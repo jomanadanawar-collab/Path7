@@ -123,13 +123,12 @@ else:
             if "مترو" in transport:
                 st.info("🚇 المترو: وصول ذكي خلال 18 دقيقة.")
             elif "سيارتي" in transport:
-                # حساب وقت السيارة الخاصة
                 car_time = 25 + st.session_state.traffic // 4
-                st.warning(f"🚗 السيارة: الوصول المتوقع خلال {car_time} دقيقة.")
+                st.warning(f"🚗 السيارة: الوصول المتوقع للوجهة خلال {car_time} دقيقة.")
             elif "تاكسي" in transport:
-                # حساب وقت التاكسي (مشابه للسيارة مع إضافة وقت انتظار بسيط)
+                # تم حذف جملة "سيصل السائق" بناءً على طلبك
                 taxi_time = 28 + st.session_state.traffic // 4
-                st.success(f"🚕 التاكسي: سيصل إليك خلال 5 دقائق، والوصول المتوقع للوجهة خلال {taxi_time} دقيقة.")
+                st.success(f"🚕 التاكسي: الوصول المتوقع للوجهة خلال {taxi_time} دقيقة.")
 
         st.markdown("---") 
         st.subheader("⭐ تقييمك لتجربة اليوم")
