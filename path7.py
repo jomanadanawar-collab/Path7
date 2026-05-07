@@ -7,7 +7,7 @@ import pytz
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 
-st.set_page_config(page_title="Path7 | Final Journey", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
 # 2. التنسيق الجمالي (CSS)
 st.markdown('''
@@ -67,12 +67,12 @@ else:
             <div class="main-card" style="padding: 20px;">
                 <span class="day-badge">اليوم {st.session_state.current_day} من 3</span>
                 <h3 style="margin:10px 0; color: #1A365D;">🕒 الرياض: {now_riyadh.strftime("%I:%M %p")}</h3>
-                <p>مرحباً <b>{st.session_state.user_name}</b>، نظام Path7 يرافقكِ في رحلتكِ.</p>
+                <p>مرحباً بك يا <b>{st.session_state.user_name}</b>، نظام Path7 يرافقك في رحلتك.</p>
             </div>
         ''', unsafe_allow_html=True)
 
         if st.button("🔗 ربط بـ Google Calendar", use_container_width=True):
-            st.success("تمت المزامنة بنجاح! سيصلكِ إشعار غداً صباحاً.")
+            st.success("تمت المزامنة بنجاح! سيصلك إشعار غداً صباحاً.")
             st.balloons()
 
         st.markdown("---")
@@ -103,7 +103,7 @@ else:
                 st.markdown('''
                     <div class="farewell-box">
                         <h2 style="color: #1A365D; margin:0;">✨ وصلنا لنهاية الاجازة! نشوفك على خير ✨</h2>
-                        <p style="margin-top:10px;">نتمنى أن تكون رحلتكِ في الرياض عبر Path7 كانت استثنائية.</p>
+                        <p style="margin-top:10px;">نتمنى أن تكون رحلتك في الرياض عبر Path7 كانت استثنائية.</p>
                     </div>
                 ''', unsafe_allow_html=True)
 
@@ -116,6 +116,9 @@ else:
                 st.session_state.star_rating = 0
                 st.rerun()
         
+        if st.session_state.current_day == 2:
+            st.warning("🔔 تذكير اليوم الثاني: هاه لسا بالرياض؟")
+
         if st.button("🔄 تصفير الحجز"):
             st.session_state.clear()
             st.rerun()
