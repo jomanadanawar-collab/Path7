@@ -8,10 +8,14 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 current_hour = now_riyadh.hour
 
-# 2. إعدادات الصفحة
-st.set_page_config(page_title="Path7", layout="wide")
+# 2. إعدادات الصفحة (جعل القائمة الجانبية مفتوحة دائمًا)
+st.set_page_config(
+    page_title="Path7", 
+    layout="wide", 
+    initial_sidebar_state="expanded" # هذا السطر يثبت القائمة
+)
 
-# 3. التنسيق الجمالي (IBM Plex Sans Arabic)
+# 3. التنسيق الجمالي
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
@@ -35,7 +39,6 @@ st.markdown("<p style='text-align: center; color: #718096;'>نظام إدارة 
 
 with st.sidebar:
     st.header("🛂 تفاصيل الرحلة")
-    # تم تغيير الخيارات للمذكر
     name = st.text_input("اسم المستخدم", "زائر")
     st.markdown("---")
     budget = st.radio("الميزانية", ["اقتصادية (Low)", "فاخرة (High)"])
@@ -46,11 +49,11 @@ with st.sidebar:
 col_main, col_stats = st.columns([2, 1])
 
 with col_main:
-    # الترحيب بصيغة المذكر وبدون لقب "مهندسة"
+    # الترحيب بصيغة المذكر العامة وبدون ألقاب
     st.markdown(f'''
         <div class="welcome-card">
             <h3>أهلاً بك {name} ✨</h3>
-            <p>نساعدك في تخطيط مسار ذكي يوافق تطلعاتك. التوقيت الحالي في الرياض {current_hour}:00.</p>
+            <p>نساعدك في تخطيط مسار ذكي يوافق تطلعاتك. التوقيت الحالي في الرياض {now_riyadh.strftime('%I:%M %p')}.</p>
         </div>
     ''', unsafe_allow_html=True)
 
