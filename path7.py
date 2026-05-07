@@ -199,3 +199,4 @@ else:
             st.rerun()
 
 st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | IA University | Engineering Team</p>", unsafe_allow_html=True)
+Final update for Path7
