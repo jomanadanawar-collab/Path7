@@ -16,7 +16,7 @@ else:
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. التنسيق الجمالي (CSS) - نسخة الحصن الحصين المحدثة
+# 2. التنسيق الجمالي (CSS) - نسخة الحصن الحصين
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -26,7 +26,6 @@ st.markdown('''
     }
     .stApp { background-color: #F4F7F9 !important; }
     
-    /* تصميم البوكس الموحد لصفحة الترحيب */
     [data-testid="stForm"] {
         background: white !important;
         padding: 50px !important;
@@ -66,7 +65,7 @@ if 'dest' not in st.session_state: st.session_state.dest = None
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 if 'weather' not in st.session_state: st.session_state.weather = initial_weather
 
-# --- المشهد الأول: صفحة الترحيب (مع إضافة الاهتمامات) ---
+# --- المشهد الأول: صفحة الترحيب ---
 if st.session_state.page == 'welcome':
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.form("main_welcome_form"):
@@ -77,7 +76,6 @@ if st.session_state.page == 'welcome':
         u_name = st.text_input("اسم السائح الموقر", "جُمانة")
         u_budget = st.radio("حدد نوع الميزانية المرصودة للرحلة", ["اقتصادية", "فاخرة"], horizontal=True)
         
-        # إضافة ركن الاهتمامات
         u_interests = st.multiselect(
             "ما هي اهتماماتك السياحية؟",
             ["تاريخ وآثار", "ترفيه ومغامرة", "تسوق", "فنون وثقافة", "مطاعم ومقاهي"],
@@ -109,7 +107,6 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("تحليل الوجهة الأنسب للوقت الحالي 🔍"):
-            # محاكاة اختيار وجهة بناءً على الاهتمامات (بشكل بسيط)
             dests = ["بوليفارد وورلد (ترفيه)", "حي الطريف التاريخي (تاريخ)", "سوق الزل وقصر المصمك"]
             st.session_state.dest = dests[st.session_state.current_day - 1]
             st.session_state.traffic = random.randint(20, 60)
@@ -126,7 +123,13 @@ else:
             if "مترو" in transport:
                 st.info("🚇 المترو: وصول ذكي خلال 18 دقيقة.")
             elif "سيارتي" in transport:
-                st.warning(f"🚗 السيارة: الوصول المتوقع خلال {25 + st.session_state.traffic//4} دقيقة.")
+                # حساب وقت السيارة الخاصة
+                car_time = 25 + st.session_state.traffic // 4
+                st.warning(f"🚗 السيارة: الوصول المتوقع خلال {car_time} دقيقة.")
+            elif "تاكسي" in transport:
+                # حساب وقت التاكسي (مشابه للسيارة مع إضافة وقت انتظار بسيط)
+                taxi_time = 28 + st.session_state.traffic // 4
+                st.success(f"🚕 التاكسي: سيصل إليك خلال 5 دقائق، والوصول المتوقع للوجهة خلال {taxi_time} دقيقة.")
 
         st.markdown("---") 
         st.subheader("⭐ تقييمك لتجربة اليوم")
