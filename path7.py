@@ -8,31 +8,27 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 current_hour = now_riyadh.hour
 
-# تحديد الجو المبدئي
-if 5 <= current_hour <= 17:
-    default_weather = "مشمس ☀️"
-else:
-    default_weather = "ليل صافي 🌙"
+default_weather = "مشمس ☀️" if 5 <= current_hour <= 17 else "ليل صافي 🌙"
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. البيانات المستخرجة من الملف
+# 2. البيانات مع إضافة "معامل الوقت" (Base Minutes من حي المروج)
 PLACES_DB = {
     "اقتصادية": [
-        {"الوجهة": "أسواق المعيقيلة", "الفئة": "تسوق", "وصف": "مركز تسوق تقليدي للبخور والعود والبشوت."},
-        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها."},
-        {"الوجهة": "سوق الزل", "الفئة": "تاريخ وآثار", "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة."},
-        {"الوجهة": "مركز الملك عبد الله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أيقونة اقتصادية حديثة."},
-        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "وصف": "ممشى مفتوح للتسوق والمطاعم العصرية."},
-        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء خلابة وبحيرات مثالية للنزهات."},
-        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء شاسعة."},
-        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس."}
+        {"الوجهة": "أسواق المعيقيلة", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25},
+        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28},
+        {"الوجهة": "سوق الزل", "الفئة": "تاريخ وآثار", "وصف": "أقدم سوق مليء بالتحف.", "base_time": 27},
+        {"الوجهة": "مركز الملك عبد الله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10},
+        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "وصف": "ممشى مفتوح للتسوق والمطاعم.", "base_time": 22},
+        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء وبحيرات.", "base_time": 35},
+        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30},
+        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس.", "base_time": 90}
     ],
     "فاخرة": [
-        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ السعودي."},
-        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية مع مطاعم وسينما عالمية."},
-        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة في العاصمة للثقافات العالمية والألعاب."},
-        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات على وادي حنيفة."}
+        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ.", "base_time": 18},
+        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية ومطاعم عالمية.", "base_time": 15},
+        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة للثقافات والألعاب.", "base_time": 12},
+        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18}
     ]
 }
 
@@ -57,7 +53,7 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# 4. حل مشكلة الـ AttributeError (تجهيز الـ Session State)
+# 4. إدارة الحالة
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'weather' not in st.session_state: st.session_state.weather = default_weather
@@ -71,73 +67,78 @@ if st.session_state.page == 'welcome':
         st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:0; font-size: 3em;">📍 Path7</h1>', unsafe_allow_html=True)
         st.markdown('<p style="text-align: center; color: #718096; margin-top:5px; font-size: 1.2em;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
         st.markdown('<hr style="margin: 30px 0; opacity: 0.1;">', unsafe_allow_html=True)
-        
         u_name = st.text_input("اسم السائح الموقر", "جُمانة")
         u_budget = st.radio("حدد نوع الميزانية المرصودة للرحلة", ["اقتصادية", "فاخرة"], horizontal=True)
-        u_interests = st.multiselect("ما هي اهتماماتك؟", ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"], default=["تاريخ وآثار"])
-        
-        st.info("📌 مكان الإقامة مثبت: حي المروج (نقطة الانطلاق)")
-        
+        st.info("📌 سيتم تحديد اهتماماتك لكل يوم داخل اللوحة")
         if st.form_submit_button("بدء المسار الذكي 🚀"):
             st.session_state.user_name = u_name
             st.session_state.user_budget = u_budget
-            st.session_state.user_interests = u_interests
-            # التأكيد على تخزين الجو هنا لمنع الخطأ مستقبلاً
-            st.session_state.weather = default_weather
             st.session_state.page = 'system'
             st.rerun()
 
-# --- الصفحة الثانية: لوحة التحكم (المشهد الذي كان فيه الخطأ) ---
+# --- الصفحة الثانية: لوحة التحكم ---
 else:
     col_main, col_stats = st.columns([2, 1])
     with col_main:
-        # هنا كان يحدث الخطأ (السطر 92 في الصورة)
         st.markdown(f'''
             <div class="main-card">
                 <h3 style="margin:0; color: #1A365D;">اليوم {st.session_state.current_day} من 3</h3>
-                <p>مرحباً بك يا <b>{st.session_state.user_name}</b> | الجو الآن: <b>{st.session_state.weather}</b></p>
-                <p style="font-size: 0.9em; color: #718096;">الميزانية: {st.session_state.user_budget} | اهتماماتك المحددة: {", ".join(st.session_state.user_interests)}</p>
+                <p>مرحباً يا <b>{st.session_state.user_name}</b> | الجو الآن: <b>{st.session_state.weather}</b></p>
             </div>
         ''', unsafe_allow_html=True)
-
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("تحليل الوجهات الأنسب لاختياراتك 🔍"):
-            available = PLACES_DB[st.session_state.user_budget]
-            final_list = []
-            # اختيار مكان واحد لكل اهتمام تم تحديده
-            for interest in st.session_state.user_interests:
-                matches = [p for p in available if p["الفئة"] == interest]
-                if matches:
-                    final_list.append(random.choice(matches))
-            st.session_state.suggestions = final_list
-            st.session_state.traffic = random.randint(20, 60)
+        
+        u_daily_interests = st.multiselect(
+            f"ما هي اهتماماتك لليوم {st.session_state.current_day}؟", 
+            ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"],
+            key=f"interests_day_{st.session_state.current_day}"
+        )
 
-        # عرض الوجهات المقترحة من الملف
+        if st.button("تحليل الوجهات الأنسب لهذا اليوم 🔍"):
+            if not u_daily_interests:
+                st.error("لطفاً، اختر اهتماماً واحداً على الأقل.")
+            else:
+                available = PLACES_DB[st.session_state.user_budget]
+                final_list = []
+                for interest in u_daily_interests:
+                    matches = [p for p in available if p["الفئة"] == interest]
+                    if matches: final_list.append(random.choice(matches))
+                st.session_state.suggestions = final_list
+                st.session_state.traffic_factor = random.uniform(1.0, 1.8) # معامل الزحمة العشوائي
+
         if st.session_state.suggestions:
+            transport = st.selectbox("اختر وسيلة النقل لمعرفة الأوقات:", ["-- اختر --", "مترو الرياض", "سيارتي الخاصة", "تاكسي"])
+            
             for place in st.session_state.suggestions:
+                # منطق حساب الوقت المتغير بناءً على الوجهة
+                base = place['base_time']
+                if transport == "مترو الرياض":
+                    final_time = f"{base + 5} دقيقة (عبر محطة كافد)"
+                    icon = "🚇"
+                elif transport == "سيارتي الخاصة":
+                    final_time = f"{int(base * st.session_state.traffic_factor)} دقيقة"
+                    icon = "🚗"
+                elif transport == "تاكسي":
+                    final_time = f"{int(base * st.session_state.traffic_factor) + 3} دقيقة"
+                    icon = "🚕"
+                else:
+                    final_time = "يرجى اختيار وسيلة نقل"
+                    icon = "📍"
+
                 st.markdown(f'''
                     <div class="info-box">
-                        <h4 style="margin:0; color:#2B6CB0;">📍 {place['الوجهة']} ({place['الفئة']})</h4>
-                        <p style="margin:5px 0;">{place['وصف']}</p>
+                        <h4 style="margin:0; color:#2B6CB0;">{icon} {place['الوجهة']}</h4>
+                        <p style="margin:2px 0; font-size:0.9em;">{place['وصف']}</p>
+                        <hr style="margin:10px 0; opacity:0.1;">
+                        <p style="margin:0; font-weight:bold; color:#2D3748;">الوقت المتوقع للوصول: {final_time}</p>
                     </div>
                 ''', unsafe_allow_html=True)
-            
-            transport = st.selectbox("اختر وسيلة النقل:", ["-- اختر --", "مترو الرياض (محطة كافد)", "سيارتي الخاصة", "تاكسي"])
-            if "مترو" in transport:
-                st.info("🚇 المترو: الانطلاق من محطة كافد (KAFD) والوصول المتوقع خلال 18 دقيقة.")
-            elif "سيارتي" in transport:
-                car_time = 25 + st.session_state.traffic // 4
-                st.warning(f"🚗 السيارة: الوصول المتوقع للوجهة خلال {car_time} دقيقة.")
-            elif "تاكسي" in transport:
-                taxi_time = 28 + st.session_state.traffic // 4
-                st.success(f"🚕 التاكسي: الوصول المتوقع للوجهة خلال {taxi_time} دقيقة.")
 
         st.markdown("---")
-        st.subheader("⭐ تقييمك لتجربة اليوم")
+        st.subheader("⭐ تقييمك لليوم")
         stars = st.columns(5)
         for i in range(1, 6):
-            if stars[i-1].button(f"{i}⭐", key=f"s{i}"):
-                st.session_state.star_rating = i
+            if stars[i-1].button(f"{i}⭐", key=f"s{i}"): st.session_state.star_rating = i
         
         if st.session_state.star_rating > 0:
             st.markdown(f"<h1 style='text-align: center; color: #FFD700;'>{'⭐' * st.session_state.star_rating}</h1>", unsafe_allow_html=True)
@@ -149,7 +150,7 @@ else:
                     st.session_state.weather = random.choice(["مشمس ☀️", "غائم جزئياً ⛅", "لطيف 🍃"])
                     st.rerun()
             else:
-                st.success("✨ نتمنى لك رحلة سعيدة في الرياض! نراك قريباً ✨")
+                st.success("✨ نتمنى لك رحلة سعيدة في الرياض! ✨")
 
     with col_stats:
         st.subheader("⚙️ النظام")
