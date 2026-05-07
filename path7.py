@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 from datetime import datetime
-import pytz # مكتبة المناطق الزمنية
+import pytz 
 
 # --- 1. ضبط التوقيت المباشر لمدينة الرياض (دقة 100%) ---
 riyadh_tz = pytz.timezone('Asia/Riyadh')
