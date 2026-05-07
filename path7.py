@@ -19,12 +19,12 @@ st.markdown('''
     }
     .stApp { background-color: #F4F7F9 !important; }
     
-    /* البوكس الكحلي - تم تجميعه ليكون الحاوية الأساسية */
+    /* الصندوق الكحلي المتكامل */
     .main-card {
         background: white; padding: 40px; border-radius: 25px;
         border-top: 15px solid #1A365D; 
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        max-width: 650px; margin: auto; margin-top: 50px;
+        max-width: 600px; margin: auto; margin-top: 60px;
     }
     
     .info-box {
@@ -43,9 +43,8 @@ st.markdown('''
     
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
     
-    /* تحسين شكل الأزرار والحقول */
-    .stButton>button { border-radius: 12px; height: 3em; background-color: #1A365D !important; color: white !important; }
-    .stTextInput>div>div>input { border-radius: 10px; }
+    /* تحسين شكل الأزرار */
+    .stButton>button { border-radius: 12px; height: 3.5em; background-color: #1A365D !important; color: white !important; font-weight: bold !important; }
     </style>
 ''', unsafe_allow_html=True)
 
@@ -55,30 +54,27 @@ if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'dest' not in st.session_state: st.session_state.dest = None
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 
-# --- المشهد الأول: صفحة الدخول (البوكس الكحلي المتكامل) ---
+# --- المشهد الأول: صفحة الترحيب (كل العناصر داخل الصندوق الكحلي) ---
 if st.session_state.page == 'welcome':
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
-    # كل شيء داخل البوكس الآن
-    st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:5px;">📍 Path7</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: #718096; font-size: 1.1em;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
-    st.markdown('<hr style="border-top: 1px solid #E2E8F0; margin: 20px 0;">', unsafe_allow_html=True)
+    # المحتوى داخل الصندوق
+    st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:0;">📍 Path7</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: #718096; margin-top:5px;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
+    st.markdown('<hr style="border-top: 1px solid #eee; margin: 25px 0;">', unsafe_allow_html=True)
     
-    with st.form("booking_form", clear_on_submit=False):
-        # المدخلات مرتبة هندسياً
+    with st.form("main_gate"):
         st.session_state.user_name = st.text_input("اسم السائح", "جُمانة")
         
         st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.user_budget = st.radio("نوع الميزانية المرصودة", ["اقتصادية", "فاخرة"], horizontal=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
-        st.info("📌 ملاحظة: مكان الإقامة مثبت في حي المروج لضمان دقة التوافق مع شبكة المترو.")
+        st.info("📌 مكان الإقامة مثبت: حي المروج (نقطة الانطلاق اللحظي)")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        # زر البدء داخل الصندوق
-        submitted = st.form_submit_button("بدء المسار الذكي 🚀", use_container_width=True)
-        
-        if submitted:
+        # الزر داخل الصندوق
+        if st.form_submit_button("بدء المسار الذكي 🚀", use_container_width=True):
             st.session_state.page = 'system'
             st.rerun()
             
@@ -119,8 +115,6 @@ else:
             transport = st.selectbox("اختر وسيلة النقل المناسبة:", ["-- اختر --", "مترو الرياض (كافد)", "تاكسي"])
             if "مترو" in transport:
                 st.info("🚇 المترو هو الخيار الأسرع حالياً (وصول خلال 18 دقيقة).")
-            elif "تاكسي" in transport:
-                st.warning(f"🚕 الوصول المتوقع خلال {20 + st.session_state.traffic//5} دقيقة.")
 
         st.markdown("<br><hr>")
         st.subheader("⭐ تقييمك لتجربة اليوم")
@@ -148,10 +142,6 @@ else:
                 st.session_state.dest = None
                 st.session_state.star_rating = 0
                 st.rerun()
-        
-        if st.session_state.current_day == 2:
-            st.warning("🔔 تنبيه الصباح: هاه لسا بالرياض؟ اليوم الجو جميل!")
-
         if st.button("🔄 إعادة ضبط"):
             st.session_state.clear()
             st.rerun()
