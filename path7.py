@@ -8,7 +8,6 @@ Original file is located at
 """
 
 # تثبيت المكتبات اللازمة لتشغيل الموقع وربطه بالإنترنت
-!pip install streamlit -q
 !pip install pyngrok -q
 
 import streamlit as st
