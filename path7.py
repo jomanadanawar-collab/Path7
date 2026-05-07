@@ -3,7 +3,7 @@ import streamlit as st
 import random
 from datetime import datetime
 
-# --- قاعدة بيانات الوجهات ---
+# 1. قاعدة بيانات الوجهات
 riyadh_destinations = {
     "تاريخ": {
         "Low": [{"name": "قصر المصمك", "start": 8, "end": 21}, {"name": "المتحف الوطني", "start": 9, "end": 19}],
@@ -21,8 +21,8 @@ riyadh_destinations = {
 
 st.set_page_config(page_title="Path7", layout="wide")
 
-# --- التنسيق الجمالي ---
-st.markdown(\"\"\"
+# 2. التنسيق الجمالي (تعديل الأخطاء السابقة)
+st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
     html, body, [class*="css"], .stMarkdown, p, span, label, input, button, select {
@@ -41,32 +41,29 @@ st.markdown(\"\"\"
         margin-bottom: 20px;
     }
     </style>
-    \"\"\", unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
 
-# --- العنوان الرئيسي ---
+# 3. العنوان الرئيسي
 st.markdown("<h1>📍 Path7</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #718096;'>نظام إدارة المسارات الذكية | جامعة الإمام عبدالرحمن بن فيصل</p>", unsafe_allow_html=True)
 
-# --- القائمة الجانبية (المدخلات) ---
+# 4. القائمة الجانبية
 with st.sidebar:
     st.header("🛂 تفاصيل الرحلة")
-    
-    # 1. التعديل الأول: اختيار الجنس
     gender = st.radio("الجنس", ["أنثى", "ذكر"], horizontal=True)
     name = st.text_input("اسم المسافر", "جُمانة")
     
     st.markdown("---")
     budget = st.radio("مستوى الميزانية", ["اقتصادية (Low)", "فاخرة (High)"])
     budget_key = "Low" if "اقتصادية" in budget else "High"
-
-    sim_hour = st.select_slider("ساعة اليوم", options=list(range(24)), value=datetime.now().hour)
+    sim_hour = st.select_slider("ساعة اليوم المحاكة", options=list(range(24)), value=datetime.now().hour)
     interest = st.selectbox("الاهتمامات الرئيسية", ["تاريخ", "ترفيه", "طبيعة"])
 
-# --- توزيع المحتوى ---
+# 5. توزيع المحتوى
 col_main, col_stats = st.columns([2, 1])
 
 with col_main:
-    # 2. التعديل الثاني: الترحيب المخصص
+    # الترحيب المخصص
     if gender == "أنثى":
         welcome_msg = f"أهلاً بكِ يا مهندسة {name} ✨"
         sub_text = "دعينا نخطط لكِ مساراً يوافق تطلعاتكِ."
@@ -74,44 +71,40 @@ with col_main:
         welcome_msg = f"أهلاً بك يا مهندس {name} ✨"
         sub_text = "دعنا نخطط لك مساراً يوافق تطلعاتك."
     
-    st.markdown(f\"\"\"
-        <div class='welcome-card'>
+    st.markdown(f'''
+        <div class="welcome-card">
             <h3>{welcome_msg}</h3>
             <p>{sub_text}</p>
         </div>
-    \"\"\", unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
 
-    st.subheader("🗓️ المسار المقترح")
-    if st.button("توليد المسار الذكي"):
+    st.subheader("🗓️ المسار المقترح اللحظي")
+    if st.button("تحديث وتحليل المسار"):
         options = riyadh_destinations[interest][budget_key]
         event = random.choice(options)
-
         container = st.container(border=True)
         container.markdown(f"### 📍 {event['name']}")
 
         if event['start'] <= sim_hour < event['end']:
-            container.success(f"✅ **متاح الآن:** استمتع{'ي' if gender=='أنثى' else ''} بزيارتك! (يغلق {event['end']}:00)")
+            container.success(f"✅ متاح الآن: استمتعي بزيارتك!")
         else:
-            container.warning(f"⏳ **مغلق حالياً:** ساعات العمل من {event['start']}:00 إلى {event['end']}:00")
+            container.warning(f"⏳ مغلق حالياً: يفتح من {event['start']}:00 إلى {event['end']}:00")
 
-    # 3. التعديل الثالث: النجوم التفاعلية (Stars)
+    # النجوم التفاعلية
     st.markdown("---")
-    st.subheader("⭐ تقييم المسار")
+    st.subheader("⭐ تقييم تجربتك")
     star_rating = st.select_slider("قيم جودة المقترح:", options=[1, 2, 3, 4, 5], value=5)
     st.markdown(f"<h2 style='text-align: center;'>{'⭐' * star_rating}</h2>", unsafe_allow_html=True)
 
 with col_stats:
-    st.subheader("📉 بيانات الجو")
-    
-    # 4. التعديل الرابع: الطقس التفاعلي (شمس أو قمر)
-    if 6 <= sim_hour <= 18:
-        weather_icon = "☀️"
-        weather_desc = "نهار مشرق"
+    st.subheader("📉 بيانات النظام")
+    # الطقس التفاعلي
+    if 6 <= sim_hour <= 17:
+        weather_icon, weather_desc = "☀️", "نهار مشرق"
     else:
-        weather_icon = "🌙"
-        weather_desc = "ليل هادئ"
+        weather_icon, weather_desc = "🌙", "ليل هادئ"
         
-    st.metric("الحالة", weather_desc, weather_icon)
+    st.metric("حالة الجو", weather_desc, weather_icon)
     st.metric("الازدحام المروري", "متوسط", "-5%")
     st.metric("دقة المطابقة", "98%")
 
@@ -120,3 +113,5 @@ st.markdown("<br><br><p style='text-align: center; color: #A0AEC0; font-size: 0.
 
 with open("app.py", "w", encoding="utf-8") as f:
     f.write(content)
+
+print("✅ تم التحديث بنجاح يا جُمانة! الآن شغلي خلية الـ Tunnel وشوفي النتيجة.")
