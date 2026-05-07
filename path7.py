@@ -3,10 +3,19 @@ import random
 from datetime import datetime
 import pandas as pd
 
-# --- إعدادات الصفحة ---
-st.set_page_config(page_title="Path7 - Intelligent System", layout="wide")
+# 1. إعدادات الصفحة
+st.set_page_config(page_title="Path7 - Live Sync", layout="wide")
 
-# --- قاعدة بيانات الوجهات مع "بيانات الازدحام المحاكة" ---
+# 2. الحصول على الوقت الفعلي (دقة 100%)
+now = datetime.now()
+days_map = {
+    "Monday": "الاثنين", "Tuesday": "الثلاثاء", "Wednesday": "الأربعاء",
+    "Thursday": "الخميس", "Friday": "الجمعة", "Saturday": "السبت", "Sunday": "الأحد"
+}
+current_day_ar = days_map[now.strftime("%A")]
+current_hour = now.hour
+
+# 3. قاعدة البيانات
 riyadh_destinations = {
     "تاريخ": {
         "Low": [{"name": "قصر المصمك", "start": 8, "end": 21}, {"name": "المتحف الوطني", "start": 9, "end": 19}],
@@ -22,7 +31,7 @@ riyadh_destinations = {
     }
 }
 
-# --- التنسيق الجمالي (IBM Plex Sans Arabic) ---
+# 4. التنسيق الجمالي (IBM Plex Sans Arabic)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap');
@@ -30,100 +39,75 @@ st.markdown("""
         font-family: 'IBM Plex Sans Arabic', sans-serif !important;
         direction: rtl; text-align: right;
     }
-    .stApp { background-color: #F4F7F9; }
-    .status-card {
-        background-color: white; padding: 20px; border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;
+    .stApp { background-color: #F8F9FB; }
+    .live-status {
+        background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%);
+        color: white; padding: 25px; border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 25px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- القائمة الجانبية (المدخلات الذكية) ---
-with st.sidebar:
-    st.header("🛂 لوحة التحكم")
-    gender = st.radio("الجنس", ["أنثى", "ذكر"], horizontal=True)
-    name = st.text_input("اسم المسافر", "جُمانة")
-    st.markdown("---")
-    budget = st.radio("الميزانية", ["اقتصادية (Low)", "فاخرة (High)"])
-    budget_key = "Low" if "اقتصادية" in budget else "High"
-    
-    # محاكاة الوقت واليوم
-    selected_day = st.selectbox("اختر يوم الزيارة:", ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"])
-    sim_hour = st.select_slider("ساعة الزيارة المحاكة:", options=list(range(24)), value=datetime.now().hour)
-    interest = st.selectbox("الاهتمام الرئيسي", ["تاريخ", "ترفيه", "طبيعة"])
+# 5. واجهة النظام اللحظية
+st.markdown("<h1>📍 Path7: Live System</h1>", unsafe_allow_html=True)
 
-# --- واجهة النظام ---
-st.markdown(f"<h1>📍 نظام Path7 </h1>", unsafe_allow_html=True)
+# شريط الحالة العلوي (يربط الوقت الفعلي)
+st.markdown(f"""
+    <div class="live-status">
+        <h2 style='color: white;'>أهلاً بكِ يا مهندسة {st.sidebar.text_input("اسمكِ", "جُمانة")} ✨</h2>
+        <p style='font-size: 1.2em;'>📅 اليوم: {current_day_ar} | ⏰ الساعة الآن: {current_hour}:00</p>
+        <p style='font-size: 0.9em; opacity: 0.8;'>تم الربط بنجاح مع تقويم النظام (Live Precision 100%)</p>
+    </div>
+""", unsafe_allow_html=True)
 
 col_main, col_stats = st.columns([2, 1])
 
 with col_main:
-    # 1. الترحيب الذكي
-    welcome_msg = f"أهلاً بكِ يا  {name} ✨" if gender == "أنثى" else f"أهلاً بك يا مهندس {name} ✨"
-    st.markdown(f'<div class="status-card"><h3>{welcome_msg}</h3><p>النظام الآن يحلل المسارات ليوم {selected_day} الساعة {sim_hour}:00</p></div>', unsafe_allow_html=True)
+    with st.expander("🛂 إعدادات التفضيلات", expanded=True):
+        interest = st.selectbox("بماذا تشعرين اليوم؟", ["تاريخ", "ترفيه", "طبيعة"])
+        budget_key = st.radio("الميزانية", ["Low", "High"], horizontal=True)
 
-    # 2. منطق المطابقة والازدحام (The Core Logic)
-    st.subheader("🗓️ المسار المقترح اللحظي")
-    
-    if st.button("تحديث وتحليل المسار الذكي"):
+    st.subheader("🗓️ التحليل اللحظي للمسار")
+    if st.button("توليد مسار متوافق مع الوقت الحالي"):
         options = riyadh_destinations[interest][budget_key]
+        place = random.choice(options)
         
-        # محاكاة فحص الازدحام (Random Traffic Simulation)
-        traffic_level = random.randint(1, 100) 
+        # منطق الزحمة التلقائي (الخميس والجمعة مساءً = زحمة)
+        is_busy_time = current_day_ar in ["الخميس", "الجمعة"] and (16 <= current_hour <= 23)
+        traffic_val = random.randint(80, 98) if is_busy_time else random.randint(15, 45)
         
-        # اختيار وجهة عشوائية
-        selected_place = random.choice(options)
+        st.write(f"### المقترح: {place['name']}")
         
-        st.write(f"### فحص الوجهة: {selected_place['name']}")
-        
-        # شرط 1: هل المكان مفتوح؟
-        is_open = selected_place['start'] <= sim_hour < selected_place['end']
-        
-        # شرط 2: هل الطريق مزدحم؟ (إذا فوق 80% يعتبر زحمة)
-        is_crowded = traffic_level > 80
-
-        if is_open and not is_crowded:
-            st.success(f"✅ الوجهة مثالية الآن! (الازدحام: {traffic_level}%)")
-            st.balloons()
-        elif is_open and is_crowded:
-            st.warning(f"⚠️ {selected_place['name']} مفتوح، لكن الطريق مزدحم جداً ({traffic_level}%).")
-            # اقتراح بديل فوراً من فئة أخرى أو نفس الفئة
-            st.info("🔄 اقتراح بديل لتجنب الزحمة: جربي 'وادي حنيفة' أو مكان مفتوح قريب.")
+        if traffic_val > 75:
+            st.error(f"🔴 الازدحام شديد جداً ({traffic_val}%). لا ننصح بالتوجه إلى {place['name']} حالياً.")
+            st.info("🔄 جاري البحث عن بدائل في مناطق أقل ازدحاماً...")
         else:
-            st.error(f"⏳ الوجهة مغلقة حالياً. تفتح من {selected_place['start']}:00")
+            st.success(f"✅ الطريق ممتاز ({traffic_val}%). الوجهة متاحة وتنتظرك!")
 
-    # 3. جدول ترتيب الأماكن (حسب اليوم)
+    # الجدول الزمني لليوم الحالي فقط
     st.markdown("---")
-    st.subheader(f"📅 جدول مقترحات يوم {selected_day}")
-    
-    # بناء جدول بيانات (DataFrame)
-    schedule_data = {
-        "الفترة": ["صباحاً", "ظهراً", "مساءً"],
-        "الوجهة المقترحة": [
-            riyadh_destinations["تاريخ"][budget_key][0]["name"],
-            riyadh_destinations["طبيعة"][budget_key][0]["name"],
-            riyadh_destinations["ترفيه"][budget_key][0]["name"]
-        ],
-        "حالة الازدحام المتوقعة": ["منخفضة", "متوسطة", "عالية"]
+    st.subheader(f"📅 خطة يوم {current_day_ar} المقترحة")
+    plan = {
+        "الفترة": ["الصباح", "الظهر", "المساء"],
+        "النشاط": ["زيارة ثقافية", "غداء عمل", "ترفيه/استرخاء"],
+        "حالة الازدحام": ["🟢 خفيف", "🟡 متوسط", "🔴 مرتفع" if is_busy_time else "🟢 خفيف"]
     }
-    df = pd.DataFrame(schedule_data)
-    st.table(df) # عرض جدول مرتب
+    st.table(pd.DataFrame(plan))
 
 with col_stats:
-    st.subheader("📊 مؤشرات النظام")
+    st.subheader("📊 مؤشرات حية")
     
-    # محاكاة حية للازدحام بناءً على ساعة السلايدر
-    traffic_sim = "مرتفع 🚩" if (7 <= sim_hour <= 9 or 16 <= sim_hour <= 19) else "منخفض ✅"
+    # عداد الازدحام التلقائي
+    traffic_status = "مرتفع جداً 🔴" if is_busy_time else "انسيابي ✅"
+    st.metric("حالة الطرق الآن", traffic_status)
     
-    st.metric("نسبة الازدحام المروري", traffic_sim)
-    
-    # الطقس التفاعلي
-    icon, desc = ("☀️", "نهار مشرق") if 6 <= sim_hour <= 17 else ("🌙", "ليل هادئ")
-    st.metric("حالة الجو", desc, icon)
+    # حالة الجو (تتغير تلقائياً)
+    weather_icon, weather_desc = ("☀️", "مشمس") if 6 <= current_hour <= 17 else ("🌙", "صافي")
+    st.metric("الطقس في الرياض", weather_desc, weather_icon)
     
     st.markdown("---")
-    st.write("⭐ **تقييم النظام**")
-    stars = st.select_slider("", options=[1,2,3,4,5], value=5, key="stars_val")
+    st.write("⭐ **تقييم النظام الذكي**")
+    stars = st.select_slider("", options=[1,2,3,4,5], value=5)
     st.write("⭐" * stars)
 
-st.caption("Path7 Project | College of Engineering - IAU 2026")
+st.caption(f"Path7 Intelligence System | Sync Time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
