@@ -54,9 +54,9 @@ st.markdown("<h1>📍 Path7: Live System</h1>", unsafe_allow_html=True)
 # شريط الحالة العلوي (يربط الوقت الفعلي)
 st.markdown(f"""
     <div class="live-status">
-        <h2 style='color: white;'>أهلاً بكِ يا مهندسة {st.sidebar.text_input("اسمكِ", "جُمانة")} ✨</h2>
+        <h2 style='color: white;'>أهلاً بكِ يا  {st.sidebar.text_input("اسمكِ", "جُمانة")} ✨</h2>
         <p style='font-size: 1.2em;'>📅 اليوم: {current_day_ar} | ⏰ الساعة الآن: {current_hour}:00</p>
-        <p style='font-size: 0.9em; opacity: 0.8;'>تم الربط بنجاح مع تقويم النظام (Live Precision 100%)</p>
+    
     </div>
 """, unsafe_allow_html=True)
 
