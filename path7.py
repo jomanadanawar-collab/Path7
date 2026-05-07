@@ -9,7 +9,7 @@ now_riyadh = datetime.now(riyadh_tz)
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. التنسيق الجمالي (CSS)
+# 2. التنسيق الجمالي (CSS) - النسخة المحدثة لملء الفراغ
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -19,12 +19,12 @@ st.markdown('''
     }
     .stApp { background-color: #F4F7F9 !important; }
     
-    /* الصندوق الكحلي المتكامل */
+    /* الصندوق الكحلي - تم تحسينه ليكون مليئاً بالمحتوى */
     .main-card {
-        background: white; padding: 40px; border-radius: 25px;
-        border-top: 15px solid #1A365D; 
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        max-width: 600px; margin: auto; margin-top: 60px;
+        background: white; padding: 45px; border-radius: 30px;
+        border-top: 18px solid #1A365D; 
+        box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+        max-width: 650px; margin: auto; margin-top: 60px;
     }
     
     .info-box {
@@ -38,13 +38,22 @@ st.markdown('''
     }
     
     .day-badge {
-        background: #1A365D; color: white; padding: 6px 18px; border-radius: 30px; font-weight: bold;
+        background: #1A365D; color: white; padding: 6px 20px; border-radius: 35px; font-weight: bold;
     }
     
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
     
-    /* تحسين شكل الأزرار */
-    .stButton>button { border-radius: 12px; height: 3.5em; background-color: #1A365D !important; color: white !important; font-weight: bold !important; }
+    /* أزرار ضخمة واحترافية */
+    .stButton>button { 
+        border-radius: 15px; height: 3.8em; 
+        background-color: #1A365D !important; 
+        color: white !important; 
+        font-weight: bold !important; 
+        font-size: 1.1em !important;
+        border: none !important;
+        width: 100%;
+    }
+    .stButton>button:hover { background-color: #2A4365 !important; }
     </style>
 ''', unsafe_allow_html=True)
 
@@ -54,27 +63,31 @@ if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'dest' not in st.session_state: st.session_state.dest = None
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 
-# --- المشهد الأول: صفحة الترحيب (كل العناصر داخل الصندوق الكحلي) ---
+# --- المشهد الأول: صفحة الترحيب (كل شيء داخل الصندوق) ---
 if st.session_state.page == 'welcome':
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
-    # المحتوى داخل الصندوق
-    st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:0;">📍 Path7</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: #718096; margin-top:5px;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
-    st.markdown('<hr style="border-top: 1px solid #eee; margin: 25px 0;">', unsafe_allow_html=True)
+    # رأس الصندوق
+    st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:0; font-size: 3em;">📍 Path7</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: #718096; margin-top:5px; font-size: 1.2em;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
+    st.markdown('<hr style="border-top: 2px solid #F7FAFC; margin: 30px 0;">', unsafe_allow_html=True)
     
-    with st.form("main_gate"):
-        st.session_state.user_name = st.text_input("اسم السائح", "جُمانة")
+    # المدخلات داخل الصندوق
+    with st.container():
+        user_name = st.text_input("اسم السائح الموقر", "جُمانة", key="u_name_input")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        st.session_state.user_budget = st.radio("نوع الميزانية المرصودة", ["اقتصادية", "فاخرة"], horizontal=True)
+        user_budget = st.radio("حدد نوع الميزانية المرصودة للرحلة", ["اقتصادية", "فاخرة"], horizontal=True, key="u_budget_radio")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        st.info("📌 مكان الإقامة مثبت: حي المروج (نقطة الانطلاق اللحظي)")
+        st.info("📌 ملاحظة هندسية: مكان الإقامة مثبت في حي المروج لربط المسار بشبكة المترو اللحظية.")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        # الزر داخل الصندوق
-        if st.form_submit_button("بدء المسار الذكي 🚀", use_container_width=True):
+        
+        # الزر الكبير في أسفل الصندوق
+        if st.button("بدء المسار الذكي 🚀", key="start_btn_final"):
+            st.session_state.user_name = user_name
+            st.session_state.user_budget = user_budget
             st.session_state.page = 'system'
             st.rerun()
             
@@ -93,13 +106,13 @@ else:
             </div>
         ''', unsafe_allow_html=True)
 
-        if st.button("🔗 ربط بـ Google Calendar", use_container_width=True):
+        if st.button("🔗 ربط بـ Google Calendar", key="cal_btn"):
             st.success("تمت المزامنة بنجاح! سيصلك إشعار غداً صباحاً.")
             st.balloons()
 
         st.markdown("<br>", unsafe_allow_html=True)
         
-        if st.button("تحليل الوجهة الأنسب للوقت الحالي 🔍", use_container_width=True):
+        if st.button("تحليل الوجهة الأنسب للوقت الحالي 🔍", key="analyze_btn"):
             dests = ["بوليفارد وورلد (ترفيه)", "حي الطريف التاريخي (تاريخ)", "سوق الزل وقصر المصمك"]
             st.session_state.dest = dests[st.session_state.current_day - 1]
             st.session_state.traffic = random.randint(20, 60)
@@ -112,7 +125,7 @@ else:
                 </div>
             ''', unsafe_allow_html=True)
             
-            transport = st.selectbox("اختر وسيلة النقل المناسبة:", ["-- اختر --", "مترو الرياض (كافد)", "تاكسي"])
+            transport = st.selectbox("اختر وسيلة النقل المناسبة:", ["-- اختر --", "مترو الرياض (كافد)", "تاكسي"], key="trans_sel")
             if "مترو" in transport:
                 st.info("🚇 المترو هو الخيار الأسرع حالياً (وصول خلال 18 دقيقة).")
 
@@ -120,7 +133,7 @@ else:
         st.subheader("⭐ تقييمك لتجربة اليوم")
         stars = st.columns(5)
         for i in range(1, 6):
-            if stars[i-1].button(f"{i}⭐", key=f"s{i}"):
+            if stars[i-1].button(f"{i}⭐", key=f"star_btn_{i}"):
                 st.session_state.star_rating = i
         
         if st.session_state.star_rating > 0:
@@ -136,13 +149,13 @@ else:
 
     with col_stats:
         st.subheader("⚙️ محاكاة")
-        if st.button("⏩ اليوم التالي"):
+        if st.button("⏩ اليوم التالي", key="next_day_btn"):
             if st.session_state.current_day < 3:
                 st.session_state.current_day += 1
                 st.session_state.dest = None
                 st.session_state.star_rating = 0
                 st.rerun()
-        if st.button("🔄 إعادة ضبط"):
+        if st.button("🔄 إعادة ضبط", key="reset_btn"):
             st.session_state.clear()
             st.rerun()
 
