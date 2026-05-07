@@ -8,7 +8,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 current_hour = now_riyadh.hour
 
-# تحديد حالة الجو اللحظية بناءً على الساعة
+# منطق الجو اللحظي (ليل/نهار)
 if 5 <= current_hour <= 17:
     initial_weather = "مشمس ☀️"
 else:
@@ -16,7 +16,7 @@ else:
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. التنسيق الجمالي (CSS) - نسخة الحصن الحصين
+# 2. التنسيق الجمالي (CSS) - النسخة الموحدة والنظيفة
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -103,17 +103,18 @@ else:
             st.markdown(f'''
                 <div class="info-box">
                     <h4 style="margin:0; color:#2B6CB0;">📍 الوجهة: {st.session_state.dest}</h4>
-                    <p style="margin-top:5px;">حالة الزحمة: <b>{st.session_state.traffic}%</b></p>
+                    <p style="margin-top:5px;">حالة الزحمة من حي المروج: <b>{st.session_state.traffic}%</b></p>
                 </div>
             ''', unsafe_allow_html=True)
             
             transport = st.selectbox("اختر وسيلة النقل:", ["-- اختر --", "مترو الرياض (كافد)", "سيارتي الخاصة", "تاكسي"])
             if "مترو" in transport:
-                st.info("🚇 المترو: وصول خلال 18 دقيقة.")
+                st.info("🚇 المترو: وصول ذكي خلال 18 دقيقة.")
             elif "سيارتي" in transport:
                 st.warning(f"🚗 السيارة: الوصول المتوقع خلال {25 + st.session_state.traffic//4} دقيقة.")
 
-        st.markdown("<br><hr>")
+        # قسم التقييم والتحكم (تم تنظيف الـ HTML هنا)
+        st.markdown("---") 
         st.subheader("⭐ تقييمك لتجربة اليوم")
         stars = st.columns(5)
         for i in range(1, 6):
@@ -128,7 +129,6 @@ else:
                     st.session_state.current_day += 1
                     st.session_state.dest = None
                     st.session_state.star_rating = 0
-                    # في المحاكاة، نغير الجو لعشوائي منطقي لليوم الجديد
                     st.session_state.weather = random.choice(["مشمس ☀️", "غائم جزئياً ⛅", "لطيف 🍃"])
                     st.rerun()
             else:
@@ -140,10 +140,10 @@ else:
                 ''', unsafe_allow_html=True)
 
     with col_stats:
-        st.subheader("⚙️ إدارة النظام")
+        st.subheader("⚙️ النظام")
+        st.write(f"⏰ {now_riyadh.strftime('%I:%M %p')}")
         if st.button("🔄 إعادة ضبط"):
             st.session_state.clear()
             st.rerun()
-        st.markdown(f"**توقيت الرياض اللحظي:** {now_riyadh.strftime('%I:%M %p')}")
 
 st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | Engineering @ IAU</p>", unsafe_allow_html=True)
