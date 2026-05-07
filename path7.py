@@ -3,67 +3,51 @@ import random
 from datetime import datetime
 import pytz 
 
-# 1. ضبط التوقيت
+# 1. إعدادات الوقت والصفحة
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
-current_hour = now_riyadh.hour
-
-# 2. إعدادات الصفحة
 st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="collapsed")
 
-# 3. CSS احترافي (تركيز كامل على الدائرة الكحلية وتنسيق البوكس)
+# 2. التنسيق (CSS) لإجبار النمط الفاتح وتنسيق الأزرار
 st.markdown('''
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
     html, body, [class*="css"], .stMarkdown, p, span, label, input, button, select {
         font-family: 'IBM Plex Sans Arabic', sans-serif !important;
         direction: rtl; text-align: right; color: #2D3748 !important;
     }
     .stApp { background-color: #F8F9FB !important; }
-
-    /* البوكس الكحلي الترحيبي (الفورم) */
+    
+    /* تنسيق البوكس الترحيبي الكحلي */
     [data-testid="stForm"] {
         background: white !important;
         padding: 30px !important;
         border-radius: 25px !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
         border-top: 12px solid #1A365D !important;
-        border-left: none !important; border-right: none !important; border-bottom: none !important;
         max-width: 650px; margin: auto;
     }
-
-    /* === إجبار الدائرة والخط على اللون الكحلي ومنع الأحمر تماماً === */
-    /* الدائرة (المقبض) */
-    div[role="slider"] {
-        background-color: #1A365D !important;
-        border: 3px solid #FFFFFF !important;
-        box-shadow: 0 2px 8px rgba(26, 54, 93, 0.5) !important;
-        width: 26px !important; height: 26px !important;
-        cursor: pointer !important;
-    }
-    /* الخط النشط (الذي يتم سحبه) */
-    div[data-baseweb="slider"] div[style*="background-color: rgb(255, 75, 75)"],
-    div[data-baseweb="slider"] div[style*="background-color: rgb(255, 131, 131)"],
-    div[data-baseweb="slider"] > div > div > div {
-        background-color: #1A365D !important;
-    }
-    /* إخفاء أي خطوط حمراء عند الأطراف */
-    div[data-baseweb="slider"] > div::before, div[data-baseweb="slider"] > div::after {
-        background-color: #1A365D !important;
-    }
     
+    /* تنسيق الكروت */
+    .result-card {
+        background: white; padding: 20px; border-radius: 15px;
+        border-right: 8px solid #1A365D; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    /* إخفاء القوائم الجانبية */
     [data-testid="stSidebar"] { display: none !important; }
     [data-testid="collapsedControl"] { display: none !important; }
     </style>
 ''', unsafe_allow_html=True)
 
-# 4. إدارة الحالة
+# 3. إدارة الحالة (Session State)
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'dest_result' not in st.session_state: st.session_state.dest_result = None
 if 'traffic_val' not in st.session_state: st.session_state.traffic_val = None
+if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 
-# --- الصفحة الأولى: البوكس الكحلي ---
+# --- الصفحة الأولى: البوكس الكحلي الترحيبي ---
 if st.session_state.page == 'welcome':
     col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
@@ -80,7 +64,7 @@ if st.session_state.page == 'welcome':
                 st.session_state.page, st.session_state.dest_result = 'system', None
                 st.rerun()
 
-# --- الصفحة الثانية: النتائج ---
+# --- الصفحة الثانية: النتائج والتقييم الجديد ---
 else:
     c1, c2 = st.columns([5, 1])
     with c1: st.markdown("<h2>📍 تحليل المسار اللحظي</h2>", unsafe_allow_html=True)
@@ -91,7 +75,7 @@ else:
 
     col_main, col_stats = st.columns([2, 1])
     with col_main:
-        st.markdown(f'<div style="background: white; padding: 20px; border-radius: 15px; border-right: 8px solid #1A365D; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;"><h3>أهلاً بك {st.session_state.user_name} ✨</h3><p>توقيت الرياض: {now_riyadh.strftime("%I:%M %p")}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'''<div class="result-card"><h3>أهلاً بك {st.session_state.user_name} ✨</h3><p>توقيت الرياض: {now_riyadh.strftime("%I:%M %p")}</p></div>''', unsafe_allow_html=True)
 
         if st.button("تحديث وتحليل الوجهة"):
             destinations = {"تاريخ": {"Low": ["قصر المصمك"], "High": ["حي الطريف"]}, "ترفيه": {"Low": ["حديقة السويدي"], "High": ["بوليفارد وورلد"]}, "طبيعة": {"Low": ["وادي حنيفة"], "High": ["منتجع نوفا"]}}
@@ -101,17 +85,26 @@ else:
 
         if st.session_state.dest_result:
             st.info(f"📍 الوجهة المقترحة: {st.session_state.dest_result}")
-            st.metric("نسبة الازدحام", f"{st.session_state.traffic_val}%")
+            st.success(f"✅ نسبة الازدحام: {st.session_state.traffic_val}%")
 
         st.markdown("---")
-        # حل مشكلة دقة النجوم: عرض القيم من 1 لـ 5 وضمان تطابقها
-        rating = st.select_slider("قيم تجربتك (اسحب الدائرة الكحلية):", options=[1, 2, 3, 4, 5], value=5)
-        # عرض النجوم بناءً على الرقم المختار فعلياً
-        st.markdown(f"<h1 style='text-align: center; color: #FFD700;'>{'⭐' * rating}</h1>", unsafe_allow_html=True)
+        st.subheader("⭐ قيم تجربتك مع النظام")
+        
+        # نظام النجوم الجديد: أزرار تفاعلية بدل السلايدر المتعب
+        star_cols = st.columns(5)
+        for i in range(1, 6):
+            with star_cols[i-1]:
+                if st.button(f"{i} ⭐", key=f"star_{i}", use_container_width=True):
+                    st.session_state.star_rating = i
+
+        # عرض النجوم المختارة بكبر ووضوح
+        if st.session_state.star_rating > 0:
+            st.markdown(f"<h1 style='text-align: center; color: #FFD700;'>{'⭐' * st.session_state.star_rating}</h1>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center;'>شكراً لتقييمك ({st.session_state.star_rating} نجوم)</p>", unsafe_allow_html=True)
 
     with col_stats:
         st.subheader("📊 مؤشرات")
         st.metric("الطقس", "صافي", "☀️")
-        st.metric("الحالة", "نشط")
+        st.metric("الازدحام اللحظي", f"{st.session_state.traffic_val if st.session_state.traffic_val else '--'}%")
 
 st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | IAU Engineering</p>", unsafe_allow_html=True)
