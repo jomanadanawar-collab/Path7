@@ -16,7 +16,7 @@ else:
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. التنسيق الجمالي (CSS) - النسخة الموحدة والنظيفة
+# 2. التنسيق الجمالي (CSS) - نسخة الحصن الحصين المحدثة
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -26,6 +26,7 @@ st.markdown('''
     }
     .stApp { background-color: #F4F7F9 !important; }
     
+    /* تصميم البوكس الموحد لصفحة الترحيب */
     [data-testid="stForm"] {
         background: white !important;
         padding: 50px !important;
@@ -65,19 +66,31 @@ if 'dest' not in st.session_state: st.session_state.dest = None
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 if 'weather' not in st.session_state: st.session_state.weather = initial_weather
 
-# --- المشهد الأول: صفحة الترحيب ---
+# --- المشهد الأول: صفحة الترحيب (مع إضافة الاهتمامات) ---
 if st.session_state.page == 'welcome':
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.form("main_welcome_form"):
         st.markdown('<h1 style="text-align: center; color: #1A365D; margin-bottom:0; font-size: 3em;">📍 Path7</h1>', unsafe_allow_html=True)
         st.markdown('<p style="text-align: center; color: #718096; margin-top:5px; font-size: 1.2em;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
         st.markdown('<hr style="margin: 30px 0; opacity: 0.1;">', unsafe_allow_html=True)
+        
         u_name = st.text_input("اسم السائح الموقر", "جُمانة")
         u_budget = st.radio("حدد نوع الميزانية المرصودة للرحلة", ["اقتصادية", "فاخرة"], horizontal=True)
+        
+        # إضافة ركن الاهتمامات
+        u_interests = st.multiselect(
+            "ما هي اهتماماتك السياحية؟",
+            ["تاريخ وآثار", "ترفيه ومغامرة", "تسوق", "فنون وثقافة", "مطاعم ومقاهي"],
+            default=["ترفيه ومغامرة"]
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         st.info("📌 مكان الإقامة مثبت: حي المروج (نقطة الانطلاق)")
+        
         if st.form_submit_button("بدء المسار الذكي 🚀"):
             st.session_state.user_name = u_name
             st.session_state.user_budget = u_budget
+            st.session_state.user_interests = u_interests
             st.session_state.page = 'system'
             st.rerun()
 
@@ -90,11 +103,13 @@ else:
             <div class="main-card">
                 <h3 style="margin:0; color: #1A365D;">اليوم {st.session_state.current_day} من 3</h3>
                 <p>مرحباً بك يا <b>{st.session_state.user_name}</b> | الجو الآن: <b>{st.session_state.weather}</b></p>
+                <p style="font-size: 0.9em; color: #718096;">اهتماماتك: {", ".join(st.session_state.user_interests)}</p>
             </div>
         ''', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("تحليل الوجهة الأنسب للوقت الحالي 🔍"):
+            # محاكاة اختيار وجهة بناءً على الاهتمامات (بشكل بسيط)
             dests = ["بوليفارد وورلد (ترفيه)", "حي الطريف التاريخي (تاريخ)", "سوق الزل وقصر المصمك"]
             st.session_state.dest = dests[st.session_state.current_day - 1]
             st.session_state.traffic = random.randint(20, 60)
@@ -113,7 +128,6 @@ else:
             elif "سيارتي" in transport:
                 st.warning(f"🚗 السيارة: الوصول المتوقع خلال {25 + st.session_state.traffic//4} دقيقة.")
 
-        # قسم التقييم والتحكم (تم تنظيف الـ HTML هنا)
         st.markdown("---") 
         st.subheader("⭐ تقييمك لتجربة اليوم")
         stars = st.columns(5)
