@@ -56,7 +56,7 @@ col_main, col_stats = st.columns([2, 1])
 
 with col_main:
     welcome_msg = f"أهلاً بكِ يا  {name} ✨" if gender == "أنثى" else f"أهلاً بك يا  {name} ✨"
-    st.markdown(f'<div class="welcome-card"><h3>{welcome_msg}</h3><p>دعينا نخطط لكِ مساراً مذهلاً لجامعة IAU.</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="welcome-card"><h3>{welcome_msg}</h3><p>دعينا نخطط لكِ مساراً مذهلاً لنُكمل رحلتك! </p></div>', unsafe_allow_html=True)
 
     if st.button("توليد المسار"):
         options = riyadh_destinations[interest][budget_key]
