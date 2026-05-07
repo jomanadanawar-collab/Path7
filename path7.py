@@ -6,6 +6,13 @@ import pytz
 # 1. إعدادات الوقت والصفحة
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
+current_hour = now_riyadh.hour
+
+# تحديد حالة الجو اللحظية بناءً على الساعة
+if 5 <= current_hour <= 17:
+    initial_weather = "مشمس ☀️"
+else:
+    initial_weather = "ليل صافي 🌙"
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
@@ -27,7 +34,6 @@ st.markdown('''
         box-shadow: 0 25px 60px rgba(0,0,0,0.12) !important;
         max-width: 650px !important;
         margin: auto !important;
-        border: none !important;
     }
     [data-testid="stForm"] > div { border: none !important; }
 
@@ -57,7 +63,7 @@ if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'dest' not in st.session_state: st.session_state.dest = None
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
-if 'weather' not in st.session_state: st.session_state.weather = "مشمس ☀️"
+if 'weather' not in st.session_state: st.session_state.weather = initial_weather
 
 # --- المشهد الأول: صفحة الترحيب ---
 if st.session_state.page == 'welcome':
@@ -83,7 +89,7 @@ else:
         st.markdown(f'''
             <div class="main-card">
                 <h3 style="margin:0; color: #1A365D;">اليوم {st.session_state.current_day} من 3</h3>
-                <p>مرحباً بك يا <b>{st.session_state.user_name}</b> | الطقس الحالي: <b>{st.session_state.weather}</b></p>
+                <p>مرحباً بك يا <b>{st.session_state.user_name}</b> | الجو الآن: <b>{st.session_state.weather}</b></p>
             </div>
         ''', unsafe_allow_html=True)
 
@@ -107,7 +113,6 @@ else:
             elif "سيارتي" in transport:
                 st.warning(f"🚗 السيارة: الوصول المتوقع خلال {25 + st.session_state.traffic//4} دقيقة.")
 
-        # قسم التقييم والتحكم بالأيام
         st.markdown("<br><hr>")
         st.subheader("⭐ تقييمك لتجربة اليوم")
         stars = st.columns(5)
@@ -118,16 +123,15 @@ else:
         if st.session_state.star_rating > 0:
             st.markdown(f"<h1 style='text-align: center; color: #FFD700;'>{'⭐' * st.session_state.star_rating}</h1>", unsafe_allow_html=True)
             
-            # زر اليوم التالي يظهر هنا (إلا في اليوم الأخير)
             if st.session_state.current_day < 3:
                 if st.button("الانتقال لليوم التالي ⏩"):
                     st.session_state.current_day += 1
                     st.session_state.dest = None
                     st.session_state.star_rating = 0
-                    st.session_state.weather = random.choice(["مشمس ☀️", "غائم جزئياً ⛅", "مطر خفيف 🌧️", "لطيف 🍃"])
+                    # في المحاكاة، نغير الجو لعشوائي منطقي لليوم الجديد
+                    st.session_state.weather = random.choice(["مشمس ☀️", "غائم جزئياً ⛅", "لطيف 🍃"])
                     st.rerun()
             else:
-                # رسالة اليوم الأخير تظهر تلقائياً بدل الزر
                 st.markdown('''
                     <div class="farewell-box">
                         <h2 style="color: #2D3748; margin:0;">✨ وصلنا لنهاية الاجازة! نشوفك على خير ✨</h2>
@@ -140,6 +144,6 @@ else:
         if st.button("🔄 إعادة ضبط"):
             st.session_state.clear()
             st.rerun()
-        st.markdown(f"**توقيت الرياض:** {now_riyadh.strftime('%I:%M %p')}")
+        st.markdown(f"**توقيت الرياض اللحظي:** {now_riyadh.strftime('%I:%M %p')}")
 
 st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | Engineering @ IAU</p>", unsafe_allow_html=True)
