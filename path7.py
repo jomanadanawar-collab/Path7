@@ -11,7 +11,7 @@ current_hour = now_riyadh.hour
 # 2. إعدادات الصفحة
 st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="collapsed")
 
-# 3. تنسيق CSS (إجبار النمط الفاتح وتنسيق البوكس الكحلي)
+# 3. تنسيق CSS (لإجبار كل شيء داخل البوكس الكحلي)
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
@@ -25,26 +25,30 @@ st.markdown('''
 
     .stApp { background-color: #F8F9FB !important; }
 
-    /* تنسيق البوكس الترحيبي الكحلي (اللي طلبتي يكون فيه كل شيء) */
+    /* البوكس الكحلي الرئيسي */
     .letter-container {
-        background: white !important; padding: 40px; border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 12px solid #1A365D;
-        max-width: 700px; margin: 30px auto; text-align: center;
+        background: white !important;
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-top: 12px solid #1A365D;
+        max-width: 650px;
+        margin: 20px auto;
     }
-    
+
     .system-card {
         background-color: white !important; padding: 20px; border-radius: 15px;
         border-right: 8px solid #3182CE; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         margin-bottom: 20px;
     }
 
-    /* إبراز دائرة السلايدر (التقييم) */
+    /* تنسيق السلايدر (الدائرة) */
     div[role="slider"] { 
         background-color: #1A365D !important; border: 2px solid white !important;
         width: 22px !important; height: 22px !important;
     }
 
-    /* إخفاء القائمة الجانبية تماماً لمنع التكدس */
+    /* إخفاء أي قوائم جانبية */
     [data-testid="stSidebar"] { display: none !important; }
     [data-testid="collapsedControl"] { display: none !important; }
     </style>
@@ -55,28 +59,29 @@ if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'dest_result' not in st.session_state: st.session_state.dest_result = None
 if 'traffic_val' not in st.session_state: st.session_state.traffic_val = None
 
-# --- المشهد الأول: البوكس الكحلي (يحتوي كل شيء: الاسم، الاهتمامات، والميزانية) ---
+# --- المشهد الأول: البوكس الكحلي ---
 if st.session_state.page == 'welcome':
-    # بداية البوكس الكحلي
-    st.markdown('<div class="letter-container">', unsafe_allow_html=True)
-    
-    st.markdown('<h1 style="color: #1A365D; margin-bottom: 10px;">📍 Path7</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="font-size: 1.2em; color: #4A5568; line-height: 1.6;">مرحباً بك في دليلك الذكي لاستكشاف الرياض.<br>فضلاً زودنا بتفضيلاتك لنبدأ التحليل اللحظي.</p>', unsafe_allow_html=True)
-    st.markdown('<hr style="border: 0.5px solid #EDF2F7; margin: 20px 0;">', unsafe_allow_html=True)
-    
-    # الخانات داخل البوكس الكحلي
-    st.session_state.user_name = st.text_input("الاسم", "زائر")
-    st.session_state.user_interest = st.selectbox("بماذا تهتم اليوم؟", ["تاريخ", "ترفيه", "طبيعة"])
-    st.session_state.user_budget = st.radio("الميزانية", ["اقتصادية (Low)", "فاخرة (High)"], horizontal=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("توليد المسار اللحظي 🚀", use_container_width=True):
-        st.session_state.page = 'system'
-        st.session_state.dest_result = None
-        st.rerun()
-    
-    # نهاية البوكس الكحلي
-    st.markdown('</div>', unsafe_allow_html=True)
+    # نستخدم st.container() مع CSS مخصص لضمان دخول العناصر داخل البوكس
+    with st.container():
+        st.markdown('<div class="letter-container">', unsafe_allow_html=True)
+        
+        # كل هذه العناصر ستظهر "داخل" حدود البوكس
+        st.markdown('<h1 style="color: #1A365D; text-align: center; margin-bottom: 0;">📍 Path7</h1>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size: 1.1em; color: #4A5568; text-align: center; margin-top: 10px;">مرحباً بك في دليلك الذكي لاستكشاف الرياض.<br>فضلاً زودنا بتفضيلاتك لنبدأ التحليل:</p>', unsafe_allow_html=True)
+        st.markdown('<hr style="border: 0.5px solid #EDF2F7; margin: 15px 0;">', unsafe_allow_html=True)
+        
+        # خانات إدخال البيانات (الآن أصبحت تابعة للحاوية المرئية داخل البوكس)
+        st.session_state.user_name = st.text_input("الاسم", "زائر")
+        st.session_state.user_interest = st.selectbox("بماذا تهتم اليوم؟", ["تاريخ", "ترفيه", "طبيعة"])
+        st.session_state.user_budget = st.radio("الميزانية", ["اقتصادية (Low)", "فاخرة (High)"], horizontal=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("توليد المسار اللحظي 🚀", use_container_width=True):
+            st.session_state.page = 'system'
+            st.session_state.dest_result = None
+            st.rerun()
+            
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # --- المشهد الثاني: صفحة النتائج ---
 else:
@@ -116,7 +121,7 @@ else:
     with col_stats:
         st.subheader("📊 مؤشرات")
         st.metric("الطقس", "صافي", "🌙" if current_hour > 18 or current_hour < 6 else "☀️")
-        t_disp = f"{st.session_state.traffic_val}%" if st.session_state.traffic_val else "--"
-        st.metric("الازدحام", t_disp)
+        t_val = f"{st.session_state.traffic_val}%" if st.session_state.traffic_val else "--"
+        st.metric("الازدحام", t_val)
 
 st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | IAU Engineering</p>", unsafe_allow_html=True)
