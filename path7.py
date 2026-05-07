@@ -1,17 +1,17 @@
 import streamlit as st
 import random
 from datetime import datetime
-import pytz # عشان تضبط الساعة بدون ما نغير شي في الشكل
+import pytz 
 
-# 1. ضبط التوقيت (الرياض 100%)
+# 1. ضبط التوقيت المباشر لمدينة الرياض
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 current_hour = now_riyadh.hour
 
-# 2. إعدادات الصفحة (نفس اللي حبيتيها بالضبط)
+# 2. إعدادات الصفحة
 st.set_page_config(page_title="Path7", layout="wide")
 
-# 3. التنسيق الجمالي (رجعنا لكل التفاصيل الأصلية والخطوط الفخمة)
+# 3. التنسيق الجمالي (IBM Plex Sans Arabic)
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
@@ -29,36 +29,33 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# 4. العنوان والترحيب اللي فيه "الفضفضة" والروح
+# 4. العنوان والترحيب
 st.markdown("<h1>📍 Path7</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #718096;'>نظام إدارة المسارات الذكية | جامعة الإمام عبدالرحمن بن فيصل</p>", unsafe_allow_html=True)
 
 with st.sidebar:
     st.header("🛂 تفاصيل الرحلة")
-    gender = st.radio("الجنس", ["أنثى", "ذكر"], horizontal=True)
-    name = st.text_input("اسم المسافر", "جُمانة")
+    # تم تغيير الخيارات للمذكر
+    name = st.text_input("اسم المستخدم", "زائر")
     st.markdown("---")
     budget = st.radio("الميزانية", ["اقتصادية (Low)", "فاخرة (High)"])
     budget_key = "Low" if "اقتصادية" in budget else "High"
-    # هنا يقرأ الساعة الحالية تلقائياً
-    sim_hour = st.select_slider("ساعة الزيارة المحاكة", options=list(range(24)), value=current_hour)
+    sim_hour = st.select_slider("ساعة الزيارة", options=list(range(24)), value=current_hour)
     interest = st.selectbox("الاهتمامات", ["تاريخ", "ترفيه", "طبيعة"])
 
 col_main, col_stats = st.columns([2, 1])
 
 with col_main:
-    # الترحيب اللي يعزز ثقتك (النسخة اللي حبيتيها)
-    welcome_msg = f"أهلاً بكِ يا مهندسة {name} ✨" if gender == "أنثى" else f"أهلاً بك يا مهندس {name} ✨"
+    # الترحيب بصيغة المذكر وبدون لقب "مهندسة"
     st.markdown(f'''
         <div class="welcome-card">
-            <h3>{welcome_msg}</h3>
-            <p>دعينا نخطط لكِ مساراً هندسياً يوافق تطلعاتكِ، الساعة الآن بتوقيتنا المحلي {current_hour}:00.</p>
+            <h3>أهلاً بك {name} ✨</h3>
+            <p>نساعدك في تخطيط مسار ذكي يوافق تطلعاتك. التوقيت الحالي في الرياض {current_hour}:00.</p>
         </div>
     ''', unsafe_allow_html=True)
 
     st.subheader("🗓️ المسار المقترح")
     if st.button("تحديث وتحليل المسار"):
-        # نفس منطق الأماكن والزحمة
         destinations = {
             "تاريخ": {"Low": ["قصر المصمك"], "High": ["حي الطريف"]},
             "ترفيه": {"Low": ["حديقة السويدي"], "High": ["بوليفارد وورلد"]},
@@ -73,18 +70,17 @@ with col_main:
         if traffic > 80:
             st.warning(f"⚠️ تنبيه: الطريق مزدحم حالياً ({traffic}%). يفضل الانتظار.")
         else:
-            st.success(f"✅ الطريق سالك ({traffic}%). استمتعي بوقتك!")
+            st.success(f"✅ الطريق سالك ({traffic}%). استمتع بوقتك!")
 
     st.markdown("---")
     st.subheader("⭐ تقييم التجربة")
-    stars = st.select_slider("قيمينا:", options=[1, 2, 3, 4, 5], value=5)
+    stars = st.select_slider("قيم النظام:", options=[1, 2, 3, 4, 5], value=5)
     st.markdown(f"<h2 style='text-align: center;'>{'⭐' * stars}</h2>", unsafe_allow_html=True)
 
 with col_stats:
-    st.subheader("📊 مؤشرات")
-    # الطقس والزحمة اللي كانت عاجبتك
+    st.subheader("📊 مؤشرات لحظية")
     weather_icon = "☀️" if 6 <= sim_hour <= 17 else "🌙"
     st.metric("حالة الجو", "صافي", weather_icon)
     st.metric("الازدحام المروري", "متوسط", "-5%")
 
-st.markdown("<br><p style='text-align: center; color: #A0AEC0;'>Path7 Project | IAU</p>", unsafe_allow_html=True)
+st.markdown("<br><p style='text-align: center; color: #A0AEC0;'>Path7 Project | College of Engineering - IAU</p>", unsafe_allow_html=True)
