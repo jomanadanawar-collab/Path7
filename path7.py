@@ -7,195 +7,150 @@ import pytz
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 
-st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Path7 | Official Demo", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. التنسيق الجمالي (CSS) - الهوية البصرية لـ Path7
+# 2. بيانات السيناريو (الرحلة الوهمية)
+HOTEL_ZONE = "حي المروج (شمال الرياض)"
+
+# 3. التنسيق الجمالي (CSS)
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
-    
     html, body, [class*="css"], .stMarkdown, p, span, label, input, button, select {
         font-family: 'IBM Plex Sans Arabic', sans-serif !important;
-        direction: rtl; text-align: right; color: #2D3748 !important;
+        direction: rtl; text-align: right;
     }
-    .stApp { background-color: #F8F9FB !important; }
-    
-    /* البوكس الكحلي الترحيبي */
-    [data-testid="stForm"] {
-        background: white !important; padding: 40px !important; border-radius: 25px !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; border-top: 12px solid #1A365D !important;
-        max-width: 750px; margin: auto;
-    }
-    
-    /* كروت النتائج */
-    .result-card {
-        background: white; padding: 25px; border-radius: 15px;
-        border-right: 8px solid #1A365D; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    .stApp { background-color: #F4F7F9 !important; }
+    .main-card {
+        background: white; padding: 30px; border-radius: 20px;
+        border-top: 10px solid #1A365D; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         margin-bottom: 20px;
     }
-
-    .transport-box {
-        background: #F1F5F9; padding: 15px; border-radius: 12px;
-        border: 1px dashed #1A365D; margin-top: 10px;
+    .calendar-sync {
+        background: #E8F0FE; padding: 15px; border-radius: 12px;
+        border: 1px solid #4285F4; color: #1967D2; margin-top: 15px;
     }
-
+    .day-badge {
+        background: #1A365D; color: white; padding: 5px 15px;
+        border-radius: 20px; font-size: 0.8em;
+    }
     .update-box {
-        background: #FFF9C4; padding: 20px; border-radius: 15px;
-        border: 2px dashed #FBC02D; margin-bottom: 20px; text-align: center;
+        background: #FFF9C4; padding: 15px; border-radius: 12px;
+        border: 1px solid #FBC02D; margin-bottom: 20px;
     }
-
-    /* إخفاء القوائم الجانبية تماماً */
+    /* إخفاء القوائم الجانبية */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
-    
-    .stButton>button { border-radius: 10px; font-weight: bold; }
     </style>
 ''', unsafe_allow_html=True)
 
-# 3. إدارة الحالة (Session State)
+# 4. إدارة الحالة (Session State)
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
-if 'user_hotel' not in st.session_state: st.session_state.user_hotel = None
-if 'dest_result' not in st.session_state: st.session_state.dest_result = None
-if 'traffic_val' not in st.session_state: st.session_state.traffic_val = 0
-if 'status_msg' not in st.session_state: st.session_state.status_msg = ""
+if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
-if 'is_day_two' not in st.session_state: st.session_state.is_day_two = False
+if 'dest' not in st.session_state: st.session_state.dest = None
 
-# --- المشهد الأول: البوكس الكحلي الترحيبي مع تثبيت الفندق ---
+# --- المشهد الأول: صفحة الحجز ---
 if st.session_state.page == 'welcome':
-    col_l, col_m, col_r = st.columns([1, 6, 1])
+    col_l, col_m, col_r = st.columns([1, 4, 1])
     with col_m:
-        with st.form("gate_form"):
-            st.markdown('<h1 style="color: #1A365D; text-align: center; margin-bottom:0;">📍 Path7</h1>', unsafe_allow_html=True)
-            st.markdown('<p style="text-align: center; color: #718096;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
-            st.markdown('---')
+        st.markdown('<div class="main-card">', unsafe_allow_html=True)
+        st.markdown('<h1 style="text-align: center; color: #1A365D;">📍 Path7</h1>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #64748b;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
+        
+        with st.form("booking_form"):
+            u_name = st.text_input("اسم السائح", "جُمانة")
+            u_budget = st.radio("فئة الميزانية", ["اقتصادية (Low)", "فاخرة (High)"], horizontal=True)
+            st.info(f"📍 مكان الإقامة المثبت: {HOTEL_ZONE}")
             
-            u_name = st.text_input("الاسم الكريم", "جُمانة")
-            u_budget = st.radio("نوع الميزانية", ["اقتصادية (Low)", "فاخرة (High)"], horizontal=True)
-            
-            # فنادق حي المروج المقترحة
-            hotels_db = {
-                "اقتصادية (Low)": ["أجنحة المروج الفندقية", "بودل المروج"],
-                "فاخرة (High)": ["فندق موفنبيك الرياض", "فندق دبل تري - كافد"]
-            }
-            
-            u_hotel = st.selectbox("حددي مكان إقامتك (حي المروج):", hotels_db[u_budget])
-            u_interest = st.selectbox("بماذا تهتمين اليوم؟", ["تاريخ", "ترفيه", "طبيعة"])
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            submit = st.form_submit_button("تثبيت البيانات وبدء الرحلة 🚀", use_container_width=True)
-            
-            if submit:
+            if st.form_submit_button("تفعيل المسار السياحي الذكي 🚀", use_container_width=True):
                 st.session_state.user_name = u_name
                 st.session_state.user_budget = u_budget
-                st.session_state.user_hotel = u_hotel
-                st.session_state.user_interest = u_interest
                 st.session_state.page = 'system'
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# --- المشهد الثاني: صفحة التوافق والنتائج اللحظية ---
+# --- المشهد الثاني: لوحة التحكم والنتائج ---
 else:
     col_main, col_stats = st.columns([2, 1])
     
     with col_main:
-        # عرض الوقت الحالي والفندق المثبت
+        # الكارت العلوي
         st.markdown(f'''
-            <div class="result-card">
-                <h3 style="margin:0; color:#1A365D;">🕒 {now_riyadh.strftime("%I:%M %p")}</h3>
-                <p style="margin-top:10px;">أهلاً <b>{st.session_state.user_name}</b>، مكان إقامتك المثبت هو: <b>🏨 {st.session_state.user_hotel}</b></p>
-                <small>حي المروج | مربوط بمحطة مترو كافد</small>
+            <div class="main-card" style="padding: 20px;">
+                <span class="day-badge">اليوم {st.session_state.current_day} من 3</span>
+                <h3 style="margin:10px 0; color: #1A365D;">🕒 توقيت الرياض: {now_riyadh.strftime("%I:%M %p")}</h3>
+                <p>مرحباً <b>{st.session_state.user_name}</b>، فندقك المثبت في المروج جاهز للمزامنة.</p>
             </div>
         ''', unsafe_allow_html=True)
 
-        # منطق تحديث اليوم الثاني (ARE YOU STILL IN RIYADH?)
-        if st.session_state.is_day_two:
+        # 🔗 زر جوجل كالندر (المطلوب)
+        if st.button("🔗 ربط بـ Google Calendar (تفعيل التنبيهات)", use_container_width=True):
             st.markdown(f'''
-                <div class="update-box">
-                    <h3 style="margin:0; color:#856404;">🔔 تحديث اليوم الجديد</h3>
-                    <p>هاه يا جمانة، لسا جالتنا بالرياض ولا خلصت فترة إجازتك؟</p>
+                <div class="calendar-sync">
+                    <b>📅 تم الربط بنجاح!</b><br>
+                    تمت جدولة تنبيهات المسار اللحظي لرحلتك. سيصلك إشعار غداً صباحاً.
                 </div>
             ''', unsafe_allow_html=True)
-            c1, c2 = st.columns(2)
-            if c1.button("لسا موجودة (تحديث المسار) ✨", use_container_width=True):
-                st.session_state.is_day_two = False
-                st.rerun()
-            if c2.button("خلصت الإجازة (وداعاً) 👋", use_container_width=True):
-                st.success("رحلة سعيدة، ننتظركِ مرة أخرى في الرياض! ✈️")
-                st.stop()
-
-        # زر توليد الوجهة (خوارزمية التوافق اللحظي)
-        if st.button("تحليل الوجهة الأنسب بناءً على موقعي حالياً 🔍", use_container_width=True):
-            data = {
-                "تاريخ": {"Low": ["قصر المصمك", "مركز الملك عبدالعزيز"], "High": ["حي الطريف", "المتحف الوطني"]},
-                "ترفيه": {"Low": ["حديقة السويدي", "ممشى الفريان"], "High": ["بوليفارد وورلد", "فيا رياض"]},
-                "طبيعة": {"Low": ["وادي حنيفة", "منتزه السلام"], "High": ["منتجع نوفا", "الجهة الخفية"]}
-            }
-            b_key = "Low" if "اقتصادية" in st.session_state.user_budget else "High"
-            
-            first_choice = random.choice(data[st.session_state.user_interest][b_key])
-            first_traffic = random.randint(10, 99)
-            
-            if first_traffic > 80:
-                alternatives = [d for d in data[st.session_state.user_interest][b_key] if d != first_choice]
-                st.session_state.dest_result = alternatives[0] if alternatives else first_choice
-                st.session_state.traffic_val = random.randint(10, 45)
-                st.session_state.status_msg = f"⚠️ طريق ({first_choice}) مزدحم جداً ({first_traffic}%)؛ تم تحويلك للخيار الأنسب سالكاً."
-            else:
-                st.session_state.dest_result = first_choice
-                st.session_state.traffic_val = first_traffic
-                st.session_state.status_msg = "✅ المسار المختار من حي المروج سالك حالياً."
-
-        if st.session_state.dest_result:
-            if "⚠️" in st.session_state.status_msg: st.warning(st.session_state.status_msg)
-            else: st.success(st.session_state.status_msg)
-            
-            st.info(f"📍 الوجهة المقترحة: {st.session_state.dest_result}")
-            
-            st.markdown("---")
-            st.subheader(f"🚗 خيارات النقل من {st.session_state.user_hotel}")
-            transport = st.selectbox("كيف تودين الذهاب؟", ["-- اختر وسيلة النقل --", "مترو الرياض (اقتصادي/سريع)", "تاكسي / أوبر", "سيارة خاصة"])
-            
-            if transport != "-- اختر وسيلة النقل --":
-                base_m = 18 
-                if "مترو" in transport:
-                    t_time = base_m
-                    msg = "🚇 خيار ذكي! المترو يربط حي المروج بكافة الوجهات دون التأثر بزحمة السير."
-                elif "تاكسي" in transport:
-                    t_time = base_m + (st.session_state.traffic_val // 5)
-                    msg = "🚕 مريح، ولكن المدة تعتمد على حركة المرور في طريق الملك فهد."
-                else:
-                    t_time = base_m + (st.session_state.traffic_val // 4)
-                    msg = "🚘 تأكد من حجز موقف في الوجهة قبل الانطلاق."
-                
-                st.markdown(f'''
-                    <div class="transport-box">
-                        <h3 style="margin:0; color:#1A365D;">الوصول خلال: {t_time} دقيقة</h3>
-                        <p>{msg}</p>
-                    </div>
-                ''', unsafe_allow_html=True)
+            st.balloons()
 
         st.markdown("---")
-        # نظام التقييم بالنجوم
-        st.subheader("⭐ تقييمك للنظام")
-        star_cols = st.columns(5)
+        
+        # محاكاة اليوم الثاني
+        if st.session_state.current_day == 2:
+            st.markdown('''
+                <div class="update-box">
+                    <b>🔔 إشعار متابعة:</b><br>
+                    هاه يا جمانة، لسا جالتنا بالرياض؟ اليوم الجو مثالي لزيارة حي الطريف!
+                </div>
+            ''', unsafe_allow_html=True)
+
+        # تحليل الوجهة بناءً على اليوم
+        if st.button("تحليل الوجهة الأنسب لليوم بناءً على الزحمة 🔍", use_container_width=True):
+            if st.session_state.current_day == 1:
+                st.session_state.dest = "بوليفارد وورلد"
+                st.session_state.traffic = random.randint(40, 70)
+            elif st.session_state.current_day == 2:
+                st.session_state.dest = "حي الطريف التاريخي"
+                st.session_state.traffic = random.randint(15, 35)
+            else:
+                st.session_state.dest = "سوق الزل وقصر المصمك"
+                st.session_state.traffic = random.randint(20, 50)
+        
+        if st.session_state.dest:
+            st.success(f"📍 الوجهة المقترحة: {st.session_state.dest}")
+            
+            st.markdown("---")
+            st.subheader("🚗 وسيلة النقل والوقت")
+            transport = st.selectbox("اختر وسيلة النقل من المروج:", ["-- اختر --", "مترو الرياض (من محطة كافد)", "تاكسي / أوبر"])
+            
+            if transport == "مترو الرياض (من محطة كافد)":
+                st.info("🚇 **الوصول خلال 18 دقيقة.** المترو خيارك الأسرع لتجنب زحمة الطرق حالياً.")
+            elif transport == "تاكسي / أوبر":
+                t_time = 18 + (st.session_state.traffic // 4)
+                st.warning(f"🚕 **الوصول خلال {t_time} دقيقة.** المسار يتأثر بنسبة زحمة {st.session_state.traffic}% في الطرق المحورية.")
+
+        # ⭐ نظام التقييم
+        st.markdown("<br><br>")
+        st.subheader("⭐ تقييمك لتجربة اليوم")
+        stars = st.columns(5)
         for i in range(1, 6):
-            with star_cols[i-1]:
-                if st.button(f"{i} ⭐", key=f"s_{i}", use_container_width=True):
-                    st.session_state.star_rating = i
+            if stars[i-1].button(f"{i}⭐", key=f"star_{i}"):
+                st.session_state.star_rating = i
         if st.session_state.star_rating > 0:
             st.markdown(f"<h1 style='text-align: center; color: #FFD700;'>{'⭐' * st.session_state.star_rating}</h1>", unsafe_allow_html=True)
 
     with col_stats:
-        st.subheader("📊 مؤشرات")
-        st.metric("الازدحام اللحظي", f"{st.session_state.traffic_val}%")
-        st.metric("حالة الطقس", "28°C", "صافي")
+        st.subheader("⚙️ إدارة الرحلة")
+        if st.button("⏩ محاكاة اليوم التالي"):
+            if st.session_state.current_day < 3:
+                st.session_state.current_day += 1
+                st.session_state.dest = None
+                st.rerun()
+            else:
+                st.error("وصلتِ لليوم الأخير في الرحلة!")
         
-        st.markdown("---")
-        if st.button("⏩ محاكاة اليوم التالي (24h)"):
-            st.session_state.is_day_two = True
-            st.rerun()
-            
-        if st.button("🔄 تغيير الإعدادات"):
-            st.session_state.page = 'welcome'
+        if st.button("🔄 إعادة ضبط السيناريو"):
+            st.session_state.clear()
             st.rerun()
 
-st.markdown("<br><p style='text-align: center; color: #A0AEC0; font-size: 0.8em;'>Path7 | IA University | Engineering Team</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 0.8em;'>Path7 | Engineering @ IAU</p>", unsafe_allow_html=True)
