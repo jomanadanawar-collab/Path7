@@ -53,13 +53,13 @@ with st.sidebar:
     interest = st.selectbox("الاهتمام الرئيسي", ["تاريخ", "ترفيه", "طبيعة"])
 
 # --- واجهة النظام ---
-st.markdown(f"<h1>📍 نظام Path7 الذكي</h1>", unsafe_allow_html=True)
+st.markdown(f"<h1>📍 نظام Path7 </h1>", unsafe_allow_html=True)
 
 col_main, col_stats = st.columns([2, 1])
 
 with col_main:
     # 1. الترحيب الذكي
-    welcome_msg = f"أهلاً بكِ يا مهندسة {name} ✨" if gender == "أنثى" else f"أهلاً بك يا مهندس {name} ✨"
+    welcome_msg = f"أهلاً بكِ يا  {name} ✨" if gender == "أنثى" else f"أهلاً بك يا مهندس {name} ✨"
     st.markdown(f'<div class="status-card"><h3>{welcome_msg}</h3><p>النظام الآن يحلل المسارات ليوم {selected_day} الساعة {sim_hour}:00</p></div>', unsafe_allow_html=True)
 
     # 2. منطق المطابقة والازدحام (The Core Logic)
