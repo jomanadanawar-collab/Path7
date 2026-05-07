@@ -105,13 +105,4 @@ st.markdown(f"""
 st.write("---")
 st.caption("تم التطوير بكل فخر | مشروع Path7 2026")
 
-# 1. تشغيل الموقع في الخلفية
-!streamlit run app.py &>/dev/null &
 
-# 2. جلب رقم الـ IP (انسخيه بمجرد ظهوره)
-print("--- 1. انسخي هذا الرقم (IP) ---")
-!wget -q -O - ipv4.icanhazip.com
-
-# 3. استخراج الرابط (انتظري ثواني)
-print("\n--- 2. اضغطي على الرابط اللي بآخره .loca.lt ---")
-!npx localtunnel --port 8501
