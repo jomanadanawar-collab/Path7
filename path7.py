@@ -12,27 +12,27 @@ default_weather = "مشمس ☀️" if 5 <= current_hour <= 17 else "ليل صا
 
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. البيانات مع إضافة "معامل الوقت" (Base Minutes من حي المروج)
+# 2. البيانات مع إضافة "إمكانية المترو" (metro_access)
 PLACES_DB = {
     "اقتصادية": [
-        {"الوجهة": "أسواق المعيقيلة", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25},
-        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28},
-        {"الوجهة": "سوق الزل", "الفئة": "تاريخ وآثار", "وصف": "أقدم سوق مليء بالتحف.", "base_time": 27},
-        {"الوجهة": "مركز الملك عبد الله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10},
-        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "وصف": "ممشى مفتوح للتسوق والمطاعم.", "base_time": 22},
-        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء وبحيرات.", "base_time": 35},
-        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30},
-        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس.", "base_time": 90}
+        {"الوجهة": "أسواق المعيقيلة", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25, "metro_access": True},
+        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28, "metro_access": True},
+        {"الوجهة": "سوق الزل", "الفئة": "تاريخ وآثار", "وصف": "أقدم سوق مليء بالتحف.", "base_time": 27, "metro_access": True},
+        {"الوجهة": "مركز الملك عبد الله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "وصف": "ممشى مفتوح للتسوق والمطاعم.", "base_time": 22, "metro_access": False},
+        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء وبحيرات.", "base_time": 35, "metro_access": False},
+        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30, "metro_access": False},
+        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس.", "base_time": 90, "metro_access": False}
     ],
     "فاخرة": [
-        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ.", "base_time": 18},
-        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية ومطاعم عالمية.", "base_time": 15},
-        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة للثقافات والألعاب.", "base_time": 12},
-        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18}
+        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ.", "base_time": 18, "metro_access": True},
+        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية ومطاعم عالمية.", "base_time": 15, "metro_access": False},
+        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة للثقافات والألعاب.", "base_time": 12, "metro_access": False},
+        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18, "metro_access": True}
     ]
 }
 
-# 3. التنسيق الجمالي (CSS)
+# 3. التنسيق الجمالي (CSS) - تم تحديثه لتمييز وسيلة النقل
 st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -41,11 +41,14 @@ st.markdown('''
         direction: rtl; text-align: right;
     }
     .stApp { background-color: #F4F7F9 !important; }
-    [data-testid="stForm"] {
-        background: white !important; padding: 50px !important; border-radius: 30px !important;
-        border-top: 18px solid #1A365D !important; box-shadow: 0 25px 60px rgba(0,0,0,0.12) !important;
-        max-width: 650px !important; margin: auto !important;
+    
+    /* تمييز جملة وسيلة النقل */
+    .transport-label {
+        background-color: #FFF3CD; padding: 15px; border-radius: 12px;
+        border: 2px solid #FFE69C; color: #856404; font-weight: bold;
+        text-align: center; margin-bottom: 10px; font-size: 1.1em;
     }
+
     .main-card { background: white; padding: 25px; border-radius: 20px; border-top: 10px solid #1A365D; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     .info-box { background: #EBF8FF; padding: 20px; border-radius: 15px; border-right: 6px solid #3182CE; margin-bottom: 15px; }
     .stButton>button { background-color: #1A365D !important; color: white !important; border-radius: 15px; height: 3.5em; width: 100%; }
@@ -102,15 +105,30 @@ else:
                 final_list = []
                 for interest in u_daily_interests:
                     matches = [p for p in available if p["الفئة"] == interest]
-                    if matches: final_list.append(random.choice(matches))
+                    if matches: 
+                        final_list.append(random.choice(matches))
                 st.session_state.suggestions = final_list
-                st.session_state.traffic_factor = random.uniform(1.0, 1.8) # معامل الزحمة العشوائي
+                st.session_state.traffic_factor = random.uniform(1.0, 1.8)
 
         if st.session_state.suggestions:
-            transport = st.selectbox("اختر وسيلة النقل لمعرفة الأوقات:", ["-- اختر --", "مترو الرياض", "سيارتي الخاصة", "تاكسي"])
+            # تمييز الجملة المطلوبة بـ CSS class
+            st.markdown('<div class="transport-label">💡 اختر وسيلة النقل أدناه لمعرفة أوقات الوصول الدقيقة</div>', unsafe_allow_html=True)
             
+            # فحص هل هناك أي مكان لا يدعم المترو في الاقتراحات الحالية؟
+            no_metro_places = [p['الوجهة'] for p in st.session_state.suggestions if not p['metro_access']]
+            
+            options = ["-- اختر --", "سيارتي الخاصة", "تاكسي"]
+            # إضافة المترو فقط إذا كانت كل الوجهات تدعمه (للمنطق والواقعية)
+            if not no_metro_places:
+                options.insert(1, "مترو الرياض")
+            
+            transport = st.selectbox("", options)
+            
+            # إذا كان هناك أماكن لا يوصلها المترو، نظهر تنبيه لطيف
+            if no_metro_places and transport == "-- اختر --":
+                st.caption(f"⚠️ ملاحظة: بعض الوجهات المختارة (مثل {', '.join(no_metro_places)}) لا يصلها المترو حالياً، لذا تم إخفاؤه من الخيارات.")
+
             for place in st.session_state.suggestions:
-                # منطق حساب الوقت المتغير بناءً على الوجهة
                 base = place['base_time']
                 if transport == "مترو الرياض":
                     final_time = f"{base + 5} دقيقة (عبر محطة كافد)"
@@ -130,7 +148,7 @@ else:
                         <h4 style="margin:0; color:#2B6CB0;">{icon} {place['الوجهة']}</h4>
                         <p style="margin:2px 0; font-size:0.9em;">{place['وصف']}</p>
                         <hr style="margin:10px 0; opacity:0.1;">
-                        <p style="margin:0; font-weight:bold; color:#2D3748;">الوقت المتوقع للوصول: {final_time}</p>
+                        <p style="margin:0; font-weight:bold; color:#2D3748;">الوقت المتوقع للوصول من المروج: {final_time}</p>
                     </div>
                 ''', unsafe_allow_html=True)
 
