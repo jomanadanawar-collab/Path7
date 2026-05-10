@@ -34,7 +34,7 @@ LANG = {
         "metro_fail": "المترو غير متاح لهذه الوجهات ❌"
     },
     "English": {
-        "p_name": "Path7 | مسار 7",
+        "p_name": "Path7",
         "subtitle": "Real-time Compatibility System for Smart Tourism",
         "visitor_name": "Tourist Name",
         "budget_q": "Select Trip Budget",
