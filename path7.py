@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 import pytz 
 
-# 1. إعدادات الوقت والصفحة (نفس ملفك بالضبط)
+# 1. إعدادات الوقت والصفحة (ثبتنا العرض والخطوط)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 
@@ -17,19 +17,13 @@ TRANSLATIONS = {
         "interests": "الاهتمامات",
         "analyze": "تحليل الوجهات الأنسب 🔍",
         "transport_q": "🚕 كيف تفضل الوصول لوجهاتك اليوم؟",
-        "metro": "🚇 مترو الرياض",
-        "car": "🚗 سيارتي",
-        "taxi": "🚕 تاكسي",
+        "metro": "🚇 مترو الرياض", "car": "🚗 سيارتي", "taxi": "🚕 تاكسي",
         "time_est": "⏱️ الوقت المقدر:",
-        "lang_btn": "English 🌐",
         "start_btn": "استكشف مسارك الآن 🚀",
-        "day": "اليوم",
-        "of": "من",
+        "day": "اليوم", "of": "من",
         "interests_q": "🌟 ما هي اهتماماتك المفضلة لليوم؟",
-        "eco": "اقتصادية",
-        "lux": "فاخرة",
-        "dir": "rtl",
-        "align": "right"
+        "eco": "اقتصادية", "lux": "فاخرة",
+        "dir": "rtl", "align": "right", "lang_btn": "English 🌐"
     },
     "en": {
         "title": "📍 Path7 | Smart Journey",
@@ -39,72 +33,74 @@ TRANSLATIONS = {
         "interests": "Interests",
         "analyze": "Analyze Best Destinations 🔍",
         "transport_q": "🚕 How do you prefer to get there?",
-        "metro": "🚇 Riyadh Metro",
-        "car": "🚗 My Car",
-        "taxi": "🚕 Taxi",
+        "metro": "🚇 Riyadh Metro", "car": "🚗 My Car", "taxi": "🚕 Taxi",
         "time_est": "⏱️ Estimated Time:",
-        "lang_btn": "العربية 🌐",
         "start_btn": "Explore Your Path Now 🚀",
-        "day": "Day",
-        "of": "of",
+        "day": "Day", "of": "of",
         "interests_q": "🌟 What are your interests for today?",
-        "eco": "Economy",
-        "lux": "Luxury",
-        "dir": "ltr",
-        "align": "left"
+        "eco": "Economy", "lux": "Luxury",
+        "dir": "ltr", "align": "left", "lang_btn": "العربية 🌐"
     }
 }
 
-# 3. إدارة الحالة (لحماية البرنامج من التعليق)
+# 3. إدارة الحالة (لحماية الكود من الـ KeyError)
 if 'lang' not in st.session_state: st.session_state.lang = 'ar'
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
+if 'user_name' not in st.session_state: st.session_state.user_name = ""
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 
 T = TRANSLATIONS[st.session_state.lang]
 
-st.set_page_config(page_title=T["title"], layout="wide")
+# العودة للإعدادات الأصلية التي جعلت الموقع يبهرك
+st.set_page_config(page_title=T["title"], layout="wide", initial_sidebar_state="collapsed")
 
-# 4. التنسيق الجمالي (نسخة طبق الأصل من التصميم الذي أبهرك)
+# 4. التنسيق الجمالي (CSS - النسخة الأصلية حرفياً)
 st.markdown(f'''
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
     
-    html, body, [class*="css"] {{
-        font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif !important;
+    html, body, [class*="css"], p, label, button, input {{
+        font-family: 'IBM Plex Sans Arabic', sans-serif !important;
         direction: {T["dir"]}; text-align: {T["align"]};
     }}
 
     .stApp {{ background-color: #F0F9FF !important; }}
+    
     .highlight-box {{
         background-color: #E0F2FE; padding: 20px; border-radius: 18px;
-        border-{"right" if st.session_state.lang == 'ar' else "left"}: 10px solid #0EA5E9;
+        border-{"right" if st.session_state.lang == "ar" else "left"}: 10px solid #0EA5E9; 
         margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }}
+
     .main-card {{ 
         background: white; padding: 25px; border-radius: 25px; 
         border-top: 12px solid #0284C7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
     }}
+
     .info-box {{ 
         background: white; padding: 20px; border-radius: 20px; 
-        border: 1px solid #BAE6FD; border-{"right" if st.session_state.lang == 'ar' else "left"}: 8px solid #38BDF8; 
+        border: 1px solid #BAE6FD; border-{"right" if st.session_state.lang == "ar" else "left"}: 8px solid #38BDF8; 
         margin-bottom: 15px; 
     }}
+
     .stButton>button {{
         background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important;
-        color: white !important; border-radius: 15px !important; font-weight: bold !important;
+        color: white !important; border: none !important;
+        border-radius: 15px !important; height: 3.5em !important; 
+        font-weight: bold !important; width: 100% !important;
     }}
     </style>
 ''', unsafe_allow_html=True)
 
-# زر تبديل اللغة (ثابت بالأعلى)
-col_l1, col_l2 = st.columns([0.9, 0.1])
+# زر اللغة في مكانه الصحيح
+col_l1, col_l2 = st.columns([0.85, 0.15])
 if col_l2.button(T["lang_btn"]):
     st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
     st.rerun()
 
-# 5. بيانات الأماكن من ملف (الميزانية معدلة)
+# 5. البيانات (من ملف الميزانية المعدلة)
 PLACES_DB = {
     "اقتصادية": [
         {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "time": 25},
@@ -113,7 +109,6 @@ PLACES_DB = {
         {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "time": 10},
         {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "time": 10},
         {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "time": 10},
-        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "time": 22},
         {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "time": 35},
         {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "time": 30},
         {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "time": 90}
@@ -128,25 +123,24 @@ PLACES_DB = {
     ]
 }
 
-# --- الصفحة الأولى: الترحيب ---
+# --- صفحة الترحيب ---
 if st.session_state.page == 'welcome':
-    st.markdown("<br>", unsafe_allow_html=True)
-    with st.form("welcome_form"):
-        st.markdown(f'<h1 style="text-align: center; color: #0369A1;">{T["title"]}</h1>', unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    with st.form("main_welcome_form"):
+        st.markdown(f'<h1 style="text-align: center; color: #0369A1; font-size: 3em;">{T["title"]}</h1>', unsafe_allow_html=True)
         st.markdown(f'<p style="text-align: center; color: #64748B;">{T["subtitle"]}</p>', unsafe_allow_html=True)
         
-        # الاسم الآن فارغ تماماً
-        u_name = st.text_input("Name" if st.session_state.lang == 'en' else "الاسم", value="")
+        # تصفير الاسم (قيمة فارغة)
+        u_name = st.text_input("Name" if st.session_state.lang == 'en' else "الاسم", value="") 
         u_budget = st.radio(T["budget"], [T["eco"], T["lux"]], horizontal=True)
         
         if st.form_submit_button(T["start_btn"]):
             st.session_state.user_name = u_name
-            # تأكد من تخزين الميزانية بشكل صحيح للمقارنة لاحقاً
             st.session_state.user_budget = "اقتصادية" if u_budget in ["Economy", "اقتصادية"] else "فاخرة"
             st.session_state.page = 'system'
             st.rerun()
 
-# --- الصفحة الثانية: لوحة التحكم ---
+# --- صفحة لوحة التحكم ---
 else:
     st.markdown(f'''
         <div class="main-card">
@@ -155,33 +149,35 @@ else:
         </div>
     ''', unsafe_allow_html=True)
 
-    st.markdown(f'<div class="highlight-box"><h4>{T["interests_q"]}</h4></div>', unsafe_allow_html=True)
+    st.markdown(f'<br><div class="highlight-box"><h4>{T["interests_q"]}</h4></div>', unsafe_allow_html=True)
     
     # قائمة الاهتمامات
     u_interests = st.multiselect("", ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"], label_visibility="collapsed")
 
+    # زر التحليل - العودة للشكل المنسق
     if st.button(T["analyze"]):
-        db_choice = st.session_state.user_budget
-        # منطق التعدد: الآن يعرض كل ما يطابق أي اهتمام تختارينه معاً
-        st.session_state.suggestions = [p for p in PLACES_DB[db_choice] if p['الفئة'] in u_interests]
+        db = PLACES_DB[st.session_state.user_budget]
+        st.session_state.suggestions = [p for p in db if p['الفئة'] in u_interests]
         st.session_state.transport_choice = None
 
     if st.session_state.suggestions:
         st.markdown(f'<br><div class="highlight-box"><h4>{T["transport_q"]}</h4></div>', unsafe_allow_html=True)
-        t1, t2, t3 = st.columns(3)
-        if t1.button(T["metro"]): st.session_state.transport_choice = "metro"
-        if t2.button(T["car"]): st.session_state.transport_choice = "car"
-        if t3.button(T["taxi"]): st.session_state.transport_choice = "taxi"
+        t_col1, t_col2, t_col3 = st.columns(3)
+        if t_col1.button(T["metro"]): st.session_state.transport_choice = "metro"
+        if t_col2.button(T["car"]): st.session_state.transport_choice = "car"
+        if t_col3.button(T["taxi"]): st.session_state.transport_choice = "taxi"
 
         for p in st.session_state.suggestions:
             st.markdown(f'''
                 <div class="info-box">
-                    <h4>📍 {p["الوجهة"]}</h4>
-                    <p style="color:#64748B;">{p["الفئة"]}</p>
-                    <p><b>{T["time_est"]}</b> {p["time"]} min</p>
+                    <h4 style="margin:0; color:#0284C7;">📍 {p["الوجهة"]}</h4>
+                    <p style="margin:5px 0; color:#64748B;">{p["الفئة"]}</p>
+                    <p style="margin:0; font-weight:bold; color:#0369A1;">⏱️ {T["time_est"]} {p["time"]} min</p>
                 </div>
             ''', unsafe_allow_html=True)
 
-    if st.button("Reset" if st.session_state.lang == 'en' else "إعادة ضبط"):
+    # زر إعادة الضبط في الأسفل ليبقى الشكل مرتباً
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🔄 Reset" if st.session_state.lang == 'en' else "🔄 إعادة ضبط"):
         st.session_state.clear()
         st.rerun()
