@@ -1,0 +1,64 @@
+{
+  "العربية": {
+    "p_name": "Path7",
+    "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
+    "visitor_name": "اسم السائح",
+    "budget_q": "حدد الميزانية المناسبة للرحلة",
+    "start_btn": "استكشف المسار الآن 🚀",
+    "day": "اليوم", "of": "من",
+    "weather": "الجو في الرياض", "sunny": "مشمس ☀️", "night": "ليل صافي 🌙",
+    "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
+    "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق"],
+    "analyze_btn": "تحليل الوجهات 🔍",
+    "transport_q": "كيف تفضل الوصول لوجهاتك؟",
+    "m_btn": "🚇 مترو الرياض", "c_btn": "🚗 سيارتي", "t_btn": "🚕 تاكسي",
+    "min": "دقيقة", "est_time": "الوقت المتوقع (توافق لحظي)",
+    "wait_choice": "بانتظار اختيار وسيلة النقل...",
+    "rating_q": "⭐ تقييمك لليوم",
+    "next_day": "مسار اليوم التالي ⏩",
+    "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
+    "eco": "اقتصادية", "lux": "فاخرة",
+    "metro_fail": "المترو غير متاح لهذه الوجهات ❌",
+    "db": {
+      "Economy": [
+        {"الوجهة": "قصر المصمك", "وصف": "قلعة تاريخية في قلب الرياض القديمة", "b_time": 25, "metro": true},
+        {"الوجهة": "سوق الزل", "وصف": "تحف ومنسوجات شعبية أصيلة", "b_time": 30, "metro": true}
+      ],
+      "Luxury": [
+        {"الوجهة": "فيا رياض", "وصف": "فخامة معمارية ومطاعم عالمية", "b_time": 15, "metro": false},
+        {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو والتاريخ العريق", "b_time": 20, "metro": true}
+      ]
+    }
+  },
+  "English": {
+    "p_name": "Path7",
+    "subtitle": "Real-time Compatibility System for Smart Tourism",
+    "visitor_name": "Tourist Name",
+    "budget_q": "Select Trip Budget",
+    "start_btn": "Explore Path Now 🚀",
+    "day": "Day", "of": "of",
+    "weather": "Riyadh Weather", "sunny": "Sunny ☀️", "night": "Clear Night 🌙",
+    "interests_q": "🌟 What are your interests today?",
+    "interests_list": ["History", "Entertainment", "Nature", "Shopping"],
+    "analyze_btn": "Analyze Destinations 🔍",
+    "transport_q": "How would you like to travel?",
+    "m_btn": "🚇 Riyadh Metro", "c_btn": "🚗 My Car", "t_btn": "🚕 Taxi",
+    "min": "min", "est_time": "Real-time Arrival",
+    "wait_choice": "Waiting for transport selection...",
+    "rating_q": "⭐ Rate Your Day",
+    "next_day": "Next Day Path ⏩",
+    "finish": "✨ Wish you unforgettable memories! ✨",
+    "eco": "Economy", "lux": "Luxury",
+    "metro_fail": "Metro unavailable for these locations ❌",
+    "db": {
+      "Economy": [
+        {"الوجهة": "Masmak Palace", "وصف": "Historical fortress in old Riyadh", "b_time": 25, "metro": true},
+        {"الوجهة": "Souq Al-Zal", "وصف": "Traditional antiques and textiles", "b_time": 30, "metro": true}
+      ],
+      "Luxury": [
+        {"الوجهة": "Via Riyadh", "وصف": "Architectural luxury and global dining", "b_time": 15, "metro": false},
+        {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and deep heritage", "b_time": 20, "metro": true}
+      ]
+    }
+  }
+}
