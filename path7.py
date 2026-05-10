@@ -11,7 +11,7 @@ current_hour = now_riyadh.hour
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 default_weather = "مشمس ☀️" if 5 <= current_hour <= 17 else "ليل صافي 🌙"
 
-# 2. قاموس اللغات الشامل
+# 2. قاموس اللغات الشامل (للتأكد من عمل زر اللغة)
 TRANSLATIONS = {
     "ar": {
         "title": "📍 Path7",
@@ -51,25 +51,30 @@ TRANSLATIONS = {
     }
 }
 
-# 3. البيانات المحدثة
+# 3. قاعدة البيانات المحدثة (التي تشمل خيارات الفاخرة المفقودة)
 PLACES_DB = {
     "اقتصادية": [
         {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25, "metro_access": True},
         {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28, "metro_access": True},
         {"الوجهة": "سوق الزل", "الفئة": "تسوق", "وصف": "أقدم سوق مليء بالتاريخ والتحف.", "base_time": 27, "metro_access": True},
         {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "وصف": "تسوق عالمي في قلب الرياض.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "تجربة تذوق عصرية.", "base_time": 10, "metro_access": True},
         {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء وبحيرات.", "base_time": 35, "metro_access": False},
-        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30, "metro_access": False}
+        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30, "metro_access": False},
+        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالة ساحرة من المرتفعات.", "base_time": 90, "metro_access": False}
     ],
     "فاخرة": [
         {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ.", "base_time": 18, "metro_access": True},
         {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية ومطاعم عالمية.", "base_time": 15, "metro_access": False},
+        {"الوجهة": "فيا رياض", "الفئة": "تسوق", "وصف": "بوتيكات عالمية فاخرة.", "base_time": 15, "metro_access": False},
         {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة للثقافات والألعاب.", "base_time": 12, "metro_access": False},
-        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18, "metro_access": True}
+        {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18, "metro_access": True},
+        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم حائزة على نجوم ميشلان.", "base_time": 18, "metro_access": True}
     ]
 }
 
-# 4. إدارة الحالة
+# 4. إدارة الحالة (Session State)
 if 'lang' not in st.session_state: st.session_state.lang = 'ar'
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
@@ -95,8 +100,8 @@ st.markdown(f'''
         background-color: #E0F2FE; padding: 20px; border-radius: 18px;
         border-right: 10px solid #0EA5E9; margin-bottom: 20px;
     }}
-    .main-card {{ background: white; padding: 25px; border-radius: 25px; border-top: 12px solid #0284C7; }}
-    .info-box {{ background: white; padding: 20px; border-radius: 20px; border-right: 8px solid #38BDF8; margin-bottom: 15px; }}
+    .main-card {{ background: white; padding: 25px; border-radius: 25px; border-top: 12px solid #0284C7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }}
+    .info-box {{ background: white; padding: 20px; border-radius: 20px; border-right: 8px solid #38BDF8; margin-bottom: 15px; border: 1px solid #BAE6FD; }}
     .stButton>button {{
         background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important;
         color: white !important; border-radius: 15px !important; height: 3.5em !important; font-weight: bold !important; width: 100%;
@@ -105,7 +110,7 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر اللغة في الأعلى
+# زر اللغة
 col_l1, col_l2 = st.columns([0.85, 0.15])
 if col_l2.button(T["lang_btn"]):
     st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
@@ -113,15 +118,17 @@ if col_l2.button(T["lang_btn"]):
 
 # --- الصفحة الأولى ---
 if st.session_state.page == 'welcome':
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
     with st.form("welcome_form"):
         st.markdown(f'<h1 style="text-align: center; color: #0369A1;">{T["title"]}</h1>', unsafe_allow_html=True)
         st.markdown(f'<p style="text-align: center; color: #64748B;">{T["subtitle"]}</p>', unsafe_allow_html=True)
         u_name = st.text_input(T["name_label"], value="") 
-        u_budget = st.radio(T["budget_label"], [T["eco"], T["lux"]], horizontal=True)
+        u_budget_display = st.radio(T["budget_label"], [T["eco"], T["lux"]], horizontal=True)
+        
         if st.form_submit_button(T["start_btn"]):
             st.session_state.user_name = u_name
-            st.session_state.user_budget = "اقتصادية" if u_budget in ["اقتصادية", "Economy"] else "فاخرة"
+            # ربط الاختيار بالقيمة الصحيحة في PLACES_DB
+            st.session_state.user_budget = "اقتصادية" if u_budget_display in ["اقتصادية", "Economy"] else "فاخرة"
             st.session_state.page = 'system'
             st.rerun()
 
@@ -139,20 +146,33 @@ else:
         u_interests = st.multiselect("", interests_list, key="m_int", label_visibility="collapsed")
 
         if st.button(T["analyze"]):
-            if not u_interests: st.error("!")
+            if not u_interests:
+                st.error("لطفاً اختر اهتماماً واحداً على الأقل!")
             else:
                 db = PLACES_DB[st.session_state.user_budget]
-                st.session_state.suggestions = [random.choice([p for p in db if p["الفئة"] == i]) for i in u_interests if [p for p in db if p["الفئة"] == i]]
-                st.session_state.traffic_factor = random.uniform(1.1, 1.5)
-                st.session_state.transport_choice = None
+                found_suggestions = []
+                for interest in u_interests:
+                    matches = [p for p in db if p["الفئة"] == interest]
+                    if matches:
+                        found_suggestions.append(random.choice(matches))
+                
+                if found_suggestions:
+                    st.session_state.suggestions = found_suggestions
+                    st.session_state.traffic_factor = random.uniform(1.1, 1.5)
+                    st.session_state.transport_choice = None
+                else:
+                    st.warning("عذراً، لا توجد وجهات تطابق هذه الاهتمامات في ميزانيتك المختارة.")
 
         if st.session_state.suggestions:
             st.markdown(f"<br><div class='highlight-box'><h4>{T['transport_q']}</h4></div>", unsafe_allow_html=True)
             t_col1, t_col2, t_col3 = st.columns(3)
-            # فحص المترو
+            
             can_metro = all(p.get('metro_access') for p in st.session_state.suggestions)
             if can_metro:
                 if t_col1.button(T["metro"]): st.session_state.transport_choice = "metro"
+            else:
+                t_col1.markdown('<p style="text-align:center; color:#94A3B8; font-size:0.8em; margin-top:15px;">المترو غير متاح للكل ❌</p>', unsafe_allow_html=True)
+            
             if t_col2.button(T["car"]): st.session_state.transport_choice = "car"
             if t_col3.button(T["taxi"]): st.session_state.transport_choice = "taxi"
 
@@ -163,13 +183,20 @@ else:
                 elif st.session_state.transport_choice == "taxi": res, icon = f"{int(t*st.session_state.traffic_factor)+3} min", "🚕"
                 else: res, icon = "...", "📍"
                 
-                st.markdown(f'<div class="info-box"><h4>{icon} {p["الوجهة"]}</h4><p>{p["وصف"]}</p><b>{T["time_est"]} {res}</b></div>', unsafe_allow_html=True)
+                st.markdown(f'''
+                    <div class="info-box">
+                        <h4>{icon} {p["الوجهة"]}</h4>
+                        <p>{p["وصف"]}</p>
+                        <b>{T["time_est"]} {res}</b>
+                    </div>
+                ''', unsafe_allow_html=True)
 
             st.markdown("---")
             st.subheader(T["rating_title"])
             stars = st.columns(5)
             for i in range(1, 6):
-                if stars[i-1].button(f"{i}⭐", key=f"s_{i}"): st.session_state.star_rating = i
+                if stars[i-1].button(f"{i}⭐", key=f"s_{i}"):
+                    st.session_state.star_rating = i
 
             if st.session_state.star_rating > 0:
                 if st.session_state.current_day < 3:
@@ -179,10 +206,12 @@ else:
                         st.session_state.star_rating = 0
                         st.session_state.transport_choice = None
                         st.rerun()
-                else: st.success(T["finish_msg"])
+                else:
+                    st.success(T["finish_msg"])
 
     with col_stats:
-        st.subheader(T["reset_btn"])
+        st.subheader("⚙️")
+        st.write(f"🕒 {now_riyadh.strftime('%I:%M %p')}")
         if st.button(T["reset_btn"]):
             st.session_state.clear()
             st.rerun()
