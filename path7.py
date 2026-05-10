@@ -11,90 +11,72 @@ current_hour = now_riyadh.hour
 st.set_page_config(page_title="Path7 | Smart Journey", layout="wide", initial_sidebar_state="collapsed")
 default_weather = "مشمس ☀️" if 5 <= current_hour <= 17 else "ليل صافي 🌙"
 
-# 2. قاموس اللغات (ثابت لتسهيل التحويل)
-TRANSLATIONS = {
-    "ar": {
-        "title": "📍 Path7 ",
-        "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
-        "name_label": "اسم السائح الموقر",
-        "budget_label": "حدد نوع الميزانية للرحلة",
-        "eco": "اقتصادية", "lux": "فاخرة",
-        "start_btn": "استكشف مسارك الآن 🚀",
-        "welcome": "مرحباً يا", "day": "اليوم", "of": "من", "weather": "الجو في الرياض",
-        "interests_q": "🌟 ما هي اهتماماتك المفضلة لليوم؟",
-        "analyze": "تحليل الوجهات الأنسب لهذا اليوم 🔍",
-        "transport_q": "🚕 كيف تفضل الوصول لوجهاتك اليوم؟",
-        "metro": "🚇 مترو الرياض", "car": "🚗 سيارتي", "taxi": "🚕 تاكسي",
-        "time_est": "⏱️ الوقت المقدر:",
-        "reset": "🔄 ضبط جديد", "lang_btn": "English 🌐"
-    },
-    "en": {
-        "title": "📍 Path7 ",
-        "subtitle": "Real-time Smart Tourism Compatibility System",
-        "name_label": "Tourist Name",
-        "budget_label": "Select Trip Budget",
-        "eco": "Economy", "lux": "Luxury",
-        "start_btn": "Explore Your Path Now 🚀",
-        "welcome": "Welcome", "day": "Day", "of": "of", "weather": "Riyadh Weather",
-        "interests_q": "🌟 What are your interests for today?",
-        "analyze": "Analyze Best Destinations 🔍",
-        "transport_q": "🚕 How do you prefer to get there?",
-        "metro": "🚇 Riyadh Metro", "car": "🚗 My Car", "taxi": "🚕 Taxi",
-        "time_est": "⏱️ Estimated Time:",
-        "reset": "🔄 Reset", "lang_btn": "العربية 🌐"
-    }
-}
-
-# 3. البيانات المحدثة (من ملف الميزانية المعدلة)
+# 2. البيانات المحدثة بالكامل من ملف الميزانية (Source 1 & 2)
 PLACES_DB = {
     "اقتصادية": [
-        {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25, "metro": True},
-        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28, "metro": True},
-        {"الوجهة": "سوق الزل", "الفئة": "تسوق", "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة.", "base_time": 27, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أيقونة اقتصادية حديثة.", "base_time": 10, "metro": True},
-        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء وبحيرات مثالية.", "base_time": 35, "metro": False},
-        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء.", "base_time": 30, "metro": False},
-        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس.", "base_time": 90, "metro": False}
+        {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "وصف": "مركز تقليدي للبخور والعود.", "base_time": 25, "metro_access": True},
+        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "وصف": "رمز لتوحيد المملكة وتأسيسها.", "base_time": 28, "metro_access": True},
+        {"الوجهة": "سوق الزل", "الفئة": "تسوق", "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة.", "base_time": 27, "metro_access": True},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.", "base_time": 10, "metro_access": True},
+        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "وصف": "مساحات خضراء خلابة وبحيرات مثالية.", "base_time": 35, "metro_access": False},
+        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "وصف": "نافورات راقصة ومساحات خضراء شاسعة.", "base_time": 30, "metro_access": False},
+        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "وصف": "إطلالات منحدرة تخطف الأنفاس لعشاق المغامرة.", "base_time": 90, "metro_access": False}
     ],
     "فاخرة": [
-        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ.", "base_time": 18, "metro": True},
-        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية ومطاعم عالمية.", "base_time": 15, "metro": False},
-        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة للثقافات والألعاب.", "base_time": 12, "metro": False},
-        {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18, "metro": True},
-        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات تاريخية.", "base_time": 18, "metro": True}
+        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "وصف": "موقع اليونسكو وقلب التاريخ السعودي.", "base_time": 18, "metro_access": True},
+        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.", "base_time": 15, "metro_access": False},
+        {"الوجهة": "فيا رياض", "الفئة": "تسوق", "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.", "base_time": 15, "metro_access": False},
+        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة في العاصمة للثقافات والألعاب.", "base_time": 12, "metro_access": False},
+        {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.", "base_time": 18, "metro_access": True},
+        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.", "base_time": 18, "metro_access": True}
     ]
 }
 
-# 4. إدارة الحالة
+# 3. إدارة الحالة (Session State) لمنع الأخطاء
+if 'lang' not in st.session_state: st.session_state.lang = 'ar'
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
+if 'user_name' not in st.session_state: st.session_state.user_name = ""
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
 if 'weather' not in st.session_state: st.session_state.weather = default_weather
 if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'star_rating' not in st.session_state: st.session_state.star_rating = 0
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 
-T = TRANSLATIONS[st.session_state.lang]
-
-# 5. التنسيق الجمالي (ثابت كما في ملفك)
-st.markdown(f'''
+# 4. التنسيق الجمالي (ثابت)
+st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
-    html, body, [class*="css"] {{ font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: {"rtl" if st.session_state.lang == "ar" else "ltr"}; text-align: {"right" if st.session_state.lang == "ar" else "left"}; }}
-    .stApp {{ background-color: #F0F9FF !important; }}
-    .highlight-box {{ background-color: #E0F2FE; padding: 20px; border-radius: 18px; border-right: 10px solid #0EA5E9; margin-bottom: 20px; }}
-    .main-card {{ background: white; padding: 25px; border-radius: 25px; border-top: 12px solid #0284C7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }}
-    .info-box {{ background: white; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; border-right: 8px solid #38BDF8; margin-bottom: 15px; }}
-    .stButton>button {{ background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; color: white !important; border-radius: 15px !important; height: 3.5em !important; font-weight: bold !important; width: 100%; }}
-    [data-testid="stSidebar"] {{ display: none !important; }}
+    html, body, [class*="css"], .stMarkdown, p, span, label, input, button, select {
+        font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: rtl; text-align: right;
+    }
+    .stApp { background-color: #F0F9FF !important; }
+    .highlight-box {
+        background-color: #E0F2FE; padding: 20px; border-radius: 18px;
+        border-right: 10px solid #0EA5E9; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .main-card { 
+        background: white; padding: 25px; border-radius: 25px; 
+        border-top: 12px solid #0284C7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+    }
+    .info-box { 
+        background: white; padding: 20px; border-radius: 20px; 
+        border: 1px solid #BAE6FD; border-right: 8px solid #38BDF8; margin-bottom: 15px; 
+    }
+    .stButton>button {
+        background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important;
+        color: white !important; border: none !important; border-radius: 15px !important;
+        height: 3.5em !important; font-weight: bold !important; width: 100%;
+    }
+    [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
     </style>
 ''', unsafe_allow_html=True)
 
-# زر تبديل اللغة
+# زر تبديل اللغة (English)
 col_l1, col_l2 = st.columns([0.85, 0.15])
-if col_l2.button(T["lang_btn"]):
-    st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
+if col_l2.button("English 🌐"):
+    st.session_state.lang = 'en'
     st.rerun()
 
 # --- الصفحة الأولى: الترحيب ---
@@ -104,8 +86,11 @@ if st.session_state.page == 'welcome':
         st.markdown('<h1 style="text-align: center; color: #0369A1; margin-bottom:0; font-size: 3.5em;">📍 Path7</h1>', unsafe_allow_html=True)
         st.markdown('<p style="text-align: center; color: #64748B; margin-top:5px; font-size: 1.3em;">نظام التوافق اللحظي للسياحة الذكية</p>', unsafe_allow_html=True)
         st.markdown('<hr style="margin: 30px 0; opacity: 0.1;">', unsafe_allow_html=True)
-        u_name = st.text_input("اسم السائح الموقر", "")
+        
+        # التعديل: تصفير الاسم
+        u_name = st.text_input("اسم السائح الموقر", value="") 
         u_budget = st.radio("حدد نوع الميزانية للرحلة", ["اقتصادية", "فاخرة"], horizontal=True)
+        
         if st.form_submit_button("استكشف مسارك الآن 🚀"):
             st.session_state.user_name = u_name
             st.session_state.user_budget = u_budget
@@ -124,14 +109,14 @@ else:
         ''', unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
-    # خيارات الاهتمامات
-    st.markdown(f'''
+        st.markdown(f'''
             <div class="highlight-box">
                 <h4 style="margin:0; color: #0369A1;">🌟 ما هي اهتماماتك المفضلة لليوم {st.session_state.current_day}؟</h4>
                 <p style="font-size: 0.9em; color: #64748B; margin: 5px 0 0 0;">(يمكنك اختيار أكثر من خيار لرسم مسار متنوع)</p>
             </div>
         ''', unsafe_allow_html=True)
         
+        # قائمة الاهتمامات
         u_daily_interests = st.multiselect(
             "", 
             ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"],
@@ -145,43 +130,45 @@ else:
             else:
                 available = PLACES_DB[st.session_state.user_budget]
                 final_list = []
+                # التعديل: يختار وجهة واحدة لكل اهتمام تم اختياره
                 for interest in u_daily_interests:
                     matches = [p for p in available if p["الفئة"] == interest]
-                    if matches: final_list.append(random.choice(matches))
+                    if matches:
+                        final_list.append(random.choice(matches))
                 st.session_state.suggestions = final_list
-                st.session_state.traffic_factor = random.uniform(1.0, 1.8)
-                st.session_state.transport_choice = None # تصفير الوسيلة عند تغيير الوجهات
+                st.session_state.traffic_factor = random.uniform(1.1, 1.6)
+                st.session_state.transport_choice = None
 
         if st.session_state.suggestions:
             st.markdown("<br>", unsafe_allow_html=True)
-        
-        # فحص توفر المترو لكل الوجهات المختارة
-        no_metro_places = [p['الوجهة'] for p in st.session_state.suggestions if not p['metro_access']]
+            st.markdown(f'''
+                <div class="highlight-box">
+                    <h4 style="margin:0; color: #0369A1;">🚕 كيف تفضل الوصول لوجهاتك اليوم؟</h4>
+                </div>
+            ''', unsafe_allow_html=True)
+            
+            # فحص المترو لجميع الوجهات
+            no_metro = [p['الوجهة'] for p in st.session_state.suggestions if not p.get('metro_access', False)]
             
             t_col1, t_col2, t_col3 = st.columns(3)
-            
-            if not no_metro_places:
+            if not no_metro:
                 if t_col1.button("🚇 مترو الرياض"): st.session_state.transport_choice = "مترو"
             else:
-                t_col1.markdown('<p style="text-align:center; color:#94A3B8; font-size:0.8em; margin-top:15px;">المترو غير متاح لهذه الوجهات ❌</p>', unsafe_allow_html=True)
-                
+                t_col1.markdown('<p style="text-align:center; color:#94A3B8; font-size:0.8em; margin-top:15px;">المترو غير متاح للكل ❌</p>', unsafe_allow_html=True)
+            
             if t_col2.button("🚗 سيارتي"): st.session_state.transport_choice = "سيارة"
             if t_col3.button("🚕 تاكسي"): st.session_state.transport_choice = "تاكسي"
 
             for place in st.session_state.suggestions:
                 base = place['base_time']
                 if st.session_state.transport_choice == "مترو":
-                    final_time = f"{base + 5} دقيقة"
-                    icon = "🚇"
+                    final_time, icon = f"{base + 5} دقيقة", "🚇"
                 elif st.session_state.transport_choice == "سيارة":
-                    final_time = f"{int(base * st.session_state.traffic_factor)} دقيقة"
-                    icon = "🚗"
+                    final_time, icon = f"{int(base * st.session_state.traffic_factor)} دقيقة", "🚗"
                 elif st.session_state.transport_choice == "تاكسي":
-                    final_time = f"{int(base * st.session_state.traffic_factor) + 3} دقيقة"
-                    icon = "🚕"
+                    final_time, icon = f"{int(base * st.session_state.traffic_factor) + 3} دقيقة", "🚕"
                 else:
-                    final_time = "بانتظار اختيارك..."
-                    icon = "📍"
+                    final_time, icon = "بانتظار اختيارك...", "📍"
 
                 st.markdown(f'''
                     <div class="info-box">
@@ -190,24 +177,6 @@ else:
                         <p style="margin:10px 0 0 0; font-weight:bold; color:#0369A1;">⏱️ الوقت المقدر: {final_time}</p>
                     </div>
                 ''', unsafe_allow_html=True)
-
-        st.markdown("---")
-        st.subheader("⭐ تقييمك لليوم")
-        stars = st.columns(5)
-        for i in range(1, 6):
-            if stars[i-1].button(f"{i}⭐", key=f"s{i}"): st.session_state.star_rating = i
-        
-        if st.session_state.star_rating > 0:
-            if st.session_state.current_day < 3:
-                if st.button("التوجه نحو مسار اليوم التالي ⏩"):
-                    st.session_state.current_day += 1
-                    st.session_state.suggestions = []
-                    st.session_state.star_rating = 0
-                    st.session_state.transport_choice = None
-                    st.session_state.weather = random.choice(["مشمس ☀️", "غائم ⛅", "لطيف 🍃"])
-                    st.rerun()
-            else:
-                st.success("✨ شكراً لاستخدامك Path7.. نتمنى لك ذكريات لا تُنسى في الرياض! ✨")
 
     with col_stats:
         st.subheader("⚙️ النظام")
