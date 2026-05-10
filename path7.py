@@ -21,8 +21,6 @@ TRANSLATIONS = {
         "car": "🚗 سيارتي",
         "taxi": "🚕 تاكسي",
         "time_est": "⏱️ الوقت المقدر:",
-        "next_day": "التوجه نحو مسار اليوم التالي ⏩",
-        "finish": "✨ نتمنى لك رحلة سعيدة في الرياض! ✨",
         "lang_btn": "English 🌐",
         "start_btn": "استكشف مسارك الآن 🚀",
         "day": "اليوم",
@@ -45,8 +43,6 @@ TRANSLATIONS = {
         "car": "🚗 My Car",
         "taxi": "🚕 Taxi",
         "time_est": "⏱️ Estimated Time:",
-        "next_day": "Move to Next Day ⏩",
-        "finish": "✨ We wish you a happy journey in Riyadh! ✨",
         "lang_btn": "العربية 🌐",
         "start_btn": "Explore Your Path Now 🚀",
         "day": "Day",
@@ -59,7 +55,7 @@ TRANSLATIONS = {
     }
 }
 
-# 3. إدارة الحالة (Session State)
+# 3. إدارة الحالة (لحماية البرنامج من التعليق)
 if 'lang' not in st.session_state: st.session_state.lang = 'ar'
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
@@ -70,7 +66,7 @@ T = TRANSLATIONS[st.session_state.lang]
 
 st.set_page_config(page_title=T["title"], layout="wide")
 
-# 4. التنسيق الجمالي (نسخة طبق الأصل من ملفك "اللي أبهرك")
+# 4. التنسيق الجمالي (نسخة طبق الأصل من التصميم الذي أبهرك)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
@@ -102,12 +98,13 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
+# زر تبديل اللغة (ثابت بالأعلى)
 col_l1, col_l2 = st.columns([0.9, 0.1])
 if col_l2.button(T["lang_btn"]):
     st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
     st.rerun()
 
-# 5. البيانات (تم تثبيت بيانات ملف الميزانية الجديد هنا)
+# 5. بيانات الأماكن من ملف (الميزانية معدلة)
 PLACES_DB = {
     "اقتصادية": [
         {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "time": 25},
@@ -124,6 +121,7 @@ PLACES_DB = {
     "فاخرة": [
         {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "time": 18},
         {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "time": 15},
+        {"الوجهة": "فيا رياض", "الفئة": "تسوق", "time": 15},
         {"الوجهة": "بوليفارد ستي", "الفئة": "ترفيه", "time": 12},
         {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "time": 18},
         {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "time": 18}
@@ -137,12 +135,13 @@ if st.session_state.page == 'welcome':
         st.markdown(f'<h1 style="text-align: center; color: #0369A1;">{T["title"]}</h1>', unsafe_allow_html=True)
         st.markdown(f'<p style="text-align: center; color: #64748B;">{T["subtitle"]}</p>', unsafe_allow_html=True)
         
-        # التعديل: الاسم أصبح فارغاً
+        # الاسم الآن فارغ تماماً
         u_name = st.text_input("Name" if st.session_state.lang == 'en' else "الاسم", value="")
         u_budget = st.radio(T["budget"], [T["eco"], T["lux"]], horizontal=True)
         
         if st.form_submit_button(T["start_btn"]):
             st.session_state.user_name = u_name
+            # تأكد من تخزين الميزانية بشكل صحيح للمقارنة لاحقاً
             st.session_state.user_budget = "اقتصادية" if u_budget in ["Economy", "اقتصادية"] else "فاخرة"
             st.session_state.page = 'system'
             st.rerun()
@@ -158,12 +157,13 @@ else:
 
     st.markdown(f'<div class="highlight-box"><h4>{T["interests_q"]}</h4></div>', unsafe_allow_html=True)
     
-    # التعديل: منطق الفلترة ليدعم تعدد الاهتمامات كما في الملف الجديد
+    # قائمة الاهتمامات
     u_interests = st.multiselect("", ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"], label_visibility="collapsed")
 
     if st.button(T["analyze"]):
-        db = PLACES_DB[st.session_state.user_budget]
-        st.session_state.suggestions = [p for p in db if p['الفئة'] in u_interests]
+        db_choice = st.session_state.user_budget
+        # منطق التعدد: الآن يعرض كل ما يطابق أي اهتمام تختارينه معاً
+        st.session_state.suggestions = [p for p in PLACES_DB[db_choice] if p['الفئة'] in u_interests]
         st.session_state.transport_choice = None
 
     if st.session_state.suggestions:
@@ -174,7 +174,13 @@ else:
         if t3.button(T["taxi"]): st.session_state.transport_choice = "taxi"
 
         for p in st.session_state.suggestions:
-            st.markdown(f'<div class="info-box"><h4>📍 {p["الوجهة"]}</h4><p>{p["الفئة"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="info-box">
+                    <h4>📍 {p["الوجهة"]}</h4>
+                    <p style="color:#64748B;">{p["الفئة"]}</p>
+                    <p><b>{T["time_est"]}</b> {p["time"]} min</p>
+                </div>
+            ''', unsafe_allow_html=True)
 
     if st.button("Reset" if st.session_state.lang == 'en' else "إعادة ضبط"):
         st.session_state.clear()
