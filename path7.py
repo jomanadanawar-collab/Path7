@@ -11,7 +11,7 @@ current_hour = now_riyadh.hour
 
 st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. القاموس (تم تثبيت اسم المشروع ومنع الترجمة الحرفية)
+# 2. القاموس الموحد للمحتوى (بما في ذلك الوجهات والاهتمامات)
 LANG = {
     "العربية": {
         "p_name": "Path7",
@@ -22,6 +22,7 @@ LANG = {
         "day": "اليوم", "of": "من",
         "weather": "الجو في الرياض", "sunny": "مشمس ☀️", "night": "ليل صافي 🌙",
         "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
+        "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق"],
         "analyze_btn": "تحليل الوجهات 🔍",
         "transport_q": "كيف تفضل الوصول لوجهاتك؟",
         "m_btn": "🚇 مترو الرياض", "c_btn": "🚗 سيارتي", "t_btn": "🚕 تاكسي",
@@ -31,7 +32,17 @@ LANG = {
         "next_day": "مسار اليوم التالي ⏩",
         "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
         "eco": "اقتصادية", "lux": "فاخرة",
-        "metro_fail": "المترو غير متاح لهذه الوجهات ❌"
+        "metro_fail": "المترو غير متاح لهذه الوجهات ❌",
+        "db": {
+            "اقتصادية": [
+                {"الوجهة": "قصر المصمك", "وصف": "قلعة تاريخية في قلب الرياض القديمة", "b_time": 25, "metro": True},
+                {"الوجهة": "سوق الزل", "وصف": "تحف ومنسوجات شعبية أصيلة", "b_time": 30, "metro": True}
+            ],
+            "فاخرة": [
+                {"الوجهة": "فيا رياض", "وصف": "فخامة معمارية ومطاعم عالمية", "b_time": 15, "metro": False},
+                {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو والتاريخ العريق", "b_time": 20, "metro": True}
+            ]
+        }
     },
     "English": {
         "p_name": "Path7",
@@ -42,6 +53,7 @@ LANG = {
         "day": "Day", "of": "of",
         "weather": "Riyadh Weather", "sunny": "Sunny ☀️", "night": "Clear Night 🌙",
         "interests_q": "🌟 What are your interests today?",
+        "interests_list": ["History", "Entertainment", "Nature", "Shopping"],
         "analyze_btn": "Analyze Destinations 🔍",
         "transport_q": "How would you like to travel?",
         "m_btn": "🚇 Riyadh Metro", "c_btn": "🚗 My Car", "t_btn": "🚕 Taxi",
@@ -51,7 +63,17 @@ LANG = {
         "next_day": "Next Day Path ⏩",
         "finish": "✨ Wish you unforgettable memories! ✨",
         "eco": "Economy", "lux": "Luxury",
-        "metro_fail": "Metro unavailable for these locations ❌"
+        "metro_fail": "Metro unavailable for these locations ❌",
+        "db": {
+            "Economy": [
+                {"الوجهة": "Masmak Palace", "وصف": "Historical fortress in old Riyadh", "b_time": 25, "metro": True},
+                {"الوجهة": "Souq Al-Zal", "وصف": "Traditional antiques and textiles", "b_time": 30, "metro": True}
+            ],
+            "Luxury": [
+                {"الوجهة": "Via Riyadh", "وصف": "Architectural luxury and global dining", "b_time": 15, "metro": False},
+                {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and deep heritage", "b_time": 20, "metro": True}
+            ]
+        }
     }
 }
 
@@ -61,16 +83,18 @@ if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'day' not in st.session_state: st.session_state.day = 1
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'user_name' not in st.session_state: st.session_state.user_name = ""
+if 'rated' not in st.session_state: st.session_state.rated = False
+if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 
 T = LANG[st.session_state.lang]
 
-# 4. التصميم البصري (Glassmorphism)
+# 4. الستايل البصري (Glassmorphism)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
     * {{ font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: {"rtl" if st.session_state.lang == "العربية" else "ltr"}; }}
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
-    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 35px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; }}
+    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 35px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }}
     .stButton>button {{ background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; color: white !important; border-radius: 12px !important; border: none !important; font-weight: 700 !important; transition: 0.3s !important; }}
     [data-testid="stSidebar"] {{ display: none !important; }}
@@ -81,34 +105,23 @@ st.markdown(f'''
 col_l1, col_l2 = st.columns([12, 1])
 if col_l2.button("عربي/EN"):
     st.session_state.lang = "English" if st.session_state.lang == "العربية" else "العربية"
+    st.session_state.suggestions = [] # تصفير لجلب البيانات باللغة الجديدة
     st.rerun()
-
-# البيانات
-PLACES_DB = {
-    "اقتصادية": [
-        {"الوجهة": "قصر المصمك", "وصف": "قلعة تاريخية في قلب الرياض القديمة", "b_time": 25, "metro": True},
-        {"الوجهة": "سوق الزل", "وصف": "تحف ومنسوجات شعبية", "b_time": 30, "metro": True}
-    ],
-    "فاخرة": [
-        {"الوجهة": "فيا رياض", "وصف": "فخامة معمارية ومطاعم عالمية", "b_time": 18, "metro": False},
-        {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو والتاريخ العريق", "b_time": 20, "metro": True}
-    ]
-}
 
 # --- صفحة الترحيب ---
 if st.session_state.page == 'welcome':
     st.markdown("<br><br><br>", unsafe_allow_html=True)
-    st.markdown(f'''<div class="glass-card">
+    st.markdown(f'''<div class="glass-card" style="text-align: center;">
         <h1 style="color: #0369A1; margin-bottom: 0;">{T["p_name"]} 📍</h1>
         <p style="color: #64748B; font-size: 1.2em;">{T["subtitle"]}</p>
         <hr style="opacity: 0.1; margin: 25px 0;">
     </div>''', unsafe_allow_html=True)
     
     with st.container():
-        st.session_state.user_name = st.text_input(T["visitor_name"], placeholder="مثال: خالد")
+        st.session_state.user_name = st.text_input(T["visitor_name"], placeholder="...")
         u_budget = st.radio(T["budget_q"], [T["eco"], T["lux"]], horizontal=True)
         if st.button(T["start_btn"]):
-            st.session_state.budget_choice = "اقتصادية" if u_budget in [T["eco"], "اقتصادية"] else "فاخرة"
+            st.session_state.budget_key = "Luxury" if u_budget in [T["lux"], "فاخرة"] else "Economy"
             st.session_state.traffic_factor = random.uniform(1.2, 1.7)
             st.session_state.page = 'system'
             st.rerun()
@@ -117,17 +130,21 @@ if st.session_state.page == 'welcome':
 else:
     col_m, col_s = st.columns([2, 1])
     with col_m:
-        st.markdown(f'''<div class="glass-card" style="text-align: right;">
+        st.markdown(f'''<div class="glass-card">
             <h3 style="margin:0; color:#0369A1;">📅 {T["day"]} {st.session_state.day} {T["of"]} 3</h3>
             <p>👤 {st.session_state.user_name} | 🕒 {formatted_time} | {T["weather"]}: <b>{T["sunny"] if 5 <= current_hour <= 17 else T["night"]}</b></p>
         </div>''', unsafe_allow_html=True)
 
         st.subheader(T["interests_q"])
-        st.multiselect("", ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق"], label_visibility="collapsed")
+        st.multiselect("", T["interests_list"], label_visibility="collapsed")
         
         if st.button(T["analyze_btn"]):
-            st.session_state.suggestions = PLACES_DB[st.session_state.budget_choice]
-            st.session_state.transport_choice = None # تصفير الوسيلة عند تغيير التحليل
+            # جلب البيانات بناءً على اللغة المختارة والميزانية
+            current_db = T["db"]["فاخرة" if st.session_state.budget_key == "Luxury" and st.session_state.lang == "العربية" else 
+                          ("Luxury" if st.session_state.budget_key == "Luxury" else 
+                          ("اقتصادية" if st.session_state.lang == "العربية" else "Economy"))]
+            st.session_state.suggestions = current_db
+            st.session_state.transport_choice = None
             st.rerun()
 
         if st.session_state.suggestions:
@@ -144,7 +161,6 @@ else:
             if t_cols[2].button(T["t_btn"]): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
-                # حساب الوقت فقط إذا تم اختيار الوسيلة
                 if st.session_state.transport_choice:
                     base = p['b_time']
                     if st.session_state.transport_choice == "metro": f_time = f"{base + 5} {T['min']}"
@@ -161,13 +177,14 @@ else:
                 </div>''', unsafe_allow_html=True)
 
     with col_s:
-        st.markdown(f'<div class="glass-card"><h4>{T["rating_q"]}</h4>', unsafe_allow_html=True)
+        st.markdown(f'<div class="glass-card" style="text-align: center;"><h4>{T["rating_q"]}</h4>', unsafe_allow_html=True)
         stars = st.columns(5)
         for i in range(1, 6):
             if stars[i-1].button(f"{i}⭐", key=f"s{i}"):
                 st.session_state.rated = True
         
-        if getattr(st.session_state, 'rated', False):
+        if st.session_state.rated:
+            st.markdown("<br>", unsafe_allow_html=True)
             if st.session_state.day < 3:
                 if st.button(T["next_day"]):
                     st.session_state.day += 1
@@ -179,3 +196,5 @@ else:
         
         if st.button("🔄 Reset"): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em; margin-top: 30px;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
