@@ -3,14 +3,14 @@ import random
 from datetime import datetime
 import pytz 
 
-# 1. إعدادات الوقت والصفحة
+# 1. الوقت والصفحة
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 current_hour = now_riyadh.hour
 
 st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. قاموس اللغات الشامل (Dictionary)
+# 2. قاموس اللغات - حل نهائي لعدم خلط اللغات
 TRANSLATIONS = {
     "ar": {
         "title": "📍 Path7 | المسار الذكي",
@@ -62,7 +62,7 @@ TRANSLATIONS = {
     }
 }
 
-# 3. قاعدة البيانات ثنائية اللغة
+# 3. قاعدة بيانات مترجمة بالكامل (عشان ما يطلع لك مكان بالعربي في النسخة الإنجليزية)
 PLACES_DB = {
     "ar": {
         "اقتصادية": [
@@ -71,6 +71,7 @@ PLACES_DB = {
         ],
         "فاخرة": [
             {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "وصف": "وجهة فاخرة تضم مطاعم وسينما عالمية.", "base_time": 15, "metro": False},
+            {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "وصف": "أكبر منطقة ترفيهية في المنطقة.", "base_time": 12, "metro": False},
             {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "وصف": "إطلالة تاريخية فاخرة على الطريف.", "base_time": 18, "metro": True}
         ]
     },
@@ -81,12 +82,13 @@ PLACES_DB = {
         ],
         "Luxury": [
             {"الوجهة": "Via Riyadh", "الفئة": "Entertainment", "وصف": "Luxury dining and world-class cinema.", "base_time": 15, "metro": False},
+            {"الوجهة": "Boulevard City", "الفئة": "Entertainment", "وصف": "The ultimate entertainment hub.", "base_time": 12, "metro": False},
             {"الوجهة": "Bujairi Terrace", "الفئة": "Dining", "وصف": "Premium historic views of At-Turaif.", "base_time": 18, "metro": True}
         ]
     }
 }
 
-# 4. إدارة الحالة
+# 4. الحالة
 if 'lang' not in st.session_state: st.session_state.lang = 'ar'
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'current_day' not in st.session_state: st.session_state.current_day = 1
@@ -95,36 +97,35 @@ if 'u_name' not in st.session_state: st.session_state.u_name = ""
 
 T = TRANSLATIONS[st.session_state.lang]
 
-# 5. التنسيق (استخدام الخط المعتمد)
+# 5. التنسيق والخط (IBM Plex Sans Arabic)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
-    html, body, [class*="css"] {{
+    html, body, [class*="css"], .stMarkdown, p, span, label, input, button, select {{
         font-family: 'IBM Plex Sans Arabic', sans-serif !important;
         direction: {T["dir"]}; text-align: {T["align"]};
     }}
     .main-card {{ background: white; padding: 25px; border-radius: 25px; border-top: 12px solid #0284C7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }}
     .info-box {{ background: white; padding: 20px; border-radius: 20px; border-{T["align"]}: 8px solid #38BDF8; margin-bottom: 15px; border: 1px solid #BAE6FD; }}
-    .stButton>button {{ background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; color: white !important; border: none !important; border-radius: 15px !important; font-weight: bold !important; width: 100%; }}
+    .stButton>button {{ background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; color: white !important; border-radius: 15px !important; font-weight: bold !important; width: 100%; border: none !important; }}
     </style>
 ''', unsafe_allow_html=True)
 
-# زر اللغة
+# زر اللغة في مكان بارز
 col_l1, col_l2 = st.columns([0.85, 0.15])
 if col_l2.button(T["lang_btn"]):
     st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
     st.rerun()
 
-# --- الصفحة الأولى ---
+# الصفحة الأولى
 if st.session_state.page == 'welcome':
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     with st.form("welcome_form"):
         st.markdown(f'<h1 style="text-align: center; color: #0369A1;">{T["title"]}</h1>', unsafe_allow_html=True)
         st.markdown(f'<p style="text-align: center; color: #64748B;">{T["subtitle"]}</p>', unsafe_allow_html=True)
         
-        # إدخال الاسم
+        # إدخال اسم السائح
         name_input = st.text_input(T["name_label"], value=st.session_state.u_name)
-        
         u_budget = st.radio(T["budget_label"], [T["eco"], T["lux"]], horizontal=True)
         
         if st.form_submit_button(T["start_btn"]):
@@ -133,11 +134,10 @@ if st.session_state.page == 'welcome':
             st.session_state.page = 'system'
             st.rerun()
 
-# --- الصفحة الثانية ---
+# الصفحة الثانية
 else:
     col_main, col_stats = st.columns([2, 1])
     with col_main:
-        # عرض الاسم في الترحيب
         st.markdown(f'''<div class="main-card">
             <h3>📅 {T["day"]} {st.session_state.current_day} {T["of"]} 3</h3>
             <p>{T["welcome"]} <b>{st.session_state.u_name}</b> | {T["weather_label"]}: <b>{T["weather_val"]}</b></p>
@@ -148,8 +148,12 @@ else:
 
         if st.button(T["analyze"]):
             db = PLACES_DB[st.session_state.lang][st.session_state.user_budget]
-            # منطق اختيار الوجهات (مثال)
-            st.session_state.suggestions = [random.choice(db)]
+            # تحليل الوجهات بناءً على الاهتمامات المختارة
+            selected = []
+            for interest in u_interests:
+                matches = [p for p in db if p["الفئة"] == interest]
+                if matches: selected.append(random.choice(matches))
+            st.session_state.suggestions = selected
             st.rerun()
         
         for p in st.session_state.suggestions:
