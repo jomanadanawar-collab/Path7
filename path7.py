@@ -14,7 +14,7 @@ st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="col
 # 2. القاموس (تم تثبيت اسم المشروع ومنع الترجمة الحرفية)
 LANG = {
     "العربية": {
-        "p_name": "Path7 | مسار 7",
+        "p_name": "Path7",
         "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
         "visitor_name": "اسم السائح",
         "budget_q": "حدد الميزانية المناسبة للرحلة",
