@@ -3,11 +3,11 @@ import random
 from datetime import datetime
 import pytz 
 
-# 1. إعدادات الوقت والصفحة (كما هي في ملفك)
+# 1. إعدادات الوقت والصفحة (نفس ملفك بالضبط)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 
-# 2. قاموس اللغات (Dictionary) - ثابت
+# 2. قاموس اللغات (Dictionary)
 TRANSLATIONS = {
     "ar": {
         "title": "📍 Path7 | المسار الذكي",
@@ -70,7 +70,7 @@ T = TRANSLATIONS[st.session_state.lang]
 
 st.set_page_config(page_title=T["title"], layout="wide")
 
-# 4. التنسيق الجمالي (مأخوذ حرفياً من ملفك المرفق)
+# 4. التنسيق الجمالي (نسخة طبق الأصل من ملفك "اللي أبهرك")
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
@@ -102,32 +102,31 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر تبديل اللغة (كما في ملفك)
 col_l1, col_l2 = st.columns([0.9, 0.1])
 if col_l2.button(T["lang_btn"]):
     st.session_state.lang = 'en' if st.session_state.lang == 'ar' else 'ar'
     st.rerun()
 
-# 5. بيانات الأماكن (مأخوذة من ملف الميزانية الجديد)
+# 5. البيانات (تم تثبيت بيانات ملف الميزانية الجديد هنا)
 PLACES_DB = {
     "اقتصادية": [
-        {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "time": 25, "metro": True},
-        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "time": 28, "metro": True},
-        {"الوجهة": "سوق الزل", "الفئة": "تسوق", "time": 27, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "time": 10, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "time": 10, "metro": True},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "time": 10, "metro": True},
-        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "time": 22, "metro": False},
-        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "time": 35, "metro": False},
-        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "time": 30, "metro": False},
-        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "time": 90, "metro": False}
+        {"الوجهة": "أسواق المعيقلية", "الفئة": "تسوق", "time": 25},
+        {"الوجهة": "حصن المصمك", "الفئة": "تاريخ وآثار", "time": 28},
+        {"الوجهة": "سوق الزل", "الفئة": "تسوق", "time": 27},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "طبيعة", "time": 10},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "تسوق", "time": 10},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "الفئة": "مطاعم ومقاهي", "time": 10},
+        {"الوجهة": "واجهة روشن", "الفئة": "تسوق", "time": 22},
+        {"الوجهة": "وادي حنيفة / نمار", "الفئة": "طبيعة", "time": 35},
+        {"الوجهة": "منتزه الملك عبد الله", "الفئة": "طبيعة", "time": 30},
+        {"الوجهة": "حافة العالم", "الفئة": "طبيعة", "time": 90}
     ],
     "فاخرة": [
-        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "time": 18, "metro": True},
-        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "time": 15, "metro": False},
-        {"الوجهة": "بوليفارد سيتي", "الفئة": "ترفيه", "time": 12, "metro": False},
-        {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "time": 18, "metro": True},
-        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "time": 18, "metro": True}
+        {"الوجهة": "حي الطريف", "الفئة": "تاريخ وآثار", "time": 18},
+        {"الوجهة": "فيا رياض", "الفئة": "ترفيه", "time": 15},
+        {"الوجهة": "بوليفارد ستي", "الفئة": "ترفيه", "time": 12},
+        {"الوجهة": "مطل البجيري", "الفئة": "تاريخ وآثار", "time": 18},
+        {"الوجهة": "مطل البجيري", "الفئة": "مطاعم ومقاهي", "time": 18}
     ]
 }
 
@@ -138,7 +137,8 @@ if st.session_state.page == 'welcome':
         st.markdown(f'<h1 style="text-align: center; color: #0369A1;">{T["title"]}</h1>', unsafe_allow_html=True)
         st.markdown(f'<p style="text-align: center; color: #64748B;">{T["subtitle"]}</p>', unsafe_allow_html=True)
         
-        u_name = st.text_input("Name" if st.session_state.lang == 'en' else "الاسم", value="") # فارغ
+        # التعديل: الاسم أصبح فارغاً
+        u_name = st.text_input("Name" if st.session_state.lang == 'en' else "الاسم", value="")
         u_budget = st.radio(T["budget"], [T["eco"], T["lux"]], horizontal=True)
         
         if st.form_submit_button(T["start_btn"]):
@@ -158,11 +158,11 @@ else:
 
     st.markdown(f'<div class="highlight-box"><h4>{T["interests_q"]}</h4></div>', unsafe_allow_html=True)
     
+    # التعديل: منطق الفلترة ليدعم تعدد الاهتمامات كما في الملف الجديد
     u_interests = st.multiselect("", ["تاريخ وآثار", "ترفيه", "تسوق", "مطاعم ومقاهي", "طبيعة"], label_visibility="collapsed")
 
     if st.button(T["analyze"]):
         db = PLACES_DB[st.session_state.user_budget]
-        # منطق التعدد: يظهر كل ما يطابق أي اهتمام
         st.session_state.suggestions = [p for p in db if p['الفئة'] in u_interests]
         st.session_state.transport_choice = None
 
@@ -176,6 +176,6 @@ else:
         for p in st.session_state.suggestions:
             st.markdown(f'<div class="info-box"><h4>📍 {p["الوجهة"]}</h4><p>{p["الفئة"]}</p></div>', unsafe_allow_html=True)
 
-    if st.button("🔄 Reset" if st.session_state.lang == 'en' else "🔄 إعادة ضبط"):
+    if st.button("Reset" if st.session_state.lang == 'en' else "إعادة ضبط"):
         st.session_state.clear()
         st.rerun()
