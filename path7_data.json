@@ -8,7 +8,7 @@
     "day": "اليوم", "of": "من",
     "weather": "الجو في الرياض", "sunny": "مشمس ☀️", "night": "ليل صافي 🌙",
     "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
-    "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق"],
+    "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"],
     "analyze_btn": "تحليل الوجهات 🔍",
     "transport_q": "كيف تفضل الوصول لوجهاتك؟",
     "m_btn": "🚇 مترو الرياض", "c_btn": "🚗 سيارتي", "t_btn": "🚕 تاكسي",
@@ -19,14 +19,22 @@
     "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
     "eco": "اقتصادية", "lux": "فاخرة",
     "metro_fail": "المترو غير متاح لهذه الوجهات ❌",
+    "map_btn": "📍 الموقع على الخريطة",
     "db": {
       "Economy": [
-        {"الوجهة": "قصر المصمك", "وصف": "قلعة تاريخية في قلب الرياض القديمة", "b_time": 25, "metro": true},
-        {"الوجهة": "سوق الزل", "وصف": "تحف ومنسوجات شعبية أصيلة", "b_time": 30, "metro": true}
+        {"الوجهة": "حصن المصمك", "وصف": "رمز توحيد المملكة وتأسيسها", "b_time": 25, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تاريخ وآثار"},
+        {"الوجهة": "أسواق المعيقلية", "وصف": "مركز تسوق تقليدي للبخور والعود والبشوت", "b_time": 30, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تسوق"},
+        {"الوجهة": "سوق الزل", "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تسوق"},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة", "b_time": 15, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
+        {"الوجهة": "وادي حنيفة / نمار", "وصف": "مساحات خضراء خلابة وبحيرات مثالية للنزهات", "b_time": 40, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
+        {"الوجهة": "منتزه الملك عبد الله", "وصف": "نافورات راقصة ومساحات خضراء شاسعة", "b_time": 35, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
+        {"الوجهة": "حافة العالم", "وصف": "إطلالات منحدرة تخطف الأنفاس", "b_time": 90, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"}
       ],
       "Luxury": [
-        {"الوجهة": "فيا رياض", "وصف": "فخامة معمارية ومطاعم عالمية", "b_time": 15, "metro": false},
-        {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو والتاريخ العريق", "b_time": 20, "metro": true}
+        {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو وقلب التاريخ السعودي", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تاريخ وآثار"},
+        {"الوجهة": "فيا الرياض", "وصف": "عمارة سلمية مع مطاعم وسينما عالمية", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "ترفيه"},
+        {"الوجهة": "بوليفارد ستي", "وصف": "أكبر منطقة للثقافات العالمية والألعاب", "b_time": 25, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "ترفيه"},
+        {"الوجهة": "مطل البجيري", "وصف": "مطاعم راقية بإطلالات على وادي حنيفة", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "مطاعم ومقاهي"}
       ]
     }
   },
@@ -39,7 +47,7 @@
     "day": "Day", "of": "of",
     "weather": "Riyadh Weather", "sunny": "Sunny ☀️", "night": "Clear Night 🌙",
     "interests_q": "🌟 What are your interests today?",
-    "interests_list": ["History", "Entertainment", "Nature", "Shopping"],
+    "interests_list": ["History", "Entertainment", "Nature", "Shopping", "Dine & Cafe"],
     "analyze_btn": "Analyze Destinations 🔍",
     "transport_q": "How would you like to travel?",
     "m_btn": "🚇 Riyadh Metro", "c_btn": "🚗 My Car", "t_btn": "🚕 Taxi",
@@ -50,14 +58,15 @@
     "finish": "✨ Wish you unforgettable memories! ✨",
     "eco": "Economy", "lux": "Luxury",
     "metro_fail": "Metro unavailable for these locations ❌",
+    "map_btn": "📍 View on Map",
     "db": {
       "Economy": [
-        {"الوجهة": "Masmak Palace", "وصف": "Historical fortress in old Riyadh", "b_time": 25, "metro": true},
-        {"الوجهة": "Souq Al-Zal", "وصف": "Traditional antiques and textiles", "b_time": 30, "metro": true}
+        {"الوجهة": "Masmak Fortress", "وصف": "Symbol of the Kingdom's unification", "b_time": 25, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "History"},
+        {"الوجهة": "Al-Mueaiqilia Markets", "وصف": "Traditional market for incense and oud", "b_time": 30, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "Shopping"}
       ],
       "Luxury": [
-        {"الوجهة": "Via Riyadh", "وصف": "Architectural luxury and global dining", "b_time": 15, "metro": false},
-        {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and deep heritage", "b_time": 20, "metro": true}
+        {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and heart of Saudi history", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "History"},
+        {"الوجهة": "Via Riyadh", "وصف": "Salmani architecture with world-class dining", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "Entertainment"}
       ]
     }
   }
