@@ -1,7 +1,15 @@
 import streamlit as st
 import random
+import json
 from datetime import datetime
 import pytz
+
+# --- وظيفة لقراءة ملف JSON ---
+def load_data():
+    with open('path7_data.json', 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+DATA_ALL = load_data()
 
 # 1. إعدادات الوقت والصفحة
 riyadh_tz = pytz.timezone('Asia/Riyadh')
@@ -11,73 +19,7 @@ current_hour = now_riyadh.hour
 
 st.set_page_config(page_title="Path7", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. القاموس الموحد للمحتوى (بما في ذلك الوجهات والاهتمامات)
-LANG = {
-    "العربية": {
-        "p_name": "Path7",
-        "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
-        "visitor_name": "اسم السائح",
-        "budget_q": "حدد الميزانية المناسبة للرحلة",
-        "start_btn": "استكشف المسار الآن 🚀",
-        "day": "اليوم", "of": "من",
-        "weather": "الجو في الرياض", "sunny": "مشمس ☀️", "night": "ليل صافي 🌙",
-        "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
-        "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق"],
-        "analyze_btn": "تحليل الوجهات 🔍",
-        "transport_q": "كيف تفضل الوصول لوجهاتك؟",
-        "m_btn": "🚇 مترو الرياض", "c_btn": "🚗 سيارتي", "t_btn": "🚕 تاكسي",
-        "min": "دقيقة", "est_time": "الوقت المتوقع (توافق لحظي)",
-        "wait_choice": "بانتظار اختيار وسيلة النقل...",
-        "rating_q": "⭐ تقييمك لليوم",
-        "next_day": "مسار اليوم التالي ⏩",
-        "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
-        "eco": "اقتصادية", "lux": "فاخرة",
-        "metro_fail": "المترو غير متاح لهذه الوجهات ❌",
-        "db": {
-            "اقتصادية": [
-                {"الوجهة": "قصر المصمك", "وصف": "قلعة تاريخية في قلب الرياض القديمة", "b_time": 25, "metro": True},
-                {"الوجهة": "سوق الزل", "وصف": "تحف ومنسوجات شعبية أصيلة", "b_time": 30, "metro": True}
-            ],
-            "فاخرة": [
-                {"الوجهة": "فيا رياض", "وصف": "فخامة معمارية ومطاعم عالمية", "b_time": 15, "metro": False},
-                {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو والتاريخ العريق", "b_time": 20, "metro": True}
-            ]
-        }
-    },
-    "English": {
-        "p_name": "Path7",
-        "subtitle": "Real-time Compatibility System for Smart Tourism",
-        "visitor_name": "Tourist Name",
-        "budget_q": "Select Trip Budget",
-        "start_btn": "Explore Path Now 🚀",
-        "day": "Day", "of": "of",
-        "weather": "Riyadh Weather", "sunny": "Sunny ☀️", "night": "Clear Night 🌙",
-        "interests_q": "🌟 What are your interests today?",
-        "interests_list": ["History", "Entertainment", "Nature", "Shopping"],
-        "analyze_btn": "Analyze Destinations 🔍",
-        "transport_q": "How would you like to travel?",
-        "m_btn": "🚇 Riyadh Metro", "c_btn": "🚗 My Car", "t_btn": "🚕 Taxi",
-        "min": "min", "est_time": "Real-time Arrival",
-        "wait_choice": "Waiting for transport selection...",
-        "rating_q": "⭐ Rate Your Day",
-        "next_day": "Next Day Path ⏩",
-        "finish": "✨ Wish you unforgettable memories! ✨",
-        "eco": "Economy", "lux": "Luxury",
-        "metro_fail": "Metro unavailable for these locations ❌",
-        "db": {
-            "Economy": [
-                {"الوجهة": "Masmak Palace", "وصف": "Historical fortress in old Riyadh", "b_time": 25, "metro": True},
-                {"الوجهة": "Souq Al-Zal", "وصف": "Traditional antiques and textiles", "b_time": 30, "metro": True}
-            ],
-            "Luxury": [
-                {"الوجهة": "Via Riyadh", "وصف": "Architectural luxury and global dining", "b_time": 15, "metro": False},
-                {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and deep heritage", "b_time": 20, "metro": True}
-            ]
-        }
-    }
-}
-
-# 3. إدارة الحالة
+# 2. إدارة الحالة (Session State)
 if 'lang' not in st.session_state: st.session_state.lang = "العربية"
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -86,9 +28,10 @@ if 'user_name' not in st.session_state: st.session_state.user_name = ""
 if 'rated' not in st.session_state: st.session_state.rated = False
 if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 
-T = LANG[st.session_state.lang]
+# اختيار القاموس بناءً على اللغة من الملف المحمل
+T = DATA_ALL[st.session_state.lang]
 
-# 4. الستايل البصري (Glassmorphism)
+# 3. الستايل البصري (لم يتغير)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -105,7 +48,7 @@ st.markdown(f'''
 col_l1, col_l2 = st.columns([12, 1])
 if col_l2.button("عربي/EN"):
     st.session_state.lang = "English" if st.session_state.lang == "العربية" else "العربية"
-    st.session_state.suggestions = [] # تصفير لجلب البيانات باللغة الجديدة
+    st.session_state.suggestions = []
     st.rerun()
 
 # --- صفحة الترحيب ---
@@ -121,7 +64,8 @@ if st.session_state.page == 'welcome':
         st.session_state.user_name = st.text_input(T["visitor_name"], placeholder="...")
         u_budget = st.radio(T["budget_q"], [T["eco"], T["lux"]], horizontal=True)
         if st.button(T["start_btn"]):
-            st.session_state.budget_key = "Luxury" if u_budget in [T["lux"], "فاخرة"] else "Economy"
+            # تخزين نوع الميزانية (Economy أو Luxury) بشكل موحد لاستخدامه في جلب البيانات
+            st.session_state.budget_key = "Luxury" if u_budget in [T["lux"], "فاخرة", "Luxury"] else "Economy"
             st.session_state.traffic_factor = random.uniform(1.2, 1.7)
             st.session_state.page = 'system'
             st.rerun()
@@ -139,11 +83,8 @@ else:
         st.multiselect("", T["interests_list"], label_visibility="collapsed")
         
         if st.button(T["analyze_btn"]):
-            # جلب البيانات بناءً على اللغة المختارة والميزانية
-            current_db = T["db"]["فاخرة" if st.session_state.budget_key == "Luxury" and st.session_state.lang == "العربية" else 
-                          ("Luxury" if st.session_state.budget_key == "Luxury" else 
-                          ("اقتصادية" if st.session_state.lang == "العربية" else "Economy"))]
-            st.session_state.suggestions = current_db
+            # جلب البيانات من القاموس الذي تم تحميله من الملف
+            st.session_state.suggestions = T["db"][st.session_state.budget_key]
             st.session_state.transport_choice = None
             st.rerun()
 
