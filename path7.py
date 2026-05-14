@@ -3,12 +3,16 @@ import json
 from datetime import datetime
 import pytz
 
-# 1. تحميل البيانات
+# 1. تحميل البيانات مع التحقق من المفاتيح
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except:
+            data = json.load(f)
+            # طباعة المفاتيح للتأكد (تظهر في الكونسول فقط)
+            print(f"Available Keys: {list(data.keys())}")
+            return data
+    except Exception as e:
+        st.error(f"Error loading JSON: {e}")
         return {}
 
 DATA_ALL = load_data()
@@ -18,7 +22,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة واللغة
+# 3. إدارة الحالة
 if 'lang' not in st.session_state: st.session_state.lang = "العربية"
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -28,7 +32,7 @@ if 'rated' not in st.session_state: st.session_state.rated = False
 
 IS_AR = st.session_state.lang == "العربية"
 
-# قاموس الواجهة الشامل
+# قاموس الواجهة
 strings = {
     "title": "Path7 📍",
     "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
@@ -56,7 +60,7 @@ strings = {
     "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Happy travels! ✨"
 }
 
-# 4. التنسيق
+# 4. التنسيق (CSS)
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -71,9 +75,9 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر اللغة العلوي
-col_l1, col_l2 = st.columns([12, 2])
-if col_l2.button("العربية / EN"):
+# زر اللغة
+col_l1, col_l2 = st.columns([12, 3])
+if col_l2.button("العربية / EN", use_container_width=True):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
@@ -85,7 +89,6 @@ if st.session_state.page == 'welcome':
         st.session_state.user_name = st.text_input(strings["name_q"])
         u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
         if st.button(strings["start_btn"]):
-            # تحويل الميزانية لكي يقرأها ملف الـ JSON بغض النظر عن اللغة
             st.session_state.budget_key = "Luxury" if (u_budget in ["فاخرة", "Luxury"]) else "Economy"
             st.session_state.page = 'system'; st.rerun()
 
@@ -98,11 +101,20 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            # ضمان قراءة اللغة الصحيحة من ملف الـ JSON
-            lang_key = "العربية" if IS_AR else "English"
-            db = DATA_ALL.get(lang_key, {}).get("db", {}).get(st.session_state.budget_key, [])
+            # منطق البحث الذكي عن مفتاح اللغة في الـ JSON
+            # سيحاول البحث عن "English" أو "EN" أو أول مفتاح متاح إذا فشل الكل
+            possible_keys = ["العربية", "Arabic", "AR"] if IS_AR else ["English", "EN", "English "]
+            lang_data = {}
+            for k in possible_keys:
+                if k in DATA_ALL:
+                    lang_data = DATA_ALL[k]
+                    break
+            if not lang_data: # Fallback لأي مفتاح متاح
+                lang_data = list(DATA_ALL.values())[0] if DATA_ALL else {}
+
+            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
             
-            # فلترة بناءً على الاهتمامات
+            # فلترة
             st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
             st.session_state.transport_choice = None; st.rerun()
 
@@ -122,7 +134,7 @@ else:
                     if st.session_state.transport_choice == "metro":
                         action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
                     else:
-                        action_html = f"{time_str}<br><a href='https://www.google.com/maps/search/{p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+                        action_html = f"{time_str}<br><a href='http://google.com/maps/search/{p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
                 st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p>{action_html}</div>', unsafe_allow_html=True)
 
@@ -140,8 +152,7 @@ else:
                 st.info(strings["final_msg"])
         
         st.markdown("<hr style='opacity:0.2;'>", unsafe_allow_html=True)
-        if st.button(reset_label if 'reset_label' in locals() else strings["reset"]): 
-            st.session_state.clear(); st.rerun()
+        if st.button(strings["reset"]): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em; margin-top: 20px;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
