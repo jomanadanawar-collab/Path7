@@ -35,8 +35,9 @@ if 'rated' not in st.session_state: st.session_state.rated = False
 reset_label = "إعادة ضبط 🔄" if st.session_state.lang == "العربية" else "Reset 🔄"
 rating_title = "تقييمك للتجربة ⭐" if st.session_state.lang == "العربية" else "Rate your experience ⭐"
 text_align = "right" if st.session_state.lang == "العربية" else "left"
+final_msg = "شكرًا لثقتك بـ Path7.. نتمنى أن تكون رحلتك في الرياض لا تُنسى! ✨" if st.session_state.lang == "العربية" else "Thank you for trusting Path7.. We hope your journey in Riyadh was unforgettable! ✨"
 
-# 4. التنسيق البصري (نسخة المسابقات)
+# 4. التنسيق البصري
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -45,9 +46,10 @@ st.markdown(f'''
     .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }}
     .info-card {{ text-align: {text_align}; }}
     .center-rating {{ text-align: center !important; }}
-    .dest-card {{ background: white; padding: 25px; border-radius: 20px; border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }}
+    .dest-card {{ background: white; padding: 25px; border-radius: 20px; border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }}
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 12px !important; border: none !important; }}
+    .success-msg {{ color: #0369A1; font-weight: bold; padding: 15px; background: rgba(14, 165, 233, 0.1); border-radius: 15px; margin-top: 15px; }}
     </style>
 ''', unsafe_allow_html=True)
 
@@ -98,7 +100,6 @@ else:
             if t_cols[2].button("🚕 التاكسي"): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
-                # منطق صارم لمنع ظهور أي نصوص برمجية
                 action_part = ""
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
@@ -108,7 +109,7 @@ else:
                         action_part = f"<p style='font-weight:bold; color:#0369A1;'>{time_txt}</p><p style='color:#0284C7; font-weight:bold;'>{info_txt}</p>"
                     else:
                         time_txt = f"🚗 الوقت المقدر: {int(base * 1.4)} دقيقة"
-                        url = f"https://www.google.com/maps/search/?api=1&query={p['الوجهة']}"
+                        url = f"https://www.google.com/maps/search/{p['الوجهة']}"
                         action_part = f"<p style='font-weight:bold; color:#0369A1;'>{time_txt}</p><a href='{url}' target='_blank' class='map-btn'>📍 فتح في الخرائط</a>"
                 else:
                     action_part = "<p style='color:#94A3B8;'>⏳ حدد وسيلة النقل لمعرفة المسار</p>"
@@ -125,12 +126,17 @@ else:
         for i in range(1, 6):
             if stars[i-1].button(f"{i}⭐", key=f"star_{i}"): st.session_state.rated = True
         
-        if st.session_state.rated and st.session_state.day < 3:
-            st.write("")
-            if st.button("اليوم التالي ⏭️"):
-                st.session_state.day += 1
-                st.session_state.suggestions = []; st.session_state.transport_choice = None; st.session_state.rated = False
-                st.rerun()
+        # منطق ظهور العبارة اللطيفة أو زر اليوم التالي
+        if st.session_state.rated:
+            if st.session_state.day < 3:
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("اليوم التالي ⏭️"):
+                    st.session_state.day += 1
+                    st.session_state.suggestions = []; st.session_state.transport_choice = None; st.session_state.rated = False
+                    st.rerun()
+            else:
+                # العبارة اللطيفة في اليوم الأخير
+                st.markdown(f'<div class="success-msg">{final_msg}</div>', unsafe_allow_html=True)
         
         st.markdown("<hr style='opacity:0.2;'>", unsafe_allow_html=True)
         if st.button(reset_label): st.session_state.clear(); st.rerun()
