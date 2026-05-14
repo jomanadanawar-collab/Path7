@@ -36,36 +36,16 @@ reset_label = "إعادة ضبط 🔄" if st.session_state.lang == "العربي
 rating_title = "تقييمك للتجربة ⭐" if st.session_state.lang == "العربية" else "Rate your experience ⭐"
 text_align = "right" if st.session_state.lang == "العربية" else "left"
 
-# 4. التنسيق البصري المحسن (بدون فراغات زائدة)
+# 4. التنسيق البصري (نسخة المسابقات)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
-    
-    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
-
     * {{ font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: {"rtl" if st.session_state.lang == "العربية" else "ltr"}; }}
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
-    
-    .glass-card {{ 
-        background: rgba(255, 255, 255, 0.75); 
-        backdrop-filter: blur(12px); 
-        padding: 30px; border-radius: 25px; 
-        border: 1px solid rgba(255, 255, 255, 0.3); 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        animation: fadeIn 0.8s ease-out;
-        margin-bottom: 20px;
-    }}
-    
+    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }}
     .info-card {{ text-align: {text_align}; }}
     .center-rating {{ text-align: center !important; }}
-
-    .dest-card {{ 
-        background: white; padding: 25px; border-radius: 20px; 
-        border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; 
-        margin-bottom: 15px; animation: fadeIn 1s ease-out;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }}
-
+    .dest-card {{ background: white; padding: 25px; border-radius: 20px; border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }}
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 12px !important; border: none !important; }}
     </style>
@@ -118,26 +98,25 @@ else:
             if t_cols[2].button("🚕 التاكسي"): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
-                time_html = ""
-                action_html = ""
-                
+                # منطق صارم لمنع ظهور أي نصوص برمجية
+                action_part = ""
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
                     if st.session_state.transport_choice == "metro":
-                        time_html = f"<p style='font-weight:bold; color:#0369A1;'>🚇 الوقت المقدر: {base + 10} دقيقة</p>"
-                        action_html = "<p style='color:#0284C7; font-weight:bold;'>🚉 المترو بانتظارك، توجه للمحطة!</p>"
+                        time_txt = f"🚇 الوقت المقدر: {base + 10} دقيقة"
+                        info_txt = "🚉 المترو متاح لهذه الوجهة."
+                        action_part = f"<p style='font-weight:bold; color:#0369A1;'>{time_txt}</p><p style='color:#0284C7; font-weight:bold;'>{info_txt}</p>"
                     else:
-                        time_html = f"<p style='font-weight:bold; color:#0369A1;'>🚗 الوقت المقدر: {int(base * 1.4)} دقيقة</p>"
-                        action_html = f'<a href="https://maps.google.com/?q={p["الوجهة"]}" target="_blank" class="map-btn">📍 فتح في الخرائط</a>'
+                        time_txt = f"🚗 الوقت المقدر: {int(base * 1.4)} دقيقة"
+                        url = f"https://www.google.com/maps/search/?api=1&query={p['الوجهة']}"
+                        action_part = f"<p style='font-weight:bold; color:#0369A1;'>{time_txt}</p><a href='{url}' target='_blank' class='map-btn'>📍 فتح في الخرائط</a>"
                 else:
-                    time_html = "<p style='color:#94A3B8;'>⏳ حدد وسيلة النقل لمعرفة الوقت والمسار</p>"
+                    action_part = "<p style='color:#94A3B8;'>⏳ حدد وسيلة النقل لمعرفة المسار</p>"
 
-                # الآن الـ HTML يتولد بذكاء ولن يظهر أي وسم فارغ
                 st.markdown(f'''<div class="dest-card">
                     <h4 style="color:#0284C7; margin:0;">{p['الوجهة']}</h4>
-                    <p style="color:#64748B; margin-bottom:10px;">{p['وصف']}</p>
-                    {time_html}
-                    {action_html}
+                    <p style="color:#64748B;">{p['وصف']}</p>
+                    {action_part}
                 </div>''', unsafe_allow_html=True)
 
     with col_s:
@@ -147,7 +126,7 @@ else:
             if stars[i-1].button(f"{i}⭐", key=f"star_{i}"): st.session_state.rated = True
         
         if st.session_state.rated and st.session_state.day < 3:
-            st.markdown("<br>", unsafe_allow_html=True)
+            st.write("")
             if st.button("اليوم التالي ⏭️"):
                 st.session_state.day += 1
                 st.session_state.suggestions = []; st.session_state.transport_choice = None; st.session_state.rated = False
