@@ -31,12 +31,12 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
-# نصوص الواجهة بناءً على اللغة
+# نصوص الواجهة
 reset_label = "إعادة ضبط 🔄" if st.session_state.lang == "العربية" else "Reset 🔄"
 rating_title = "تقييمك للتجربة ⭐" if st.session_state.lang == "العربية" else "Rate your experience ⭐"
 text_align = "right" if st.session_state.lang == "العربية" else "left"
 
-# 4. التنسيق البصري المحسن
+# 4. التنسيق البصري المحسن (بدون فراغات زائدة)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -56,19 +56,17 @@ st.markdown(f'''
         margin-bottom: 20px;
     }}
     
-    /* محاذاة ذكية بناءً على اللغة */
     .info-card {{ text-align: {text_align}; }}
-    
-    /* توسيط التقييم تماماً */
-    .center-rating {{ text-align: center !important; display: flex; flex-direction: column; align-items: center; justify-content: center; }}
+    .center-rating {{ text-align: center !important; }}
 
     .dest-card {{ 
-        background: white; padding: 20px; border-radius: 20px; 
+        background: white; padding: 25px; border-radius: 20px; 
         border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; 
         margin-bottom: 15px; animation: fadeIn 1s ease-out;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     }}
 
-    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
+    .map-btn {{ background-color: #0284C7; color: white !important; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }}
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 12px !important; border: none !important; }}
     </style>
 ''', unsafe_allow_html=True)
@@ -88,7 +86,7 @@ if st.session_state.page == 'welcome':
     
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
     with col_w2:
-        st.session_state.user_name = st.text_input("مرحباً بك، ما هو اسمك؟", placeholder="أدخل اسمك الكريم هنا")
+        st.session_state.user_name = st.text_input("مرحباً بك، ما هو اسمك؟", placeholder="أدخل اسمك هنا")
         u_budget = st.radio("حدد طابع رحلتك اليوم:", ["اقتصادية", "فاخرة"], horizontal=True)
         if st.button("انطلق لاستكشاف الرياض 🚀"):
             st.session_state.budget_key = "Luxury" if u_budget == "فاخرة" else "Economy"
@@ -120,42 +118,42 @@ else:
             if t_cols[2].button("🚕 التاكسي"): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
+                time_html = ""
+                action_html = ""
+                
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
                     if st.session_state.transport_choice == "metro":
-                        time_display = f"🚇 الوقت المقدر: {base + 10} دقيقة"
-                        action = "<p style='color:#0284C7;'><b>🚉 المترو متاح لهذه الوجهة.</b></p>"
+                        time_html = f"<p style='font-weight:bold; color:#0369A1;'>🚇 الوقت المقدر: {base + 10} دقيقة</p>"
+                        action_html = "<p style='color:#0284C7; font-weight:bold;'>🚉 المترو بانتظارك، توجه للمحطة!</p>"
                     else:
-                        time_display = f"🚗 الوقت المقدر: {int(base * 1.4)} دقيقة"
-                        action = f'<a href="https://www.google.com/maps/search/{p["الوجهة"]}" target="_blank" class="map-btn">📍 الموقع في الخرائط</a>'
+                        time_html = f"<p style='font-weight:bold; color:#0369A1;'>🚗 الوقت المقدر: {int(base * 1.4)} دقيقة</p>"
+                        action_html = f'<a href="https://maps.google.com/?q={p["الوجهة"]}" target="_blank" class="map-btn">📍 فتح في الخرائط</a>'
                 else:
-                    time_display = "⏳ حدد وسيلة النقل"
-                    action = ""
+                    time_html = "<p style='color:#94A3B8;'>⏳ حدد وسيلة النقل لمعرفة الوقت والمسار</p>"
 
+                # الآن الـ HTML يتولد بذكاء ولن يظهر أي وسم فارغ
                 st.markdown(f'''<div class="dest-card">
                     <h4 style="color:#0284C7; margin:0;">{p['الوجهة']}</h4>
-                    <p style="color:#64748B;">{p['وصف']}</p>
-                    <p style="font-weight:bold; color:#0369A1;">{time_display}</p>
-                    {action}
+                    <p style="color:#64748B; margin-bottom:10px;">{p['وصف']}</p>
+                    {time_html}
+                    {action_html}
                 </div>''', unsafe_allow_html=True)
 
     with col_s:
-        # التقييم في المنتصف تماماً
-        st.markdown(f'<div class="glass-card center-rating"><h4>{rating_title}</h4>', unsafe_allow_html=True)
-        st.write("")
+        st.markdown(f'<div class="glass-card center-rating"><h4 style="margin-bottom:20px;">{rating_title}</h4>', unsafe_allow_html=True)
         stars = st.columns(5)
         for i in range(1, 6):
             if stars[i-1].button(f"{i}⭐", key=f"star_{i}"): st.session_state.rated = True
         
         if st.session_state.rated and st.session_state.day < 3:
-            st.write("")
+            st.markdown("<br>", unsafe_allow_html=True)
             if st.button("اليوم التالي ⏭️"):
                 st.session_state.day += 1
                 st.session_state.suggestions = []; st.session_state.transport_choice = None; st.session_state.rated = False
                 st.rerun()
         
-        st.markdown("<hr style='width:100%;'>", unsafe_allow_html=True)
-        # زر إعادة الضبط المعرب
+        st.markdown("<hr style='opacity:0.2;'>", unsafe_allow_html=True)
         if st.button(reset_label): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
