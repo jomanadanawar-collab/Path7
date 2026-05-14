@@ -3,16 +3,12 @@ import json
 from datetime import datetime
 import pytz
 
-# 1. تحميل البيانات مع التحقق من المفاتيح
+# 1. تحميل البيانات
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            # طباعة المفاتيح للتأكد (تظهر في الكونسول فقط)
-            print(f"Available Keys: {list(data.keys())}")
-            return data
-    except Exception as e:
-        st.error(f"Error loading JSON: {e}")
+            return json.load(f)
+    except:
         return {}
 
 DATA_ALL = load_data()
@@ -22,7 +18,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة
+# 3. إدارة الحالة واللغة
 if 'lang' not in st.session_state: st.session_state.lang = "العربية"
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -32,7 +28,17 @@ if 'rated' not in st.session_state: st.session_state.rated = False
 
 IS_AR = st.session_state.lang == "العربية"
 
-# قاموس الواجهة
+# خريطة ربط الاهتمامات (هذا هو الحل!)
+# يربط الكلمة الإنجليزية بما يقابلها في ملف الـ JSON العربي
+interest_map = {
+    "History": "تاريخ وآثار",
+    "Entertainment": "ترفيه",
+    "Nature": "طبيعة",
+    "Shopping": "تسوق",
+    "Dining": "مطاعم ومقاهي"
+}
+
+# قاموس نصوص الواجهة
 strings = {
     "title": "Path7 📍",
     "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
@@ -101,21 +107,21 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            # منطق البحث الذكي عن مفتاح اللغة في الـ JSON
-            # سيحاول البحث عن "English" أو "EN" أو أول مفتاح متاح إذا فشل الكل
-            possible_keys = ["العربية", "Arabic", "AR"] if IS_AR else ["English", "EN", "English "]
-            lang_data = {}
-            for k in possible_keys:
-                if k in DATA_ALL:
-                    lang_data = DATA_ALL[k]
-                    break
-            if not lang_data: # Fallback لأي مفتاح متاح
-                lang_data = list(DATA_ALL.values())[0] if DATA_ALL else {}
-
-            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
+            # جلب البيانات بناءً على اللغة المختارة
+            lang_key = "العربية" if IS_AR else "English"
+            db = DATA_ALL.get(lang_key, {}).get("db", {}).get(st.session_state.budget_key, [])
             
-            # فلترة
-            st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+            # تحويل الاهتمامات المختارة إلى ما يقابلها في ملف الـ JSON إذا كانت اللغة إنجليزية
+            search_interests = []
+            for item in selected:
+                search_interests.append(interest_map.get(item, item)) # يأخذ المقابل أو الكلمة نفسها لو كانت عربية
+            
+            # فلترة الأماكن
+            if search_interests:
+                st.session_state.suggestions = [p for p in db if p.get('الفئة') in search_interests]
+            else:
+                st.session_state.suggestions = db[:2] # افتراضي لو ما اختار شيء
+                
             st.session_state.transport_choice = None; st.rerun()
 
         if st.session_state.suggestions:
@@ -126,17 +132,17 @@ else:
             if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
-                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
+                action_part = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
                     t_val = base + 10 if st.session_state.transport_choice == "metro" else int(base * 1.4)
                     time_str = f"<b>{strings['est_time']} {t_val} {strings['mins']}</b>"
                     if st.session_state.transport_choice == "metro":
-                        action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
+                        action_part = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
                     else:
-                        action_html = f"{time_str}<br><a href='http://google.com/maps/search/{p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+                        action_part = f"{time_str}<br><a href='http://google.com/maps/search/{p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
-                st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p>{action_html}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p>{action_part}</div>', unsafe_allow_html=True)
 
     with col_s:
         st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
