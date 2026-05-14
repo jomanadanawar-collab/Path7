@@ -28,7 +28,7 @@ if 'rated' not in st.session_state: st.session_state.rated = False
 
 IS_AR = st.session_state.lang == "العربية"
 
-# قاموس الربط لإصلاح مشكلة البحث بالإنجليزي (حتى تظهر الأماكن دائماً)
+# قاموس الربط لضمان عمل "تحليل المسار" باللغتين
 interest_mapping = {
     "History": "تاريخ وآثار",
     "Entertainment": "ترفيه",
@@ -37,7 +37,7 @@ interest_mapping = {
     "Dining": "مطاعم ومقاهي"
 }
 
-# قاموس الترجمة
+# نصوص الواجهة
 strings = {
     "title": "Path7 📍",
     "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
@@ -49,23 +49,15 @@ strings = {
     "weather": ("مشمس ☀️" if 5 <= hour <= 17 else "صافي 🌙") if IS_AR else ("Sunny ☀️" if 5 <= hour <= 17 else "Clear 🌙"),
     "interests_q": "ما هي اهتماماتك المفضلة اليوم؟" if IS_AR else "What are your interests today?",
     "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"] if IS_AR else ["History", "Entertainment", "Nature", "Shopping", "Dining"],
-    "analyze_btn": "تحليل المسار الذكي 🔍" if IS_AR else "Smart Path Analysis 🔍",
+    "analyze_btn": "تحليل المسار الذكي 🔍" if IS_AR else "Analyze Smart Path 🔍",
     "trans_q": "وسيلة النقل المفضلة" if IS_AR else "Preferred Transport",
-    "metro": "🚇 المترو" if IS_AR else "🚇 Metro",
-    "car": "🚗 السيارة" if IS_AR else "🚗 Car",
-    "taxi": "🚕 التاكسي" if IS_AR else "🚕 Taxi",
-    "est_time": "الوقت المقدر:" if IS_AR else "Est. Time:",
-    "mins": "دقيقة" if IS_AR else "mins",
-    "map_btn": "📍 فتح في الخرائط" if IS_AR else "📍 Open Maps",
-    "metro_msg": "محطة المترو قريبة منك." if IS_AR else "Metro station is nearby.",
-    "select_trans": "⏳ حدد وسيلة النقل لمعرفة المسار" if IS_AR else "⏳ Select transport to see path",
     "rating_t": "تقييمك للتجربة ⭐" if IS_AR else "Rate your experience ⭐",
     "next_day": "اليوم التالي ⏭️" if IS_AR else "Next Day ⏭️",
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
-    "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Have a great trip! ✨"
+    "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Happy travels! ✨"
 }
 
-# 4. التنسيق البصري (رجوع للتصميم العظيم)
+# 4. التنسيق البصري (الأصلي + أزرار مربعة)
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -76,14 +68,20 @@ st.markdown(f'''
     .center-rating {{ text-align: center !important; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     
-    /* أزرار النجوم: بيضاء وبسيطة كما كانت */
-    div[data-testid="stHorizontalBlock"] button {{
+    /* جعل أزرار النجوم مربعة تماماً وبحجم متناسق */
+    div[data-testid="stHorizontalBlock"] button[key^="s"] {{
+        width: 50px !important;
+        height: 50px !important;
+        padding: 0px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important; /* زوايا مربعة بسيطة */
         background-color: white !important;
         color: #0284C7 !important;
         border: 1px solid #E2E8F0 !important;
-        border-radius: 10px !important;
     }}
-    
+
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     </style>
 ''', unsafe_allow_html=True)
@@ -114,18 +112,18 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            # البحث باستخدام خريطة الربط لضمان ظهور النتائج بالإنجليزي
             db = DATA_ALL.get("العربية", {}).get("db", {}).get(st.session_state.budget_key, [])
             final_search_terms = [interest_mapping.get(item, item) for item in selected]
             st.session_state.suggestions = [p for p in db if p.get('الفئة') in final_search_terms] or db[:2]
-            st.session_state.transport_choice = None; st.rerun()
+            st.rerun()
 
         if st.session_state.suggestions:
             for p in st.session_state.suggestions:
-                st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="dest-card"><h4>{p["الوجهة"]}</h4><p>{p["وصف"]}</p></div>', unsafe_allow_html=True)
 
     with col_s:
         st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
+        # النجوم المربعة
         stars = st.columns(5)
         for i in range(1, 6):
             if stars[i-1].button(f"{i}⭐", key=f"s{i}"): st.session_state.rated = True
@@ -141,4 +139,4 @@ else:
         if st.button(strings["reset"]): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em; margin-top: 20px;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
