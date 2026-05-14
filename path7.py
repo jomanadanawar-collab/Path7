@@ -28,7 +28,7 @@ if 'rated' not in st.session_state: st.session_state.rated = False
 
 IS_AR = st.session_state.lang == "العربية"
 
-# قاموس الربط الذكي لإصلاح مشكلة البحث باللغة الإنجليزية
+# قاموس الربط لإصلاح مشكلة البحث بالإنجليزي (حتى تظهر الأماكن دائماً)
 interest_mapping = {
     "History": "تاريخ وآثار",
     "Entertainment": "ترفيه",
@@ -65,7 +65,7 @@ strings = {
     "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Have a great trip! ✨"
 }
 
-# 4. التنسيق البصري (تحسين أزرار التقييم)
+# 4. التنسيق البصري (رجوع للتصميم العظيم)
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -76,19 +76,12 @@ st.markdown(f'''
     .center-rating {{ text-align: center !important; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     
-    /* تنسيق أزرار النجوم الجديد */
-    div[data-testid="stHorizontalBlock"] > div:has(button[key^="s"]) button {{
-        background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%) !important;
-        border: 1px solid #BAE6FD !important;
-        color: #0369A1 !important;
-        border-radius: 12px !important;
-        font-weight: bold !important;
-        transition: all 0.3s ease !important;
-    }}
-    div[data-testid="stHorizontalBlock"] > div:has(button[key^="s"]) button:hover {{
-        background: #0284C7 !important;
-        color: white !important;
-        transform: translateY(-2px);
+    /* أزرار النجوم: بيضاء وبسيطة كما كانت */
+    div[data-testid="stHorizontalBlock"] button {{
+        background-color: white !important;
+        color: #0284C7 !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 10px !important;
     }}
     
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
@@ -121,6 +114,7 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
+            # البحث باستخدام خريطة الربط لضمان ظهور النتائج بالإنجليزي
             db = DATA_ALL.get("العربية", {}).get("db", {}).get(st.session_state.budget_key, [])
             final_search_terms = [interest_mapping.get(item, item) for item in selected]
             st.session_state.suggestions = [p for p in db if p.get('الفئة') in final_search_terms] or db[:2]
