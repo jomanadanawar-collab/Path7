@@ -26,8 +26,9 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
-# قاموس الترجمة للواجهة
 IS_AR = st.session_state.lang == "العربية"
+
+# قاموس الترجمة للواجهة
 strings = {
     "title": "Path7 📍",
     "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
@@ -55,7 +56,7 @@ strings = {
     "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Have a great trip! ✨"
 }
 
-# 4. التنسيق البصري (ثابت كما طلبتِ مع تحسين النجوم)
+# 4. التنسيق البصري
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -63,12 +64,11 @@ st.markdown(f'''
     * {{ font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: {"rtl" if IS_AR else "ltr"}; }}
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
     .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: {text_align}; }}
-    .center-rating {{ text-align: center !important; }}
-    .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; color: black; }}
+    .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; color: black; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; }}
     
-    /* إصلاح أزرار النجوم: مربعة 1:1 وحادة واحترافية */
+    /* أزرار التقييم المربعة 1:1 */
     div[data-testid="stHorizontalBlock"] button[key^="s"] {{
         aspect-ratio: 1/1 !important;
         width: 55px !important;
@@ -76,7 +76,6 @@ st.markdown(f'''
         min-width: 55px !important;
         padding: 0 !important;
         border-radius: 10px !important;
-        font-size: 1.1rem !important;
     }}
     </style>
 ''', unsafe_allow_html=True)
@@ -101,27 +100,28 @@ if st.session_state.page == 'welcome':
 else:
     col_m, col_s = st.columns([2.2, 1])
     with col_m:
-        # عرض البيانات (الاسم، الساعة، الجو)
         st.markdown(f'<div class="glass-card"><h3>{strings["day_lbl"]}</h3><p>👤 {st.session_state.user_name} | 🕒 {now_riyadh.strftime("%I:%M %p")} | 🌤️ {strings["weather"]}</p></div>', unsafe_allow_html=True)
         
         st.subheader(strings["interests_q"])
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            # التحليل: جلب البيانات بناءً على لغة الجلسة والترجمة الصحيحة للفئات
-            lang_key = st.session_state.lang
-            db = DATA_ALL.get(lang_key, {}).get("db", {}).get(st.session_state.budget_key, [])
+            # الخطوة الأهم: تحديد لغة البيانات في الـ JSON
+            # إذا لم تكن الإنجليزية موجودة، سنستخدم العربية كمصدر بديل
+            db_lang = "English" if st.session_state.lang == "English" else "العربية"
+            db = DATA_ALL.get(db_lang, {}).get("db", {}).get(st.session_state.budget_key, [])
             
-            # ربط الفئات (Mapping) لضمان مطابقة الـ JSON
+            # في حال كانت البيانات في الـ JSON بالعربي والواجهة إنجليزي، نربط الفئات
             mapping = {"History": "تاريخ وآثار", "Entertainment": "ترفيه", "Nature": "طبيعة", "Shopping": "تسوق", "Dining": "مطاعم ومقاهي"}
-            search_vals = [mapping.get(s, s) for s in selected] if not IS_AR else selected
+            search_list = [mapping.get(s, s) for s in selected] if not IS_AR else selected
             
-            st.session_state.suggestions = [p for p in db if p.get('الفئة') in search_vals] or db[:2]
+            st.session_state.suggestions = [p for p in db if p.get('الفئة') in search_list] or db[:2]
             st.session_state.transport_choice = None; st.rerun()
 
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
             t_cols = st.columns(3)
+            # وسائل النقل ستظهر الآن فور توفر الاقتراحات
             if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
             if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
             if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
@@ -135,14 +135,12 @@ else:
                     if st.session_state.transport_choice == "metro":
                         action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
                     else:
-                        # الروابط تعتمد على اسم الوجهة في الـ JSON
                         action_html = f"{time_str}<br><a href='http://maps.google.com/?q={p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
                 st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p>{action_html}</div>', unsafe_allow_html=True)
 
     with col_s:
-        # قسم التقييم بأزرار مربعة 1:1
-        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
+        st.markdown(f'<div class="glass-card" style="text-align: center;"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
         stars = st.columns(5)
         for i in range(1, 6):
             if stars[i-1].button(f"{i}", key=f"s{i}"): st.session_state.rated = True
@@ -157,5 +155,3 @@ else:
         st.markdown("<hr>", unsafe_allow_html=True)
         if st.button(strings["reset"]): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
