@@ -26,8 +26,9 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
-# قاموس الترجمة للواجهة
 IS_AR = st.session_state.lang == "العربية"
+
+# قاموس الواجهة الشامل
 strings = {
     "title": "Path7 📍",
     "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
@@ -39,7 +40,7 @@ strings = {
     "weather": ("مشمس ☀️" if 5 <= hour <= 17 else "صافي 🌙") if IS_AR else ("Sunny ☀️" if 5 <= hour <= 17 else "Clear 🌙"),
     "interests_q": "ما هي اهتماماتك المفضلة اليوم؟" if IS_AR else "What are your interests today?",
     "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"] if IS_AR else ["History", "Entertainment", "Nature", "Shopping", "Dining"],
-    "analyze_btn": "تحليل المسار الذكي 🔍" if IS_AR else "Smart Path Analysis 🔍",
+    "analyze_btn": "تحليل المسار الذكي 🔍" if IS_AR else "Analyze Smart Path 🔍",
     "trans_q": "وسيلة النقل المفضلة" if IS_AR else "Preferred Transport",
     "metro": "🚇 المترو" if IS_AR else "🚇 Metro",
     "car": "🚗 السيارة" if IS_AR else "🚗 Car",
@@ -52,10 +53,10 @@ strings = {
     "rating_t": "تقييمك للتجربة ⭐" if IS_AR else "Rate your experience ⭐",
     "next_day": "اليوم التالي ⏭️" if IS_AR else "Next Day ⏭️",
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
-    "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Have a great trip! ✨"
+    "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Happy travels! ✨"
 }
 
-# 4. التنسيق البصري
+# 4. التنسيق
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -64,13 +65,13 @@ st.markdown(f'''
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
     .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: {text_align}; }}
     .center-rating {{ text-align: center !important; }}
-    .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
+    .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
-    .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; }}
+    .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     </style>
 ''', unsafe_allow_html=True)
 
-# زر تغيير اللغة
+# زر اللغة العلوي
 col_l1, col_l2 = st.columns([12, 2])
 if col_l2.button("العربية / EN"):
     st.session_state.lang = "English" if IS_AR else "العربية"
@@ -84,7 +85,8 @@ if st.session_state.page == 'welcome':
         st.session_state.user_name = st.text_input(strings["name_q"])
         u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
         if st.button(strings["start_btn"]):
-            st.session_state.budget_key = "Luxury" if (u_budget == "فاخرة" or u_budget == "Luxury") else "Economy"
+            # تحويل الميزانية لكي يقرأها ملف الـ JSON بغض النظر عن اللغة
+            st.session_state.budget_key = "Luxury" if (u_budget in ["فاخرة", "Luxury"]) else "Economy"
             st.session_state.page = 'system'; st.rerun()
 
 else:
@@ -96,7 +98,11 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            db = DATA_ALL.get(st.session_state.lang, {}).get("db", {}).get(st.session_state.budget_key, [])
+            # ضمان قراءة اللغة الصحيحة من ملف الـ JSON
+            lang_key = "العربية" if IS_AR else "English"
+            db = DATA_ALL.get(lang_key, {}).get("db", {}).get(st.session_state.budget_key, [])
+            
+            # فلترة بناءً على الاهتمامات
             st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
             st.session_state.transport_choice = None; st.rerun()
 
@@ -116,7 +122,7 @@ else:
                     if st.session_state.transport_choice == "metro":
                         action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
                     else:
-                        action_html = f"{time_str}<br><a href='http://maps.google.com/?q={p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+                        action_html = f"{time_str}<br><a href='https://www.google.com/maps/search/{p['الوجهة']}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
                 st.markdown(f'<div class="dest-card"><h4 style="color:#0284C7;margin:0;">{p["الوجهة"]}</h4><p>{p["وصف"]}</p>{action_html}</div>', unsafe_allow_html=True)
 
@@ -133,8 +139,9 @@ else:
             else:
                 st.info(strings["final_msg"])
         
-        st.markdown("<hr>", unsafe_allow_html=True)
-        if st.button(strings["reset"]): st.session_state.clear(); st.rerun()
+        st.markdown("<hr style='opacity:0.2;'>", unsafe_allow_html=True)
+        if st.button(reset_label if 'reset_label' in locals() else strings["reset"]): 
+            st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em; margin-top: 20px;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
