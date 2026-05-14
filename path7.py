@@ -14,7 +14,7 @@ def load_data():
 
 DATA_ALL = load_data()
 
-# 2. التوافق اللحظي (الوقت والجو)
+# 2. التوافق اللحظي
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 formatted_time = now_riyadh.strftime('%I:%M %p')
@@ -29,10 +29,11 @@ if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'day' not in st.session_state: st.session_state.day = 1
 if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
+if 'rated' not in st.session_state: st.session_state.rated = False
 
 T = DATA_ALL.get(st.session_state.lang, {})
 
-# 4. تنسيق النسخة العظيمة مع أنيميشن المسابقات
+# 4. CSS النسخة العظيمة مع إصلاح المسافات والأنيميشن
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
@@ -49,6 +50,7 @@ st.markdown(f'''
         border: 1px solid rgba(255, 255, 255, 0.3); 
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         animation: fadeIn 0.8s ease-out;
+        margin-bottom: 20px;
     }}
     
     .dest-card {{ 
@@ -57,15 +59,17 @@ st.markdown(f'''
         margin-bottom: 15px; transition: 0.3s;
         animation: fadeIn 1s ease-out;
     }}
-    .dest-card:hover {{ transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }}
 
-    .lang-btn {{ position: absolute; top: 10px; left: 10px; z-index: 1000; }}
-    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; }}
+    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
+    
+    /* تنسيق خاص لجعل النجوم تتنفس */
+    .rating-title {{ margin-bottom: 25px !important; display: block; }}
     </style>
 ''', unsafe_allow_html=True)
 
-# زر اللغة (الموقع الأصلي)
-if st.button("عربي/EN", key="lang_toggle"):
+# زر اللغة
+col_l1, col_l2 = st.columns([12, 1])
+if col_l2.button("عربي/EN"):
     st.session_state.lang = "English" if st.session_state.lang == "العربية" else "العربية"
     st.rerun()
 
@@ -75,7 +79,7 @@ if st.session_state.page == 'welcome':
     st.markdown(f'''<div class="glass-card" style="text-align: center;">
         <h1 style="color: #0369A1; margin-bottom: 0;">Path7 📍</h1>
         <p style="color: #64748B; font-size: 1.2em;">نظام التوافق اللحظي للسياحة الذكية</p>
-        <hr style="opacity: 0.1; margin: 20px 0;">
+        <hr style="opacity: 0.1; margin: 25px 0;">
     </div>''', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -106,7 +110,7 @@ else:
             st.rerun()
 
         if st.session_state.suggestions:
-            st.markdown(f"### وسيلة النقل المفضلة")
+            st.markdown("### وسيلة النقل المفضلة")
             t_cols = st.columns(3)
             if t_cols[0].button("🚇 المترو"): st.session_state.transport_choice = "metro"
             if t_cols[1].button("🚗 السيارة"): st.session_state.transport_choice = "car"
@@ -116,35 +120,39 @@ else:
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
                     if st.session_state.transport_choice == "metro":
-                        time_display = f"🚇 الوقت المقدر: {base + 8} دقيقة"
-                        map_action = "<span style='color:#0284C7; font-weight:bold;'>🚉 المترو خيارك الذكي، توجه للمحطة!</span>"
+                        time_display = f"🚇 الوقت المقدر: {base + 10} دقيقة"
+                        action = "<p style='color:#0284C7; font-weight:bold;'>🚉 المترو متاح، توجه لأقرب محطة.</p>"
                     else:
-                        time_display = f"🚗 الوقت المقدر: {int(base * 1.3)} دقيقة"
-                        map_action = f'<a href="https://www.google.com/maps/search/{p["الوجهة"]}" target="_blank" class="map-btn">📍 فتح في الخرائط</a>'
+                        time_display = f"🚗 الوقت المقدر: {int(base * 1.4)} دقيقة"
+                        action = f'<a href="https://www.google.com/maps/search/{p["الوجهة"]}" target="_blank" class="map-btn">📍 الموقع في الخرائط</a>'
                 else:
                     time_display = "⏳ حدد وسيلة النقل لمعرفة الوقت"
-                    map_action = ""
+                    action = ""
 
                 st.markdown(f'''<div class="dest-card">
                     <h4 style="color:#0284C7; margin:0;">{p['الوجهة']}</h4>
                     <p style="color:#64748B;">{p['وصف']}</p>
-                    <p style="font-weight:bold;">{time_display}</p>
-                    {map_action}
+                    <p style="font-weight:bold; color:#0369A1;">{time_display}</p>
+                    {action}
                 </div>''', unsafe_allow_html=True)
 
     with col_s:
-        st.markdown(f'<div class="glass-card" style="text-align: center;"><h4>تقييمك للتجربة ⭐</h4>', unsafe_allow_html=True)
+        # التقييم مع مساحة للتنفس
+        st.markdown('<div class="glass-card" style="text-align: center;"><h4 class="rating-title">تقييمك للتجربة ⭐</h4>', unsafe_allow_html=True)
+        st.write("") # مسافة إضافية
         stars = st.columns(5)
         for i in range(1, 6):
             if stars[i-1].button(f"{i}⭐", key=f"star_{i}"): st.session_state.rated = True
         
         if st.session_state.rated and st.session_state.day < 3:
+            st.write("") 
             if st.button("اليوم التالي ⏭️"):
                 st.session_state.day += 1
                 st.session_state.suggestions = []; st.session_state.transport_choice = None; st.session_state.rated = False
                 st.rerun()
         
+        st.write("---")
         if st.button("🔄 Reset"): st.session_state.clear(); st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em; margin-top: 30px;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
