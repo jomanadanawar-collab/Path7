@@ -34,31 +34,92 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 
 T = DATA_ALL.get(st.session_state.lang, {})
 
-# 4. التنسيق البصري (CSS)
+# 4. التنسيق البصري المتطور (CSS Animation)
 st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
+    
+    /* أنيميشن الدخول */
+    @keyframes fadeInUp {{
+        from {{ opacity: 0; transform: translateY(30px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+
+    /* أنيميشن النبض للأزرار */
+    @keyframes pulseGlow {{
+        0% {{ box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }}
+        70% {{ box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }}
+        100% {{ box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }}
+    }}
+
     * {{ font-family: 'IBM Plex Sans Arabic', sans-serif !important; direction: {"rtl" if st.session_state.lang == "العربية" else "ltr"}; }}
+    
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
-    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 35px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }}
-    .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }}
-    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-size: 0.9em; font-weight: bold; display: inline-block; margin-top: 10px; }}
-    .stButton>button {{ background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; color: white !important; border-radius: 12px !important; border: none !important; font-weight: 700 !important; }}
+    
+    .glass-card {{ 
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(12px); 
+        padding: 35px; 
+        border-radius: 25px; 
+        border: 1px solid rgba(255, 255, 255, 0.3); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+        margin-bottom: 20px;
+        animation: fadeInUp 0.8s ease-out;
+    }}
+    
+    .dest-card {{ 
+        background: white; 
+        padding: 20px; 
+        border-radius: 20px; 
+        border-{"right" if st.session_state.lang == "العربية" else "left"}: 12px solid #0EA5E9; 
+        margin-bottom: 15px; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        animation: fadeInUp 1s ease-out;
+    }}
+    
+    .dest-card:hover {{
+        transform: scale(1.02) translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }}
+
+    .map-btn {{ 
+        background-color: #0284C7; 
+        color: white !important; 
+        padding: 8px 16px; 
+        border-radius: 10px; 
+        text-decoration: none; 
+        font-size: 0.9em; 
+        font-weight: bold; 
+        display: inline-block; 
+        margin-top: 10px; 
+        transition: 0.3s;
+    }}
+    .map-btn:hover {{ background-color: #0369A1; }}
+
+    .stButton>button {{ 
+        background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%) !important; 
+        color: white !important; 
+        border-radius: 12px !important; 
+        border: none !important; 
+        font-weight: 700 !important;
+        animation: pulseGlow 2s infinite;
+    }}
     </style>
 ''', unsafe_allow_html=True)
 
-# تبديل اللغة
+# تبديل اللغة (كما هو)
 col_l1, col_l2 = st.columns([12, 1])
 if col_l2.button("عربي/EN"):
     st.session_state.lang = "English" if st.session_state.lang == "العربية" else "العربية"
     st.session_state.suggestions = []
     st.rerun()
 
-# --- صفحة الترحيب ---
+# --- صفحة الترحيب (بلمسة الأنيميشن) ---
 if st.session_state.page == 'welcome':
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.markdown(f'''<div class="glass-card" style="text-align: center;">
-        <h1 style="color: #0369A1; margin-bottom: 0;">{T.get("p_name", "")} 📍</h1>
+        <h1 style="color: #0369A1; margin-bottom: 0;">{T.get("p_name", "Path7")} 📍</h1>
         <p style="color: #64748B; font-size: 1.2em;">{T.get("subtitle", "")}</p>
         <hr style="opacity: 0.1; margin: 25px 0;">
     </div>''', unsafe_allow_html=True)
@@ -66,13 +127,13 @@ if st.session_state.page == 'welcome':
     with st.container():
         st.session_state.user_name = st.text_input(T.get("visitor_name", ""), placeholder="...")
         u_budget = st.radio(T.get("budget_q", ""), [T.get("eco", ""), T.get("lux", "")], horizontal=True)
-        if st.button(T.get("start_btn", "")):
+        if st.button(T.get("start_btn", "ابدأ")):
             st.session_state.budget_key = "Luxury" if u_budget in [T.get("lux", ""), "فاخرة", "Luxury"] else "Economy"
-            st.session_state.traffic_factor = random.uniform(1.2, 1.7) # زحام الرياض
+            st.session_state.traffic_factor = random.uniform(1.2, 1.7)
             st.session_state.page = 'system'
             st.rerun()
 
-# --- صفحة النظام ---
+# --- صفحة النظام (بلمسة الأنيميشن) ---
 else:
     col_m, col_s = st.columns([2, 1])
     with col_m:
@@ -84,7 +145,7 @@ else:
         st.subheader(T.get("interests_q", ""))
         selected_interests = st.multiselect("", T.get("interests_list", []), label_visibility="collapsed")
         
-        if st.button(T.get("analyze_btn", "")):
+        if st.button(T.get("analyze_btn", "تحليل")):
             all_options = T.get("db", {}).get(st.session_state.budget_key, [])
             if selected_interests:
                 st.session_state.suggestions = [p for p in all_options if p.get('الفئة') in selected_interests]
@@ -96,16 +157,16 @@ else:
 
         if st.session_state.suggestions:
             st.markdown(f"### {T.get('transport_q', '')}")
-            no_metro = any(not p['metro'] for p in st.session_state.suggestions)
             t_cols = st.columns(3)
-            if not no_metro and t_cols[0].button(T.get("m_btn", "")): st.session_state.transport_choice = "metro"
-            if t_cols[1].button(T.get("c_btn", "")): st.session_state.transport_choice = "car"
-            if t_cols[2].button(T.get("t_btn", "")): st.session_state.transport_choice = "taxi"
+            # إضافة المترو حسب منطقك الأصلي
+            if t_cols[0].button(T.get("m_btn", "🚇")): st.session_state.transport_choice = "metro"
+            if t_cols[1].button(T.get("c_btn", "🚗")): st.session_state.transport_choice = "car"
+            if t_cols[2].button(T.get("t_btn", "🚕")): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
-                base = p['b_time']
+                base = p.get('b_time', 20)
                 if st.session_state.transport_choice == "metro":
-                    f_time = base + 5 # وقت ثابت للمشي
+                    f_time = base + 5
                     time_display = f"🚇 {T.get('est_time', '')}: {f_time} {T.get('min', '')}"
                 elif st.session_state.transport_choice == "car":
                     f_time = int(base * st.session_state.traffic_factor)
@@ -120,7 +181,7 @@ else:
                     <h4 style="color:#0284C7; margin:0;">{p['الوجهة']}</h4>
                     <p style="color:#64748B; margin:5px 0;">{p['وصف']}</p>
                     <p style="font-weight:bold; color:#0369A1; margin-bottom:10px;">{time_display}</p>
-                    <a href="{p['map_url']}" target="_blank" class="map-btn">{T.get("map_btn", "")}</a>
+                    <a href="{p['map_url']}" target="_blank" class="map-btn">{T.get("map_btn", "الموقع")}</a>
                 </div>''', unsafe_allow_html=True)
 
     with col_s:
