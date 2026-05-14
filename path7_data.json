@@ -6,68 +6,43 @@
     "budget_q": "حدد الميزانية المناسبة للرحلة",
     "start_btn": "استكشف المسار الآن 🚀",
     "day": "اليوم", "of": "من",
-    "weather": "الجو في الرياض", "sunny": "مشمس ☀️", "night": "ليل صافي 🌙",
+    "weather": "حالة الطقس", "sunny": "مشمس (يفضل الأماكن المغلقة) ☀️", "night": "ليل صافي (مثالي للمشي) 🌙",
     "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
     "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"],
-    "analyze_btn": "تحليل الوجهات 🔍",
-    "transport_q": "كيف تفضل الوصول لوجهاتك؟",
-    "m_btn": "🚇 مترو الرياض", "c_btn": "🚗 سيارتي", "t_btn": "🚕 تاكسي",
-    "min": "دقيقة", "est_time": "الوقت المتوقع (توافق لحظي)",
-    "wait_choice": "بانتظار اختيار وسيلة النقل...",
-    "rating_q": "⭐ تقييمك لليوم",
+    "analyze_btn": "تحليل المسار الذكي 🔍",
+    "transport_q": "وسيلة النقل المفضلة",
+    "m_btn": "🚇 المترو", "c_btn": "🚗 سيارة", "t_btn": "🚕 تاكسي",
+    "min": "دقيقة", "est_time": "وقت الوصول",
+    "wait_choice": "بانتظار الاختيار...",
+    "rating_q": "⭐ تقييمك للتجربة",
     "next_day": "مسار اليوم التالي ⏩",
-    "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
+    "finish": "✨ رحلة سعيدة ذكريات لا تُنسى! ✨",
     "eco": "اقتصادية", "lux": "فاخرة",
-    "metro_fail": "المترو غير متاح لهذه الوجهات ❌",
-    "map_btn": "📍 الموقع على الخريطة",
+    "map_btn": "📍 الموقع",
     "db": {
       "Economy": [
-        {"الوجهة": "حصن المصمك", "وصف": "رمز توحيد المملكة وتأسيسها", "b_time": 25, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تاريخ وآثار"},
-        {"الوجهة": "أسواق المعيقلية", "وصف": "مركز تسوق تقليدي للبخور والعود والبشوت", "b_time": 30, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تسوق"},
-        {"الوجهة": "سوق الزل", "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تسوق"},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة", "b_time": 15, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
-        {"الوجهة": "وادي حنيفة / نمار", "وصف": "مساحات خضراء خلابة وبحيرات مثالية للنزهات", "b_time": 40, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
-        {"الوجهة": "منتزه الملك عبد الله", "وصف": "نافورات راقصة ومساحات خضراء شاسعة", "b_time": 35, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"},
-        {"الوجهة": "حافة العالم", "وصف": "إطلالات منحدرة تخطف الأنفاس", "b_time": 90, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "طبيعة"}
+        {"الوجهة": "حصن المصمك", "وصف": "رمز التأسيس", "b_time": 25, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps4", "الفئة": "تاريخ وآثار", "image": "images/masmak.jpg"},
+        {"الوجهة": "أسواق المعيقلية", "وصف": "بخور وعطور أصيلة", "b_time": 30, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps7", "الفئة": "تسوق", "image": "images/mueaiqilia.jpg"},
+        {"الوجهة": "سوق الزل", "وصف": "تاريخ وتحف نادرة", "b_time": 20, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps5", "الفئة": "تسوق", "image": "images/zal.jpg"},
+        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "وصف": "أيقونة الرياض الحديثة", "b_time": 15, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps6", "الفئة": "مطاعم ومقاهي", "image": "images/kafd.jpg"},
+        {"الوجهة": "وادي حنيفة", "وصف": "طبيعة وجمال هادئ", "b_time": 45, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M03", "الفئة": "طبيعة", "image": "images/hanifa.jpg"},
+        {"الوجهة": "منتزه الملك عبد الله", "وصف": "نافورات راقصة", "b_time": 35, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M04", "الفئة": "طبيعة", "image": "images/park.jpg"},
+        {"الوجهة": "حافة العالم", "وصف": "منظر يخطف الأنفاس", "b_time": 90, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M05", "الفئة": "طبيعة", "image": "images/edge.jpg"},
+        {"الوجهة": "واجهة روشن", "وصف": "تسوق ومطاعم مفتوحة", "b_time": 25, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M06", "الفئة": "تسوق", "image": "images/roshan.jpg"}
       ],
       "Luxury": [
-        {"الوجهة": "حي الطريف", "وصف": "موقع اليونسكو وقلب التاريخ السعودي", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "تاريخ وآثار"},
-        {"الوجهة": "فيا الرياض", "وصف": "عمارة سلمية مع مطاعم وسينما عالمية", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "ترفيه"},
-        {"الوجهة": "بوليفارد ستي", "وصف": "أكبر منطقة للثقافات العالمية والألعاب", "b_time": 25, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "ترفيه"},
-        {"الوجهة": "مطل البجيري", "وصف": "مطاعم راقية بإطلالات على وادي حنيفة", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "مطاعم ومقاهي"}
+        {"الوجهة": "حي الطريف التاريخي", "وصف": "قلب الدرعية التاريخي", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M07", "الفئة": "تاريخ وآثار", "image": "images/turaif.jpg"},
+        {"الوجهة": "ڤيا الرياض", "وصف": "فخامة السينما والمطاعم", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M08", "الفئة": "ترفيه", "image": "images/via.jpg"},
+        {"الوجهة": "البوليفارد", "وصف": "روح الترفيه العالمية", "b_time": 30, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M09", "الفئة": "ترفيه", "image": "images/boulevard.jpg"},
+        {"الوجهة": "مطل البجيري", "وصف": "إطلالة ساحرة ومطاعم فاخرة", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/W1Z2x3C4v5B6n7M80", "الفئة": "مطاعم ومقاهي", "image": "images/bujairi.jpg"}
       ]
     }
   },
   "English": {
     "p_name": "Path7",
-    "subtitle": "Real-time Compatibility System for Smart Tourism",
+    "subtitle": "Smart Tourism Real-time System",
     "visitor_name": "Tourist Name",
-    "budget_q": "Select Trip Budget",
-    "start_btn": "Explore Path Now 🚀",
-    "day": "Day", "of": "of",
-    "weather": "Riyadh Weather", "sunny": "Sunny ☀️", "night": "Clear Night 🌙",
-    "interests_q": "🌟 What are your interests today?",
-    "interests_list": ["History", "Entertainment", "Nature", "Shopping", "Dine & Cafe"],
-    "analyze_btn": "Analyze Destinations 🔍",
-    "transport_q": "How would you like to travel?",
-    "m_btn": "🚇 Riyadh Metro", "c_btn": "🚗 My Car", "t_btn": "🚕 Taxi",
-    "min": "min", "est_time": "Real-time Arrival",
-    "wait_choice": "Waiting for transport selection...",
-    "rating_q": "⭐ Rate Your Day",
-    "next_day": "Next Day Path ⏩",
-    "finish": "✨ Wish you unforgettable memories! ✨",
-    "eco": "Economy", "lux": "Luxury",
-    "metro_fail": "Metro unavailable for these locations ❌",
-    "map_btn": "📍 View on Map",
-    "db": {
-      "Economy": [
-        {"الوجهة": "Masmak Fortress", "وصف": "Symbol of the Kingdom's unification", "b_time": 25, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "History"},
-        {"الوجهة": "Al-Mueaiqilia Markets", "وصف": "Traditional market for incense and oud", "b_time": 30, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "Shopping"}
-      ],
-      "Luxury": [
-        {"الوجهة": "At-Turaif District", "وصف": "UNESCO site and heart of Saudi history", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "History"},
-        {"الوجهة": "Via Riyadh", "وصف": "Salmani architecture with world-class dining", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/vA7V15V6z8z8z8z8", "الفئة": "Entertainment"}
-      ]
-    }
+    "budget_q": "Trip Budget",
+    "start_btn": "Explore Now 🚀"
   }
 }
