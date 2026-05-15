@@ -2,26 +2,25 @@ import streamlit as st
 import json
 from datetime import datetime
 import pytz
+import os
 
 # 1. تحميل البيانات
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
             return json.load(f)
-    except:
-        return {
-            "العربية": {"db": {"Economy": [], "Luxury": []}},
-            "English": {"db": {"Economy": [], "Luxury": []}}
-        }
+    except Exception as e:
+        st.error(f"Error loading JSON file: {e}")
+        return {}
 
 DATA_ALL = load_data()
 
-# 2. التوافق اللحظي
+# 2. التوافق اللحظي والوقت
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة والصفحات (مهم جداً ترتيبها هنا)
+# 3. إدارة الحالة والصفحات
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -29,7 +28,7 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
-# --- بوابة اختيار اللغة (تظهر أول مرة فقط) ---
+# --- بوابة اختيار اللغة الأولى ---
 if st.session_state.page == 'lang_selection':
     st.markdown("""
         <style>
@@ -52,36 +51,39 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# قاموس الترجمة الموحد
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص
+lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
+
 strings = {
-    "title": "Path7 📍",
-    "sub": "نظام التوافق اللحظي للسياحة الذكية" if IS_AR else "Real-time Smart Tourism System",
-    "name_q": "مرحباً بك، ما هو اسمك؟" if IS_AR else "Welcome, what is your name?",
-    "budget_q": "حدد طابع رحلتك اليوم:" if IS_AR else "Choose your trip style:",
-    "budgets": ["اقتصادية", "فاخرة"] if IS_AR else ["Economy", "Luxury"],
-    "start_btn": "انطلق لاستكشاف الرياض 🚀" if IS_AR else "Explore Riyadh 🚀",
-    "day_lbl": f"📅 يوم {st.session_state.day} من 3" if IS_AR else f"📅 Day {st.session_state.day} of 3",
-    "weather": ("مشمس ☀️" if 5 <= hour <= 17 else "صافي 🌙") if IS_AR else ("Sunny ☀️" if 5 <= hour <= 17 else "Clear 🌙"),
-    "interests_q": "ما هي اهتماماتك المفضلة اليوم؟" if IS_AR else "What are your interests today?",
-    "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"] if IS_AR else ["History", "Entertainment", "Nature", "Shopping", "Dining"],
-    "analyze_btn": "تحليل المسار الذكي 🔍" if IS_AR else "Smart Path Analysis 🔍",
-    "trans_q": "وسيلة النقل المفضلة" if IS_AR else "Preferred Transport",
-    "metro": "🚇 المترو" if IS_AR else "🚇 Metro",
-    "car": "🚗 السيارة" if IS_AR else "🚗 Car",
-    "taxi": "🚕 التاكسي" if IS_AR else "🚕 Taxi",
-    "est_time": "الوقت المقدر:" if IS_AR else "Est. Time:",
-    "mins": "دقيقة" if IS_AR else "mins",
-    "map_btn": "📍 فتح في الخرائط" if IS_AR else "📍 Open Maps",
-    "metro_msg": "محطة المترو قريبة منك." if IS_AR else "Metro station is nearby.",
-    "select_trans": "⏳ حدد وسيلة النقل لمعرفة المسار" if IS_AR else "⏳ Select transport to see path",
-    "rating_t": "تقييمك للتجربة ⭐" if IS_AR else "Rate your experience ⭐",
-    "next_day": "اليوم التالي ⏭️" if IS_AR else "Next Day ⏭️",
+    "title": lang_data.get("p_name", "Path7 📍"),
+    "sub": lang_data.get("subtitle", ""),
+    "name_q": lang_data.get("visitor_name", "Name"),
+    "budget_q": lang_data.get("budget_q", "Budget"),
+    "budgets": [lang_data.get("eco", "Economy"), lang_data.get("lux", "Luxury")],
+    "start_btn": lang_data.get("start_btn", "Explore 🚀"),
+    "day_lbl": f"📅 {lang_data.get('day', 'Day')} {st.session_state.day} {lang_data.get('of', 'of')} 3",
+    "weather": (lang_data.get("sunny", "Sunny") if 5 <= hour <= 17 else lang_data.get("night", "Clear")),
+    "interests_q": lang_data.get("interests_q", "Interests"),
+    "interests_list": lang_data.get("interests_list", []),
+    "analyze_btn": lang_data.get("analyze_btn", "Analyze"),
+    "trans_q": lang_data.get("transport_q", "Transport"),
+    "metro": lang_data.get("m_btn", "Metro"),
+    "car": lang_data.get("c_btn", "Car"),
+    "taxi": lang_data.get("t_btn", "Taxi"),
+    "est_time": lang_data.get("est_time", "Est. Time"),
+    "mins": lang_data.get("min", "mins"),
+    "map_btn": lang_data.get("map_btn", "Location"),
+    "metro_msg": lang_data.get("metro_msg", "Metro is close."),
+    "metro_fail": lang_data.get("metro_fail", "No direct metro."),
+    "select_trans": lang_data.get("wait_choice", "Select transport"),
+    "rating_t": lang_data.get("rating_q", "Rate"),
+    "next_day": lang_data.get("next_day", "Next"),
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
-    "final_msg": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨" if IS_AR else "Thank you for trusting Path7.. Have a great trip! ✨"
+    "final_msg": lang_data.get("finish", "Thank you")
 }
 
-# 4. التنسيق البصري (CSS)
+# 4. التنسيق البصري (CSS المطور لحل مشكلة النجوم)
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -92,11 +94,26 @@ st.markdown(f'''
     .center-rating {{ text-align: center !important; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
+    
+    /* تصميم الأزرار العامة */
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
+    
+    /* حل مشكلة أزرار النجوم: إجبارها على أن تكون مربعات مثالية ومتناسقة */
+    .center-rating .stButton>button {{
+        width: 45px !important;
+        height: 45px !important;
+        padding: 0px !important;
+        line-height: 45px !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 auto !important;
+    }}
     </style>
 ''', unsafe_allow_html=True)
 
-# زر تغيير اللغة في الشريط الجانبي للطوارئ
+# زر الشريط الجانبي للطوارئ
 if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
@@ -107,7 +124,7 @@ if st.session_state.page == 'welcome':
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
     
     with col_w2:
-        demo_code = st.text_input("Enter Booking Number / أدخل رقم الحجز (اختياري)", placeholder="e.g. PATH7-2026")
+        demo_code = st.text_input("Enter Booking Number / أدخل رقم الحجز (VIP)", placeholder="e.g. PATH7-2026")
         st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
         
         if demo_code.strip().upper() == "PATH7-2026":
@@ -140,7 +157,8 @@ else:
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         if st.button(strings["analyze_btn"]):
-            db = DATA_ALL.get(st.session_state.lang, {}).get("db", {}).get(st.session_state.budget_key, [])
+            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
+            # تصفية الأماكن بناءً على الفئة المختارة من الـ JSON
             st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
             st.session_state.transport_choice = None
             st.rerun()
@@ -157,16 +175,18 @@ else:
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
                     t_val = base + 10 if st.session_state.transport_choice == "metro" else int(base * 1.4)
-                    time_str = f"<b>{strings['est_time']} {t_val} {strings['mins']}</b>"
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
                     
                     if st.session_state.transport_choice == "metro":
-                        action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
+                        if p.get('metro') == True:
+                            action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
+                        else:
+                            action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        dest_name = p.get('الوجهة') or p.get('Destination', 'Riyadh')
-                        action_html = f"{time_str}<br><a href='http://maps.google.com/?q={dest_name}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+                        action_html = f"{time_str}<br><a href='{p.get('map_url', '#')}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
-                d_name = p.get('الوجهة') if IS_AR else p.get('Destination', p.get('الوجهة'))
-                d_desc = p.get('وصف') if IS_AR else p.get('Description', p.get('وصف'))
+                d_name = p.get('الوجهة')
+                d_desc = p.get('وصف')
                 
                 st.markdown(f'''
                     <div class="dest-card">
@@ -175,6 +195,10 @@ else:
                         {action_html}
                     </div>
                 ''', unsafe_allow_html=True)
+                
+                # عرض الصورة المرافقة تلقائياً وأمان فقط إذا تم تحميلها في مجلد المشروع
+                if p.get('image') and os.path.exists(p['image']):
+                    st.image(p['image'], use_container_width=True)
 
     with col_s:
         st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
