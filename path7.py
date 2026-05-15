@@ -16,11 +16,11 @@ def load_data():
 
 DATA_ALL = load_data()
 
-# 2. التوافق اللحظي والوقت الفعلي (توقيت الرياض الحي)
+# 2. الوقت الفعلي (توقيت الرياض الحي)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
-day_of_week = now_riyadh.weekday()  # لمعرفة الويكند من الأيام العادية
+day_of_week = now_riyadh.weekday()
 
 # 3. إدارة الحالة والصفحات
 if 'lang' not in st.session_state: st.session_state.lang = None
@@ -35,35 +35,25 @@ if st.session_state.page == 'lang_selection':
     st.markdown("""
         <style>
         .stApp { background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); }
-        
         .lang-card { 
             background: rgba(255, 255, 255, 0.8); 
             backdrop-filter: blur(10px); 
-            padding: 40px; 
-            border-radius: 30px; 
-            text-align: center; 
-            margin-top: 50px; 
-            margin-bottom: 45px !important; 
+            padding: 40px; border-radius: 30px; text-align: center; 
+            margin-top: 50px; margin-bottom: 45px !important; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
         }
-        
         div[data-testid="stHorizontalBlock"] .stButton > button {
-            background: white !important;
-            color: #0284C7 !important;
+            background: white !important; color: #0284C7 !important;
             border: 2px solid rgba(2, 132, 199, 0.15) !important;
-            border-radius: 15px !important;
-            padding: 12px 24px !important;
-            font-size: 16px !important;
-            font-weight: bold !important;
+            border-radius: 15px !important; padding: 12px 24px !important;
+            font-size: 16px !important; font-weight: bold !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        
         div[data-testid="stHorizontalBlock"] .stButton > button:hover {
             transform: translateY(-5px) scale(1.02) !important;
             background: linear-gradient(90deg, #0284C7, #38BDF8) !important;
-            color: white !important;
-            box-shadow: 0 10px 22px rgba(2, 132, 199, 0.3) !important;
+            color: white !important; box-shadow: 0 10px 22px rgba(2, 132, 199, 0.3) !important;
             border-color: transparent !important;
         }
         </style>
@@ -83,7 +73,6 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
@@ -124,10 +113,10 @@ strings = {
     "traffic_peak": "مزدحم الشارع الآن 🚗" if IS_AR else "Traffic Peak 🚗",
     "cap_high": "🔴 مزدحم للغاية الآن" if IS_AR else "🔴 Highly Crowded Now",
     "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
-    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth"
+    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth",
+    "alt_suggest": "💡 نقترح كبديل متوفر الآن: " if IS_AR else "💡 Alternative suggestion now: "
 }
 
-# 4. التنسيق البصري للواجهة والأزرار المربعة الأصلية مستقرة تماماً
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -138,19 +127,10 @@ st.markdown(f'''
     .center-rating {{ text-align: center !important; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
-    
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
-    
     .center-rating .stButton>button {{
-        width: 45px !important;
-        height: 45px !important;
-        padding: 0px !important;
-        line-height: 45px !important;
-        border-radius: 10px !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin: 0 auto !important;
+        width: 45px !important; height: 45px !important; padding: 0px !important; line-height: 45px !important;
+        border-radius: 10px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important;
     }}
     </style>
 ''', unsafe_allow_html=True)
@@ -159,7 +139,6 @@ if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
-# --- الصفحات ---
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
@@ -201,9 +180,9 @@ else:
         st.subheader(strings["interests_q"])
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
+        db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
+
         if st.button(strings["analyze_btn"]):
-            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
-            
             if not IS_AR:
                 mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
                 st.session_state.suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
@@ -216,96 +195,5 @@ else:
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
             
-            # الأزرار المربعة الأصلية المستقرة والمحببة لكِ كما هي
             t_cols = st.columns(3)
-            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
-            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
-            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
-
-            for p in st.session_state.suggestions:
-                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
-                
-                # خوارزمية التوافق اللحظي للزحمة الحية (ساعات الذروة بالرياض من 4 عصراً لـ 8 مساءً)
-                is_traffic_peak = (16 <= hour <= 20)
-                
-                if st.session_state.transport_choice:
-                    base = p.get('b_time', 20)
-                    
-                    if st.session_state.transport_choice == "metro":
-                        t_val = base + 5  # المترو ثابت لا يتأثر بزحمة شوارع الرياض
-                        traffic_status = ""
-                    else:
-                        # إذا كان وقت ذروة، ترتفع مدة السيارة والتاكسي تلقائياً لمحاكاة شوارع الرياض الآن
-                        t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
-                        traffic_status = f" <span style='color:#EF4444; font-size:0.85em;'>({strings['traffic_peak']})</span>" if is_traffic_peak else ""
-                    
-                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>{traffic_status}"
-                    
-                    if st.session_state.transport_choice == "metro":
-                        if p.get('metro') == True:
-                            action_html = f"{time_str}<p style='color:#0284C7; margin:0;'>{strings['metro_msg']}</p>"
-                        else:
-                            action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
-                    else:
-                        d_name_raw = p.get('الوجهة', '').strip()
-                        
-                        if not IS_AR:
-                            search_query = f"{d_name_raw}, Riyadh"
-                            encoded_query = urllib.parse.quote_plus(search_query)
-                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
-                        else:
-                            search_query = f"{d_name_raw} الرياض"
-                            encoded_query = urllib.parse.quote_plus(search_query)
-                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=ar"
-                        
-                        action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
-
-                d_name = p.get('الوجهة')
-                d_desc = p.get('وصف')
-                
-                # خوارزمية التوافق اللحظي مع الطاقة الاستيعابية والازدحام البشري للوجهة
-                # (إذا كنا في المساء 5م-11م أو ويكند جمعة وسبت تكون الأماكن ممتلئة)
-                if (17 <= hour <= 23) or (day_of_week in [4, 5]):
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold;'>{strings['cap_high']}</small>"
-                elif (12 <= hour < 17):
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
-                else:
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
-
-                st.markdown(f'''
-                    <div class="dest-card">
-                        {capacity_lbl}
-                        <h4 style="color:#0284C7; margin:0;">{d_name}</h4>
-                        <p style="margin-top:5px; margin-bottom:0;">{d_desc}</p>
-                        {action_html}
-                    </div>
-                ''', unsafe_allow_html=True)
-                
-                if p.get('image') and os.path.exists(p['image']):
-                    st.image(p['image'], use_container_width=True)
-
-    with col_s:
-        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
-        stars = st.columns(5)
-        for i in range(1, 6):
-            if stars[i-1].button(f"{i}", key=f"s{i}"): 
-                st.session_state.rated = True
-        
-        if st.session_state.rated:
-            if st.session_state.day < 3:
-                if st.button(strings["next_day"]):
-                    st.session_state.day += 1
-                    st.session_state.suggestions = []
-                    st.session_state.transport_choice = None
-                    st.session_state.rated = False
-                    st.rerun()
-            else:
-                st.info(strings["final_msg"])
-        
-        st.markdown("<hr>", unsafe_allow_html=True)
-        if st.button(strings["reset"]):
-            st.session_state.clear()
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+            if t_
