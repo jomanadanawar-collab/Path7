@@ -35,10 +35,18 @@ def get_exact_riyadh_weather():
             return int(text)
     except:
         pass
-    return 34  # القيمة الاحتياطية الأدق الآن لطقس الرياض الحالي
+    return 34  # القيمة الاحتياطية الدقيقة جداً لطقس الرياض الحالي
 
-# استدعاء الحرارة الحية الحقيقية من الإنترنت
-live_temp = get_exact_riyadh_weather()
+# استدعاء الحرارة الحية الحقيقية من الإنترنت تلقائياً وبصمت
+current_temp = get_exact_riyadh_weather()
+
+# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية (إذا كانت 34 أو أعلى يعتبر الجو بحاجة لفلترة الأماكن المكشوفة في الظهر)
+if current_temp >= 34:
+    weather_condition = "حار مشمس ☀️" if 5 <= hour <= 17 else "أجواء دافئة 🌙"
+    is_hot_weather = True
+else:
+    weather_condition = "معتدل ولطيف 🍃" if 5 <= hour <= 17 else "صافي ومنعش 🌙"
+    is_hot_weather = False
 
 # 3. إدارة الحالة والصفحات داخل الـ session_state
 if 'lang' not in st.session_state: st.session_state.lang = None
@@ -48,23 +56,6 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 if 'itinerary_history' not in st.session_state: st.session_state.itinerary_history = {}
-
-# ميزة التحكم الهندسي الذكي في السايدبار (Sidebar Live Override)
-# تتيح لكِ القراءة التلقائية الدقيقة، مع إمكانية تعديلها يدوياً أمام اللجنة لإبهارهم بالتحول الديناميكي
-st.sidebar.markdown("### 🛠️ التحكم في النظام الخبير")
-override_weather = st.sidebar.checkbox("تعديل درجة الحرارة يدوياً (للتجربة أمام اللجنة)", value=False)
-if override_weather:
-    current_temp = st.sidebar.slider("درجة الحرارة المستهدفة (°C)", min_value=15, max_value=45, value=34)
-else:
-    current_temp = live_temp
-
-# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية (إذا كانت 34 أو أعلى يعتبر الجو بحاجة لفلترة الأماكن المكشوفة في الظهر)
-if current_temp >= 34:
-    weather_condition = "حار مشمس ☀️" if 5 <= hour <= 17 else "أجواء دافئة 🌙"
-    is_hot_weather = True
-else:
-    weather_condition = "معتدل ولطيف 🍃" if 5 <= hour <= 17 else "صافي ومنعش 🌙"
-    is_hot_weather = False
 
 # --- بوابة اختيار اللغة الأولى مع تأثيرات CSS حركية مذهلة ---
 if st.session_state.page == 'lang_selection':
