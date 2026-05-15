@@ -11,7 +11,7 @@
     "of": "من",
     "sunny": "مشمس ☀️",
     "night": "صافي 🌙",
-    "interests_q": "ما هي اهتماماتك المفضلة اليوم؟",
+    "interests_q": "ما هي اهتماماتك المفضلة اليوم？",
     "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"],
     "analyze_btn": "تحليل المسار الذكي 🔍",
     "transport_q": "وسيلة النقل المفضلة",
@@ -33,7 +33,6 @@
           "الوجهة": "أسواق المعيقلية",
           "الفئة": "تسوق",
           "وصف": "مركز تسوق تقليدي للبخور والعود والبشوت.",
-          "hours": "8:00ص - 11:30م (الجمعة: 2:00م - 11:30م)",
           "b_time": 25,
           "metro": true
         },
@@ -41,7 +40,6 @@
           "الوجهة": "حصن المصمك",
           "الفئة": "تاريخ وآثار",
           "وصف": "رمز توحيد المملكة وتأسيسها.",
-          "hours": "8:00ص - 9:00م",
           "b_time": 20,
           "metro": true
         },
@@ -49,7 +47,6 @@
           "الوجهة": "سوق الزل",
           "الفئة": "تسوق",
           "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة.",
-          "hours": "4:00م - 10:30م",
           "b_time": 30,
           "metro": true
         },
@@ -57,7 +54,6 @@
           "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
           "الفئة": "طبيعة",
           "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "hours": "24 ساعة",
           "b_time": 15,
           "metro": true
         },
@@ -65,7 +61,6 @@
           "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
           "الفئة": "تسوق",
           "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "hours": "24 ساعة",
           "b_time": 15,
           "metro": true
         },
@@ -73,7 +68,6 @@
           "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
           "الفئة": "مطاعم ومقاهي",
           "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "hours": "24 ساعة",
           "b_time": 15,
           "metro": true
         },
@@ -81,7 +75,6 @@
           "الوجهة": "وادي حنيفة / نمار",
           "الفئة": "طبيعة",
           "وصف": "مساحات خضراء خلابة وبحيرات مثالية للنزهات.",
-          "hours": "24 ساعة",
           "b_time": 40,
           "metro": false
         },
@@ -89,7 +82,6 @@
           "الوجهة": "منتزه الملك عبد الله",
           "الفئة": "طبيعة",
           "وصف": "نافورات راقصة ومساحات خضراء شاسعة للعائلات.",
-          "hours": "1:00م - 12:00ص",
           "b_time": 25,
           "metro": true
         },
@@ -97,7 +89,6 @@
           "الوجهة": "حافة العالم",
           "الفئة": "طبيعة",
           "وصف": "إطلالات منحدرة تخطف الأنفاس لعشاق الطبيعة.",
-          "hours": "نهاراً (قبل الغروب)",
           "b_time": 90,
           "metro": false
         }
@@ -107,7 +98,6 @@
           "الوجهة": "حي الطريف",
           "الفئة": "تاريخ وآثار",
           "وصف": "موقع اليونسكو وقلب التاريخ السعودي.",
-          "hours": "10:00ص - 12:00ص",
           "b_time": 30,
           "metro": false
         },
@@ -115,7 +105,6 @@
           "الوجهة": "فيا الرياض",
           "الفئة": "ترفيه",
           "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.",
-          "hours": "10:00ص - 12:00ص",
           "b_time": 20,
           "metro": false
         },
@@ -123,7 +112,6 @@
           "الوجهة": "فيا الرياض",
           "الفئة": "تسوق",
           "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.",
-          "hours": "10:00ص - 12:00ص",
           "b_time": 20,
           "metro": false
         },
@@ -131,7 +119,6 @@
           "الوجهة": "بوليفارد ستي",
           "الفئة": "ترفيه",
           "وصف": "أكبر منطقة في العاصمة للثقافات العالمية والألعاب.",
-          "hours": "4:00م - 2:00ص",
           "b_time": 25,
           "metro": false
         },
@@ -139,7 +126,6 @@
           "الوجهة": "مطل البجيري",
           "الفئة": "تاريخ وآثار",
           "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.",
-          "hours": "10:00ص - 12:00ص",
           "b_time": 30,
           "metro": false
         },
@@ -147,7 +133,6 @@
           "الوجهة": "مطل البجيري",
           "الفئة": "مطاعم ومقاهي",
           "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.",
-          "hours": "10:00ص - 12:00ص",
           "b_time": 30,
           "metro": false
         }
@@ -188,7 +173,6 @@
           "الوجهة": "Al Muaiqilia Markets",
           "الفئة": "Shopping",
           "وصف": "A traditional market famous for authentic oud, incense, and traditional cloaks.",
-          "hours": "Sat-Thu: 8:00 AM - 11:30 PM (Fri: 2:00 PM - 11:30 PM)",
           "b_time": 25,
           "metro": true
         },
@@ -196,7 +180,6 @@
           "الوجهة": "Al Masmak Fort",
           "الفئة": "History & Heritage",
           "وصف": "The ultimate symbol of national unification and establishment.",
-          "hours": "8:00 AM - 9:00 PM",
           "b_time": 20,
           "metro": true
         },
@@ -204,16 +187,13 @@
           "الوجهة": "Souq Al Zal",
           "الفئة": "Shopping",
           "وصف": "Riyadh's oldest market, filled with history, antiques, and rare collectibles.",
-          "hours": "4:00 PM - 10:30 PM",
           "b_time": 30,
           "metro": true
         },
         {
-          "الوجه King Abdullah Financial District (KAFD)": "KAFD",
           "الوجهة": "KAFD",
           "الفئة": "Nature",
           "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
-          "hours": "24 Hours",
           "b_time": 15,
           "metro": true
         },
@@ -221,7 +201,6 @@
           "الوجهة": "KAFD",
           "الفئة": "Shopping",
           "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
-          "hours": "24 Hours",
           "b_time": 15,
           "metro": true
         },
@@ -229,7 +208,6 @@
           "الوجهة": "KAFD",
           "الفئة": "Dining",
           "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
-          "hours": "24 Hours",
           "b_time": 15,
           "metro": true
         },
@@ -237,7 +215,6 @@
           "الوجهة": "Wadi Hanifa / Namar",
           "الفئة": "Nature",
           "وصف": "Breathtaking landscapes and serene lakes perfect for open-air picnics.",
-          "hours": "24 Hours",
           "b_time": 40,
           "metro": false
         },
@@ -245,7 +222,6 @@
           "الوجهة": "King Abdullah Park",
           "الفئة": "Nature",
           "وصف": "Spacious family park featuring lush green areas and dancing fountains.",
-          "hours": "1:00 PM - 12:00 AM",
           "b_time": 25,
           "metro": true
         },
@@ -253,7 +229,6 @@
           "الوجهة": "The Edge of the World",
           "الفئة": "Nature",
           "وصف": "Stunning dramatic cliffs offering breathtaking views for adventure seekers.",
-          "hours": "Daytime (Before Sunset)",
           "b_time": 90,
           "metro": false
         }
@@ -263,7 +238,6 @@
           "الوجهة": "At-Turaif District",
           "الفئة": "History & Heritage",
           "وصف": "A registered UNESCO world heritage site and the historical heart of Saudi Arabia.",
-          "hours": "10:00 AM - 12:00 AM",
           "b_time": 30,
           "metro": false
         },
@@ -271,7 +245,6 @@
           "الوجهة": "Via Riyadh",
           "الفئة": "Entertainment",
           "وصف": "Salmani architecture blending luxury cinemas with global dining options.",
-          "hours": "10:00 AM - 12:00 AM",
           "b_time": 20,
           "metro": false
         },
@@ -279,7 +252,6 @@
           "الوجهة": "Via Riyadh",
           "الفئة": "Shopping",
           "وصف": "Salmani architecture blending premium shopping boutiques with elite dining.",
-          "hours": "10:00 AM - 12:00 AM",
           "b_time": 20,
           "metro": false
         },
@@ -287,7 +259,6 @@
           "الوجهة": "Boulevard City",
           "الفئة": "Entertainment",
           "وصف": "The capital's biggest lifestyle zone showcasing global cultures and premium gaming entertainment.",
-          "hours": "4:00 PM - 2:00 AM",
           "b_time": 25,
           "metro": false
         },
@@ -295,7 +266,6 @@
           "الوجهة": "Bujairi Terrace",
           "الفئة": "History & Heritage",
           "وصف": "Elite premium restaurants directly overlooking the magnificent ruins of Wadi Hanifa.",
-          "hours": "10:00 AM - 12:00 AM",
           "b_time": 30,
           "metro": false
         },
@@ -303,7 +273,6 @@
           "الوجهة": "Bujairi Terrace",
           "الفئة": "Dining",
           "وصف": "Elite premium restaurants directly overlooking the magnificent ruins of Wadi Hanifa.",
-          "hours": "10:00 AM - 12:00 AM",
           "b_time": 30,
           "metro": false
         }
