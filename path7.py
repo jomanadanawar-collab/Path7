@@ -214,16 +214,20 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # جلب اسم المكان الفعلي من ملف الـ JSON حسب لغة العرض
+                        # جلب اسم المكان الفعلي بناءً على لغة العرض الحالية المحددة
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # إضافة كلمة "Riyadh" لضمان دقة محرك بحث الخرائط وتفادي تطابق الأسماء في بلدان أخرى
-                        search_query = f"{d_name_raw} Riyadh"
+                        # الحركة الذكية: إذا كان في الواجهة الإنجليزية، نضمن إرسال كلمة "Riyadh" بالإنجليزية 
+                        # لكي يفهم محرك بحث الخرائط النص بالكامل كلغة إنجليزية ويرتبط باللوكيشن الصحيح فوراً
+                        if not IS_AR:
+                            search_query = f"{d_name_raw} Riyadh"
+                        else:
+                            search_query = f"{d_name_raw} الرياض"
                         
-                        # ترميز النص ليكون متوافقاً كلياً مع المتصفحات (تحويل المسافات لرموز %20 وغيرها)
+                        # ترميز النص ليكون متوافقاً مع روابط الويب
                         encoded_query = urllib.parse.quote_plus(search_query)
                         
-                        # الرابط الرسمي المباشر لمحرك بحث خرائط جوجل الفعلي المعتمد
+                        # رابط البحث المباشر الرسمي المعتمد من جوجل ماب
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
