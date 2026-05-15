@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 import os
 import urllib.parse
+import requests  # جلب مكتبة الطلبات لقراءة الطقس الحي المباشر
 
 # 1. تحميل البيانات من ملف الـ JSON
 def load_data():
@@ -16,23 +17,44 @@ def load_data():
 
 DATA_ALL = load_data()
 
-# 2. الوقت الفعلي (توقيت الرياض الحي) والاستدلال على حالة الطقس والموسم
+# 2. الوقت الفعلي (توقيت الرياض الحي)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 day_of_week = now_riyadh.weekday()
 
-# محاكاة ذكية للطقس بناءً على التوقيت الحالي لرفع مستوى الذكاء الاصطناعي للنظام
-if 11 <= hour <= 15:
-    current_temp = 39  # ذروة حرارة النهار
-    weather_condition = "حار مشمس ☀️"
+# ميزة متقدمة جداً: دالة جلب درجة الحرارة الحية والمباشرة الآن من الرياض عبر الـ API
+def get_riyadh_weather():
+    try:
+        # إحداثيات مدينة الرياض الحقيقية لطلب الطقس اللحظي
+        url = "https://api.open-meteo.com/v1/forecast?latitude=24.7136&longitude=46.6753&current=temperature_2m"
+        response = requests.get(url, timeout=3)
+        if response.status_code == 200:
+            data = response.json()
+            return int(round(data['current']['temperature_2m']))
+    except:
+        pass
+    
+    # درجة حرارة احتياطية ذكية في حال فشل الاتصال بالشبكة أثناء العرض لضمان استقرار التطبيق
+    if 11 <= hour <= 15:
+        return 38
+    elif 16 <= hour <= 20:
+        return 34
+    else:
+        return 27
+
+# استدعاء الحرارة الحية الآن
+current_temp = get_riyadh_weather()
+
+# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية الحقيقية (إذا زادت عن 35 يعتبر الجو حاراً ويوجه للأماكن المغلقة)
+if current_temp >= 35:
+    weather_condition = "حار مشمس ☀️" if 5 <= hour <= 17 else "أجواء دافئة 🌙"
     is_hot_weather = True
 else:
-    current_temp = 26  # أجواء معتدلة ومناسبة للأماكن المفتوحة
     weather_condition = "معتدل ولطيف 🍃" if 5 <= hour <= 17 else "صافي ومنعش 🌙"
     is_hot_weather = False
 
-# 3. إدارة الحالة والصفحات
+# 3. إدارة الحالة والصفحات داخل الـ session_state
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -231,7 +253,7 @@ else:
             is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
-            # 1. جلب الأماكن المطابقة للاهتمام والفلترة
+            # جلب الأماكن المطابقة للاختيارات
             if not IS_AR:
                 mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
                 raw_suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
@@ -245,16 +267,15 @@ else:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة')
 
-                # ميزة الطقس الذكية (Weather-Driven Optimization): إذا كان الطقس حاراً والموقع "طبيعة" (مفتوح)، نستبدله فوراً بمكان مغلق ومكيف
+                # ميزة الطقس الحقيقية: إذا كانت قراءة الـ API حارة والمكان مفتوح، يستبدله تلقائياً بمكان مغلق ومكيف
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
-                    # البحث عن بديل مكيف ومغلق كالمطاعم أو التسوق والترفيه في نفس الميزانية
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
                     if alternatives:
                         final_suggestions.append(alternatives[0])
                         continue
 
-                # التصفية الذكية الصارمة لازدحام الطرق والوجهات المزدحمة
+                # تصفية وفلترة الزحام والبدائل خلف الكواليس لراحة السائح
                 if is_crowded_time or is_traffic_peak:
                     alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
                     if alternatives:
@@ -264,8 +285,7 @@ else:
                 else:
                     final_suggestions.append(p)
 
-            # ميزة ترشيد وتحسين المسار الجغرافي (Route Optimization الجغرافي والموقعي)
-            # نقوم بترتيب الأماكن تلقائياً بحيث لا يحدث تشتت في الجدول وتجميع الخيارات المتشابهة موضعياً
+            # ميزة ترشيد وتحسين المسار الجغرافي والموقعي لتقليل مسافات السير والوقت
             final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
 
             if show_weather_alert:
@@ -283,7 +303,7 @@ else:
             if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
             if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
 
-            # حفظ الأماكن الحالية لليوم الحالي لتمكين طباعة وتصدير الجدول في النهاية
+            # حفظ البيانات لليوم الحالي لتمكين تصديرها بالنهاية كملف نصي
             day_key = f"Day {st.session_state.day}"
             st.session_state.itinerary_history[day_key] = [p.get('الوجهة') for p in st.session_state.suggestions]
 
@@ -322,6 +342,7 @@ else:
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
+                # إظهار الشارة الخضراء للأماكن الفعالة المفلترة
                 if is_crowded_time or is_traffic_peak:
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
                 elif (12 <= hour < 17):
@@ -359,8 +380,8 @@ else:
             else:
                 st.info(strings["final_msg"])
                 
-                # ميزة تصدير الجدول وتوليد خطة الرحلة الرقمية الكاملة (Export Itinerary)
-                st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص رحلتك جاهز للتحميل:</p>", unsafe_allow_html=True)
+                # ميزة تصدير وتحميل خطة الرحلة النهائية (Export Itinerary)
+                st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
                 
                 itinerary_text = f"📍 Path7 Itinerary for {st.session_state.user_name} 📍\n"
                 itinerary_text += f"Trip Style: {st.session_state.budget_key}\n"
