@@ -223,33 +223,38 @@ else:
 
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
-                d_name = p.get('الوجهة', '')
+                # تعديل قراءة الاسم ليقبل اللغتين أثناء الفلترة
+                d_name = p.get('الوجهة', p.get('Destination', ''))
                 
                 if d_name in added_destinations:
                     continue
 
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
-                        if chosen_alt.get('الوجهة') not in added_destinations:
+                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
+                        if alt_name not in added_destinations:
                             final_suggestions.append(chosen_alt)
-                            added_destinations.add(chosen_alt.get('الوجهة'))
+                            added_destinations.add(alt_name)
                     continue
 
                 if is_crowded_time or is_traffic_peak:
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
-                        if chosen_alt.get('الوجهة') not in added_destinations:
+                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
+                        if alt_name not in added_destinations:
                             final_suggestions.append(chosen_alt)
-                            added_destinations.add(chosen_alt.get('الوجهة'))
+                            added_destinations.add(alt_name)
                     else:
-                        fallback_alts = [alt for alt in db if alt.get('الوجهة') != d_name]
-                        if fallback_alts and fallback_alts[0].get('الوجهة') not in added_destinations:
-                            final_suggestions.append(fallback_alts[0])
-                            added_destinations.add(fallback_alts[0].get('الوجهة'))
+                        fallback_alts = [alt for alt in db if alt.get('الوجهة', alt.get('Destination')) != d_name]
+                        if fallback_alts:
+                            fb_name = fallback_alts[0].get('الوجهة', fallback_alts[0].get('Destination'))
+                            if fb_name not in added_destinations:
+                                final_suggestions.append(fallback_alts[0])
+                                added_destinations.add(fb_name)
                 else:
                     final_suggestions.append(p)
                     added_destinations.add(d_name)
@@ -271,7 +276,8 @@ else:
             if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
 
             day_key = f"Day {st.session_state.day}"
-            st.session_state.itinerary_history[day_key] = [p.get('الوجهة') for p in st.session_state.suggestions]
+            # حفظ الاسم الصحيح باللغتين في السجل
+            st.session_state.itinerary_history[day_key] = [p.get('الوجهة', p.get('Destination')) for p in st.session_state.suggestions]
 
             for p in st.session_state.suggestions:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
@@ -294,14 +300,15 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
                     else:
-                        d_name_raw = p.get('الوجهة', '').strip()
+                        d_name_raw = (p.get('الوجهة') or p.get('Destination', '')).strip()
                         search_query = f"{d_name_raw} الرياض" if IS_AR else f"{d_name_raw}, Riyadh"
                         encoded_query = urllib.parse.quote_plus(search_query)
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
-                d_name = p.get('الوجهة')
-                d_desc = p.get('وصف')
+                # التعديل الذهبي لحل مشكلة الـ None بالكامل هنا:
+                d_name = p.get('الوجهة', p.get('Destination'))
+                d_desc = p.get('وصف', p.get('Description'))
                 
                 if (12 <= hour < 17):
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold; margin-top: 2px;'>{strings['cap_mid']}</small>"
@@ -348,7 +355,6 @@ else:
                         days_html += f"<li>{plc}</li>"
                     days_html += "</ul></div>"
                 
-                # تم إصلاح صياغة الأقواس لتفادي أي تعارض تماماً مع الـ f-string
                 dir_style = "rtl" if IS_AR else "ltr"
                 align_style = "right" if IS_AR else "left"
                 
