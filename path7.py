@@ -23,7 +23,6 @@ now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 day_of_week = now_riyadh.weekday()
 
-# جلب درجة الحرارة الحية اللحظية لمدينة الرياض
 def get_exact_riyadh_weather():
     try:
         url = "https://wttr.in/Riyadh?format=%t"
@@ -44,7 +43,7 @@ else:
     weather_condition = "معتدل ولطيف 🍃" if 5 <= hour <= 17 else "صافي ومنعش 🌙"
     is_hot_weather = False
 
-# 3. إدارة الحالة والصفحات داخل الـ session_state
+# 3. إدارة الحالة داخل الـ session_state
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -53,7 +52,7 @@ if 'transport_choice' not in st.session_state: st.session_state.transport_choice
 if 'rated' not in st.session_state: st.session_state.rated = False
 if 'itinerary_history' not in st.session_state: st.session_state.itinerary_history = {}
 
-# --- بوابة اختيار اللغة الأولى مع تأثيرات CSS حركية ---
+# --- بوابة اختيار اللغة ---
 if st.session_state.page == 'lang_selection':
     st.markdown("""
         <style>
@@ -139,7 +138,6 @@ strings = {
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨"),
     "traffic_peak": " - مزدحم الشارع الآن 🚗" if IS_AR else " - Traffic Peak 🚗",
-    "cap_high": "🔴 مزدحم للغاية" if IS_AR else "🔴 Highly Crowded",
     "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
     "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth",
     "weather_alert": "⚠️ تم استبدال المواقع الخارجية لشدة حرارة الأجواء وتوجيهك لأماكن مغلقة ومكيفة ومريحة!" if IS_AR else "⚠️ Outdoor places swapped due to current heat; redirected to premium indoor venues!"
@@ -150,45 +148,19 @@ st.markdown(f'''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
     * {{ font-family: {"'IBM Plex Sans Arabic'" if IS_AR else "'Inter'"}, sans-serif !important; direction: {"rtl" if IS_AR else "ltr"}; }}
-    
-    @keyframes cardFadeIn {{
-        from {{ opacity: 0; transform: translateY(15px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
-    
     .stApp {{ background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); background-attachment: fixed; }}
-    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: {text_align}; animation: cardFadeIn 0.6s ease-out; }}
+    .glass-card {{ background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: {text_align}; }}
     .center-rating {{ text-align: center !important; }}
-    
     .dest-card {{ 
         background: white; padding: 20px; border-radius: 20px; 
         border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; 
         margin-bottom: 15px; text-align: {text_align}; 
         box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        animation: cardFadeIn 0.5s ease-out;
     }}
-    .dest-card:hover {{
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
-        border-color: #38BDF8;
-    }}
-    
-    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; transition: background 0.3s; }}
-    .map-btn:hover {{ background-color: #0369A1; }}
-    
-    .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; transition: transform 0.2s; }}
-    .stButton>button:hover {{ transform: scale(1.01); }}
-    
-    .center-rating .stButton>button {{
-        width: 45px !important; height: 45px !important; padding: 0px !important; line-height: 45px !important;
-        border-radius: 10px !important; display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important;
-    }}
-    
-    .download-btn button {{
-        background: linear-gradient(90deg, #10B981, #059669) !important;
-        color: white !important; font-weight: bold !important; border-radius: 12px !important;
-    }}
+    .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
+    .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
+    .center-rating .stButton>button {{ width: 45px !important; height: 45px !important; padding: 0px !important; margin: 0 auto !important; }}
+    .download-btn button {{ background: linear-gradient(90deg, #10B981, #059669) !important; color: white !important; font-weight: bold !important; border-radius: 12px !important; }}
     </style>
 ''', unsafe_allow_html=True)
 
@@ -199,10 +171,9 @@ if st.sidebar.button("Switch Language / تغيير اللغة"):
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
-    
     with col_w2:
         ticket_html = """
-        <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center; animation: cardFadeIn 1s ease-out;">
+        <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <span style="font-weight: bold; color: #1E3A8A; font-size: 0.95em;">✈️ الخطوط السعودية / SAUDIA</span>
                 <span style="background: #E0F2FE; color: #0369A1; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">Tourist / سياحة</span>
@@ -217,10 +188,8 @@ if st.session_state.page == 'welcome':
         </div>
         """
         st.markdown(ticket_html, unsafe_allow_html=True)
-        
         st.session_state.user_name = st.text_input(strings["name_q"])
         u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
-        
         if st.button(strings["start_btn"]):
             if st.session_state.user_name:
                 st.session_state.budget_key = "Luxury" if (u_budget in ["فاخرة", "Luxury"]) else "Economy"
@@ -233,14 +202,12 @@ else:
     col_m, col_s = st.columns([2.2, 1])
     with col_m:
         st.markdown(f'<div class="glass-card"><h3>{strings["day_lbl"]}</h3><p>👤 {st.session_state.user_name} | 🕒 {now_riyadh.strftime("%I:%M %p")} | 🌤️ {strings["weather"]}</p></div>', unsafe_allow_html=True)
-        
         st.subheader(strings["interests_q"])
         selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
         
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
-            # تحديد صارم ومطلق لأوقات الذروة
             is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
@@ -254,7 +221,6 @@ else:
             show_weather_alert = False
             added_destinations = set()
 
-            # --- الفلترة الحديدية من جذور الكود لتجنب تلاعب ملف الـ JSON ---
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة', '')
@@ -262,7 +228,7 @@ else:
                 if d_name in added_destinations:
                     continue
 
-                # استبعاد فوري شامل للمواقع الخارجية أثناء موجة الحر
+                # 1. فلتر الطقس: استبعاد فوري شامل للمواقع الخارجية أثناء موجة الحر واستبدالها بداخلية سالكة
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
@@ -273,9 +239,9 @@ else:
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     continue
 
-                # الفلترة المطلقة للازدحام: إذا كان الشارع أو الوقت مزدحماً، احجبه تماماً ولا تعرض الكارت!
+                # 2. فلتر الزحمة الحاسم والقاطع: حذف واستبعاد فوري للمكان من العرض تماماً!
                 if is_crowded_time or is_traffic_peak:
-                    # جلب الأماكن السالكة والداخلية البديلة مباشرة من قاعدة البيانات
+                    # جلب البديل السالك والآمن فوراً
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
@@ -283,17 +249,16 @@ else:
                             final_suggestions.append(chosen_alt)
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     else:
-                        # حماية احتياطية: إذا لم يجد بديل مناسب، يأخذ مكاناً آخر تماماً لضمان عدم ظهور أي ازدحام
+                        # حماية احتياطية: أخذ أي مكان آخر سالك لضمان حجب المكان المزدحم تماماً وعدم إظهاره
                         fallback_alts = [alt for alt in db if alt.get('الوجهة') != d_name]
                         if fallback_alts and fallback_alts[0].get('الوجهة') not in added_destinations:
                             final_suggestions.append(fallback_alts[0])
                             added_destinations.add(fallback_alts[0].get('الوجهة'))
                 else:
-                    # الأجواء ممتازة وخالية من الازدحامات
+                    # المكان ممتاز وسالك ولا يوجد زحمة
                     final_suggestions.append(p)
                     added_destinations.add(d_name)
 
-            # ترتيب الأماكن لتبدأ بالأقرب والأقل وقتاً
             final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
 
             if show_weather_alert:
@@ -305,7 +270,6 @@ else:
 
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
-            
             t_cols = st.columns(3)
             if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
             if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
@@ -318,7 +282,6 @@ else:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
                 
                 is_traffic_peak = (16 <= hour <= 20)
-                is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
                 
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
@@ -341,16 +304,13 @@ else:
                         search_query = f"{d_name_raw} الرياض" if IS_AR else f"{d_name_raw}, Riyadh"
                         encoded_query = urllib.parse.quote_plus(search_query)
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
-                        
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
-                # الكروت المعروضة الآن مضمونة 100% أن تكون سالكة وغير حمراء
-                if is_crowded_time or is_traffic_peak:
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold; margin-top: 2px;'>{strings['cap_high']}</small>"
-                elif (12 <= hour < 17):
+                # هنا الكروت تظهر فقط باللون الأصفر أو الأخضر لأن المزدحم تم حظره نهائياً من العرض فوق
+                if (12 <= hour < 17):
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold; margin-top: 2px;'>{strings['cap_mid']}</small>"
                 else:
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold; margin-top: 2px;'>{strings['cap_low']}</small>"
@@ -371,8 +331,7 @@ else:
         st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
         stars = st.columns(5)
         for i in range(1, 6):
-            if stars[i-1].button(f"{i}", key=f"s{i}"): 
-                st.session_state.rated = True
+            if stars[i-1].button(f"{i}", key=f"s{i}"): st.session_state.rated = True
         
         if st.session_state.rated:
             if st.session_state.day < 3:
@@ -384,22 +343,6 @@ else:
                     st.rerun()
             else:
                 st.info(strings["final_msg"])
-                st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
-                
-                ticket_title = "PATH7 • تذكرة مسار الرحلة" if IS_AR else "PATH7 • ITINERARY TICKET"
-                university_name = "جامعة الإمام عبد الرحمن بن فيصل" if IS_AR else "Imam Abdulrahman bin Faisal University"
-                passenger_lbl = "اسم المسافر" if IS_AR else "Passenger Name"
-                style_lbl = "نمط الرحلة" if IS_AR else "Trip Style"
-                
-                if IS_AR:
-                    translated_budget = "فاخرة ✨" if st.session_state.budget_key == "Luxury" else "اقتصادية 🌱"
-                else:
-                    translated_budget = st.session_state.budget_key
-                
-                dest_lbl = "الوجهة" if IS_AR else "Destination"
-                dest_value = "الرياض (RUH)" if IS_AR else "Riyadh (RUH)"
-                print_btn_text = "اضغط للحفظ كـ PDF 📄" if IS_AR else "Print / Save as PDF 📄"
-                
                 days_html = ""
                 for d_day, places in st.session_state.itinerary_history.items():
                     translated_day = f"اليوم {d_day[-1]}" if IS_AR else d_day
@@ -412,61 +355,10 @@ else:
                         days_html += f"<li>{plc}</li>"
                     days_html += "</ul></div>"
                 
-                ticket_style_direction = "rtl" if IS_AR else "ltr"
-                ticket_style_align = "right" if IS_AR else "left"
-                
                 html_ticket_content = f"""
                 <html>
                 <head>
                     <meta charset='utf-8'>
                     <style>
                         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
-                        body {{ font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif; direction: {ticket_style_direction}; text-align: {ticket_style_align}; background: #F8FAFC; padding: 20px; }}
-                        .ticket-box {{ max-width: 550px; margin: 0 auto; background: white; border-radius: 25px; border: 2px solid #0284C7; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }}
-                        .header {{ background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); color: white; padding: 25px; text-align: center; }}
-                        .content {{ padding: 25px; padding-bottom: 35px; }}
-                        .btn-print {{ display: block; width: 100%; max-width: 200px; margin: 20px auto; padding: 10px; background: #10B981; color: white; text-align: center; font-weight: bold; border-radius: 10px; text-decoration: none; cursor: pointer; border: none; }}
-                        @media print {{ .btn-print {{ display: none; }} body {{ background: white; padding: 0; }} .ticket-box {{ border: none; box-shadow: none; }} }}
-                    </style>
-                </head>
-                <body>
-                    <div class='ticket-box'>
-                        <div class='header'>
-                            <h2 style='margin:0; font-size: 1.5em; font-weight: bold;'>{ticket_title}</h2>
-                            <p style='margin: 8px 0 0 0; opacity: 0.9; font-size: 0.95em;'>{university_name}</p>
-                        </div>
-                        <div class='content'>
-                            <p style='margin: 0; color: #64748B; font-size: 0.85em;'>{passenger_lbl}</p>
-                            <h3 style='margin: 5px 0 15px 0; color: #1E3A8A;'>👤 {st.session_state.user_name}</h3>
-                            
-                            <div style='display: flex; justify-content: space-between; background: #F0F9FF; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;'>
-                                <div><span style='font-size:0.8em; color:#64748B;'>{style_lbl}</span><br><strong style='color:#0284C7;'>{translated_budget}</strong></div>
-                                <div><span style='font-size:0.8em; color:#64748B;'>{dest_lbl}</span><br><strong style='color:#0284C7;'>{dest_value}</strong></div>
-                            </div>
-                            
-                            {days_html}
-                        </div>
-                    </div>
-                    <button class='btn-print' onclick='window.print()'>{print_btn_text}</button>
-                </body>
-                </html>
-                """
-
-                st.markdown('<div class="download-btn">', unsafe_allow_html=True)
-                st.download_button(
-                    label="تحميل التذكرة الرسمية للرحلة (PDF/HTML) 🎫" if IS_AR else "Download Official PDF Ticket 🎫",
-                    data=html_ticket_content,
-                    file_name=f"Path7_Ticket_{st.session_state.user_name}.html",
-                    mime="text/html",
-                    use_container_width=True
-                )
-                st.markdown('</div>', unsafe_allow_html=True)
-                st.caption("💡 بعد فتح الملف المحمّل، اضغط على زر 'اضغط للحفظ كـ PDF' الأخضر ليتم حفظ تذكرتك فوراً بالكامل.")
-        
-        st.markdown("<hr>", unsafe_allow_html=True)
-        if st.button(strings["reset"]):
-            st.session_state.clear()
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+                        body {{ font-family: 'IBM Plex Sans Arabic', sans-serif; direction: {"rtl" if IS_AR else "ltr"}; text-align: {
