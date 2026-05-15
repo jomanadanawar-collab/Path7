@@ -214,32 +214,37 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # قاموس الترجمات البرمجية الذكية لخرائط جوجل لمنع استخدام الترجمة الحرفية المشوهة
-                        mapping_names = {
-                            "فيا الرياض": "Via Riyadh",
-                            "مطل البجيري": "Bujairi Terrace",
-                            "قصر المصمك": "Al Masmak Palace",
-                            "وادي حنيفة": "Wadi Hanifa",
-                            "منتزه الملك عبدالله": "King Abdullah Park",
-                            "حافة العالم": "The Edge of the World",
-                            "واجهة روشن": "Roshn Front",
-                            "مركز الملك عبدالله المالي": "KAFD"
-                        }
-                        
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # هندسة الحركة الذكية المباشرة للخرائط
+                        # --- الحل الهندسي الذكي والشامل للتخلص من مشكلة الـ JSON والترجمة ---
                         if not IS_AR:
-                            # البحث داخل القاموس الذكي، وإذا لم يتوفر يأخذ الحقل الإنجليزي من ملف الـ JSON أو يضيف الرياض
-                            english_clean_name = mapping_names.get(d_name_raw, p.get('الوجهة_en', d_name_raw))
-                            search_query = f"{english_clean_name}, Riyadh"
+                            # نقوم بفحص وتطهير الكلمة القادمة من الـ JSON أياً كانت، ونربطها فوراً بالاسم السياحي الإنجليزي الصحيح
+                            if "فيا" in d_name_raw or "Via" in d_name_raw:
+                                search_query = "Via Riyadh"
+                            elif "بجيري" in d_name_raw or "Bujairi" in d_name_raw:
+                                search_query = "Bujairi Terrace"
+                            elif "مصمك" in d_name_raw or "Masmak" in d_name_raw:
+                                search_query = "Al Masmak Palace"
+                            elif "حنيفة" in d_name_raw or "Hanifa" in d_name_raw:
+                                search_query = "Wadi Hanifa"
+                            elif "عبدالله" in d_name_raw and "منتزه" in d_name_raw:
+                                search_query = "King Abdullah Park"
+                            elif "حافة" in d_name_raw or "Edge" in d_name_raw:
+                                search_query = "The Edge of the World"
+                            elif "واجهة" in d_name_raw or "Front" in d_name_raw:
+                                search_query = "Roshn Front"
+                            elif "مالي" in d_name_raw or "KAFD" in d_name_raw:
+                                search_query = "KAFD"
+                            else:
+                                # حماية احتياطية في حال وجود مكان آخر في الـ JSON
+                                search_query = f"{d_name_raw} Riyadh"
                         else:
-                            search_query = f"{d_name_raw}, الرياض"
+                            # في الواجهة العربية نبحث بالاسم القادم من الـ JSON مباشرة مع إضافة كلمة الرياض للضمان
+                            search_query = f"{d_name_raw} الرياض"
                         
-                        # ترميز النص برمجياً بشكل آمن لحماية الروابط من التلف والتخريب (%20)
                         encoded_query = urllib.parse.quote_plus(search_query)
                         
-                        # تشفير النطاق لمنع خوارزميات الشات من تحويله تلقائياً لروابط ميتة
+                        # دمج أجزاء الرابط برمجياً لمنع الشات من تخريبه
                         base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
                         google_maps_link = f"{base_domain}{encoded_query}"
                         
