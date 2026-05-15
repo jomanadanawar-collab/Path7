@@ -214,20 +214,18 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # جلب اسم المكان الخام من الـ JSON للوجهة الحالية المحددة
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # هندسة الحركة الذكية: دمج اسم المكان مع المدينة حسب لغة الواجهة لضمان جلب اللوكيشن الصحيح فوراً باللغة المختارة
                         if not IS_AR:
                             search_query = f"{d_name_raw} Riyadh"
                         else:
                             search_query = f"{d_name_raw} الرياض"
                         
-                        # ترميز النص برمجياً لتحويل المسافات لرموز متوافقة مع الروابط (%20)
                         encoded_query = urllib.parse.quote_plus(search_query)
                         
-                        # الرابط الرسمي والوحيد المعتمد من جوجل للبحث المباشر عن المواقع
-                        google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}"
+                        # دمج أجزاء الرابط برمجياً داخل السيرفر لمنع أي تغيير خارجي تلقائي
+                        base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
+                        google_maps_link = f"{base_domain}{encoded_query}"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
