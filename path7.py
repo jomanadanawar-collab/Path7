@@ -108,7 +108,12 @@ cat_mapping = {
     "Entertainment": "ترفيه",
     "Nature": "طبيعة",
     "Shopping": "تسوق",
-    "Dining": "مطاعم ومقاهي"
+    "Dining": "مطاعم ومقاهي",
+    "تاريخ وآثار": "History & Heritage",
+    "ترفيه": "Entertainment",
+    "طبيعة": "Nature",
+    "تسوق": "Shopping",
+    "مطاعم ومقاهي": "Dining"
 }
 
 strings = {
@@ -211,11 +216,15 @@ else:
             is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
-            if not IS_AR:
-                mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
-                raw_suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
-            else:
-                raw_suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+            # فلترة دقيقة ومرنة تقبل التصنيفات للغتين لمنع السقوط في الخيار الاحتياطي التلقائي
+            raw_suggestions = []
+            for p in db:
+                p_cat = p.get('الفئة', '')
+                if p_cat in selected or cat_mapping.get(p_cat, '') in selected:
+                    raw_suggestions.append(p)
+            
+            if not raw_suggestions:
+                raw_suggestions = db[:2]
             
             final_suggestions = []
             show_weather_alert = False
@@ -223,15 +232,14 @@ else:
 
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
-                # تعديل قراءة الاسم ليقبل اللغتين أثناء الفلترة
                 d_name = p.get('الوجهة', p.get('Destination', ''))
                 
                 if d_name in added_destinations:
                     continue
 
-                if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
+                if is_hot_weather and (d_cat == "طبيعة" or cat_mapping.get(d_cat) == "طبيعة" or d_cat == "Nature"):
                     show_weather_alert = True
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي", "Shopping", "Entertainment", "Dining"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
                         alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
@@ -241,7 +249,7 @@ else:
                     continue
 
                 if is_crowded_time or is_traffic_peak:
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي", "Shopping", "Dining"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
                         alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
@@ -276,7 +284,6 @@ else:
             if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
 
             day_key = f"Day {st.session_state.day}"
-            # حفظ الاسم الصحيح باللغتين في السجل
             st.session_state.itinerary_history[day_key] = [p.get('الوجهة', p.get('Destination')) for p in st.session_state.suggestions]
 
             for p in st.session_state.suggestions:
@@ -306,7 +313,6 @@ else:
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
-                # التعديل الذهبي لحل مشكلة الـ None بالكامل هنا:
                 d_name = p.get('الوجهة', p.get('Destination'))
                 d_desc = p.get('وصف', p.get('Description'))
                 
