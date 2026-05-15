@@ -83,7 +83,7 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص والاهتمامات والوجهات كاملة باللغة المختارة
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
@@ -115,7 +115,7 @@ strings = {
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨")
 }
 
-# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المقاومة للاهتزاز
+# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -130,7 +130,7 @@ st.markdown(f'''
     /* تصميم الأزرار العامة */
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     
-    /* أزرار الأرقام للتقييم (تصميم مربّع متناسق بدون نجوم مكررة) */
+    /* أزرار الأرقام للتقييم */
     .center-rating .stButton>button {{
         width: 45px !important;
         height: 45px !important;
@@ -145,7 +145,7 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر الشريط الجانبي لتغيير اللغة في أي وقت كخيار طوارئ للمحكّم
+# زر الشريط الجانبي لتغيير اللغة
 if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
@@ -157,19 +157,112 @@ if st.session_state.page == 'welcome':
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
     
     with col_w2:
-        # التذكرة الثابتة كلياً والمحاكية لبيانات طيران حقيقية قادمة للرياض
-        st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span style="font-weight: bold; color: #1E3A8A; font-size: 0.95em;">✈️ الخطوط السعودية / SAUDIA</span>
-                    <span style="background: #E0F2FE; color: #0369A1; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">Tourist / سياحة</span>
-                </div>
-                <div style="margin: 12px 0;">
-                    <span style="color: #64748B; font-size: 0.85em; display: block; margin-bottom: 2px;">رقم الحجز المربوط / Linked PNR</span>
-                    <strong style="font-size: 1.3em; color: #0284C7; letter-spacing: 2px; font-family: 'Inter', sans-serif;">SV-RUH2026X</strong>
-                </div>
-                <div style="border-top: 1px dashed #CBD5E1; margin-top: 10px; padding-top: 8px; font-size: 0.8em; color: #64748B;">
-                    📍 Destination: Riyadh (RUH) | الوجهة: الرياض
-                </div>
+        # الكود هنا تمت مراجعته بالكامل والتأكد من إغلاق كل الأقواس وعلامات الاقتباس بدقة منعاً لأي SyntaxError
+        ticket_html = """
+        <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-weight: bold; color: #1E3A8A; font-size: 0.95em;">✈️ الخطوط السعودية / SAUDIA</span>
+                <span style="background: #E0F2FE; color: #0369A1; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">Tourist / سياحة</span>
             </div>
-        """, unsafe_allow_html=True
+            <div style="margin: 12px 0;">
+                <span style="color: #64748B; font-size: 0.85em; display: block; margin-bottom: 2px;">رقم الحجز المربوط / Linked PNR</span>
+                <strong style="font-size: 1.3em; color: #0284C7; letter-spacing: 2px; font-family: 'Inter', sans-serif;">SV-RUH2026X</strong>
+            </div>
+            <div style="border-top: 1px dashed #CBD5E1; margin-top: 10px; padding-top: 8px; font-size: 0.8em; color: #64748B;">
+                📍 Destination: Riyadh (RUH) | الوجهة: الرياض
+            </div>
+        </div>
+        """
+        st.markdown(ticket_html, unsafe_allow_html=True)
+        
+        # حقول إدخال البيانات المعتمدة للانطلاق
+        st.session_state.user_name = st.text_input(strings["name_q"])
+        u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
+        
+        if st.button(strings["start_btn"]):
+            if st.session_state.user_name:
+                st.session_state.budget_key = "Luxury" if (u_budget in ["فاخرة", "Luxury"]) else "Economy"
+                st.session_state.page = 'system'
+                st.rerun()
+            else:
+                st.warning("Please enter your name / فضلاً أدخل اسمك")
+
+# ب. صفحة النظام والمسار السياحي الذكي
+else:
+    col_m, col_s = st.columns([2.2, 1])
+    with col_m:
+        st.markdown(f'<div class="glass-card"><h3>{strings["day_lbl"]}</h3><p>👤 {st.session_state.user_name} | 🕒 {now_riyadh.strftime("%I:%M %p")} | 🌤️ {strings["weather"]}</p></div>', unsafe_allow_html=True)
+        
+        st.subheader(strings["interests_q"])
+        selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
+        
+        if st.button(strings["analyze_btn"]):
+            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
+            st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+            st.session_state.transport_choice = None
+            st.rerun()
+
+        if st.session_state.suggestions:
+            st.markdown(f"### {strings['trans_q']}")
+            t_cols = st.columns(3)
+            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
+            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
+            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
+
+            for p in st.session_state.suggestions:
+                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
+                if st.session_state.transport_choice:
+                    base = p.get('b_time', 20)
+                    t_val = base + 10 if st.session_state.transport_choice == "metro" else int(base * 1.4)
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
+                    
+                    if st.session_state.transport_choice == "metro":
+                        if p.get('metro') == True:
+                            action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
+                        else:
+                            action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
+                    else:
+                        d_name_for_map = p.get('الوجهة', 'Riyadh')
+                        google_maps_link = p.get('map_url') or f"https://www.google.com/maps/search/?api=1&query={d_name_for_map}"
+                        
+                        action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+
+                d_name = p.get('الوجهة')
+                d_desc = p.get('وصف')
+                
+                st.markdown(f'''
+                    <div class="dest-card">
+                        <h4 style="color:#0284C7;margin:0;">{d_name}</h4>
+                        <p>{d_desc}</p>
+                        {action_html}
+                    </div>
+                ''', unsafe_allow_html=True)
+                
+                if p.get('image') and os.path.exists(p['image']):
+                    st.image(p['image'], use_container_width=True)
+
+    with col_s:
+        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
+        stars = st.columns(5)
+        for i in range(1, 6):
+            if stars[i-1].button(f"{i}", key=f"s{i}"): 
+                st.session_state.rated = True
+        
+        if st.session_state.rated:
+            if st.session_state.day < 3:
+                if st.button(strings["next_day"]):
+                    st.session_state.day += 1
+                    st.session_state.suggestions = []
+                    st.session_state.transport_choice = None
+                    st.session_state.rated = False
+                    st.rerun()
+            else:
+                st.info(strings["final_msg"])
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button(strings["reset"]):
+            st.session_state.clear()
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
