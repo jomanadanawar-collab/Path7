@@ -5,7 +5,7 @@ import pytz
 import os
 import urllib.parse
 
-# 1. تحميل البيانات من ملف الـ JSON المحدث
+# 1. تحميل البيانات من ملف الـ JSON
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
@@ -16,10 +16,11 @@ def load_data():
 
 DATA_ALL = load_data()
 
-# 2. التوافق اللحظي والوقت (توقيت الرياض)
+# 2. التوافق اللحظي والوقت الفعلي (توقيت الرياض الحي)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
+day_of_week = now_riyadh.weekday()  # لمعرفة الويكند من الأيام العادية
 
 # 3. إدارة الحالة والصفحات
 if 'lang' not in st.session_state: st.session_state.lang = None
@@ -82,11 +83,10 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON
+# جلب بيانات اللغة المحددة ديناميكياً
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
-# خريطة توافق وتطابق الفئات بين اللغتين لمنع الأخطاء أثناء التصفية والاختيار المزدوج
 cat_mapping = {
     "History & Heritage": "تاريخ وآثار",
     "Entertainment": "ترفيه",
@@ -121,10 +121,13 @@ strings = {
     "next_day": lang_data.get("next_day", "Next Day ⏭️"),
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨"),
-    "hours_lbl": "⏰ ساعات العمل" if IS_AR else "⏰ Working Hours"
+    "traffic_peak": "مزدحم الشارع الآن 🚗" if IS_AR else "Traffic Peak 🚗",
+    "cap_high": "🔴 مزدحم للغاية الآن" if IS_AR else "🔴 Highly Crowded Now",
+    "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
+    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth"
 }
 
-# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المربعة
+# 4. التنسيق البصري للواجهة والأزرار المربعة الأصلية مستقرة تماماً
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -201,7 +204,6 @@ else:
         if st.button(strings["analyze_btn"]):
             db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
             
-            # فلترة ذكية ومقاطعة مبنية على خريطة الفئات لمنع تداخل واختلاط التصنيفات
             if not IS_AR:
                 mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
                 st.session_state.suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
@@ -214,7 +216,7 @@ else:
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
             
-            # عودة الأزرار المربعة المفضلة لديكِ والمستقرة كما كانت
+            # الأزرار المربعة الأصلية المستقرة والمحببة لكِ كما هي
             t_cols = st.columns(3)
             if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
             if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
@@ -222,20 +224,31 @@ else:
 
             for p in st.session_state.suggestions:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
+                
+                # خوارزمية التوافق اللحظي للزحمة الحية (ساعات الذروة بالرياض من 4 عصراً لـ 8 مساءً)
+                is_traffic_peak = (16 <= hour <= 20)
+                
                 if st.session_state.transport_choice:
                     base = p.get('b_time', 20)
-                    t_val = base + 10 if st.session_state.transport_choice == "metro" else int(base * 1.4)
-                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
+                    
+                    if st.session_state.transport_choice == "metro":
+                        t_val = base + 5  # المترو ثابت لا يتأثر بزحمة شوارع الرياض
+                        traffic_status = ""
+                    else:
+                        # إذا كان وقت ذروة، ترتفع مدة السيارة والتاكسي تلقائياً لمحاكاة شوارع الرياض الآن
+                        t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
+                        traffic_status = f" <span style='color:#EF4444; font-size:0.85em;'>({strings['traffic_peak']})</span>" if is_traffic_peak else ""
+                    
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>{traffic_status}"
                     
                     if st.session_state.transport_choice == "metro":
                         if p.get('metro') == True:
-                            action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
+                            action_html = f"{time_str}<p style='color:#0284C7; margin:0;'>{strings['metro_msg']}</p>"
                         else:
-                            action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
+                            action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
                     else:
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # التعديل الهندسي القاطع لإجبار واجهة جوجل ماب على قلب واجهتها ومنع التعريب التلقائي
                         if not IS_AR:
                             search_query = f"{d_name_raw}, Riyadh"
                             encoded_query = urllib.parse.quote_plus(search_query)
@@ -249,13 +262,21 @@ else:
 
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
-                d_hours = p.get('hours', '')
                 
+                # خوارزمية التوافق اللحظي مع الطاقة الاستيعابية والازدحام البشري للوجهة
+                # (إذا كنا في المساء 5م-11م أو ويكند جمعة وسبت تكون الأماكن ممتلئة)
+                if (17 <= hour <= 23) or (day_of_week in [4, 5]):
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold;'>{strings['cap_high']}</small>"
+                elif (12 <= hour < 17):
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
+                else:
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
+
                 st.markdown(f'''
                     <div class="dest-card">
-                        <h4 style="color:#0284C7;margin:0;">{d_name}</h4>
-                        <p style="margin-bottom:5px;">{d_desc}</p>
-                        <p style="font-size:0.85em; color:#64748B; margin-bottom:10px;">{strings['hours_lbl']}: {d_hours}</p>
+                        {capacity_lbl}
+                        <h4 style="color:#0284C7; margin:0;">{d_name}</h4>
+                        <p style="margin-top:5px; margin-bottom:0;">{d_desc}</p>
                         {action_html}
                     </div>
                 ''', unsafe_allow_html=True)
