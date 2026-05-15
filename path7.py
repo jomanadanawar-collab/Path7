@@ -144,8 +144,7 @@ strings = {
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨"),
     "traffic_peak": " - مزدحم الشارع الآن 🚗" if IS_AR else " - Traffic Peak 🚗",
     "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
-    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth",
-    "weather_alert": "⚠️ تم استبدال المواقع الخارجية لشدة حرارة الأجواء وتوجيهك لأماكن مغلقة ومكيفة ومريحة!" if IS_AR else "⚠️ Outdoor places swapped due to current heat; redirected to premium indoor venues!"
+    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth"
 }
 
 text_align = "right" if IS_AR else "left"
@@ -213,66 +212,26 @@ else:
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
-            is_traffic_peak = (16 <= hour <= 20)
-            is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
-            
-            # فلترة دقيقة ومرنة تقبل التصنيفات للغتين لمنع السقوط في الخيار الاحتياطي التلقائي
-            raw_suggestions = []
-            for p in db:
-                p_cat = p.get('الفئة', '')
-                if p_cat in selected or cat_mapping.get(p_cat, '') in selected:
-                    raw_suggestions.append(p)
-            
-            if not raw_suggestions:
-                raw_suggestions = db[:2]
-            
+            # فلترة نقية ومباشرة تعتمد على ما تم اختياره فقط
             final_suggestions = []
-            show_weather_alert = False
             added_destinations = set()
 
-            for p in raw_suggestions:
-                d_cat = p.get('الفئة')
+            for p in db:
+                p_cat = p.get('الفئة', p.get('Category', p.get('category', '')))
                 d_name = p.get('الوجهة', p.get('Destination', ''))
                 
-                if d_name in added_destinations:
-                    continue
+                # التحقق من المطابقة باللغتين لمنع السقوط في الخيار الاحتياطي
+                if p_cat in selected or cat_mapping.get(p_cat, '') in selected:
+                    if d_name not in added_destinations:
+                        final_suggestions.append(p)
+                        added_destinations.add(d_name)
+            
+            # إذا لم يتم تحديد اهتمامات نهائياً، نعرض أول 3 عناصر مختلفة بدلاً من تثبيت سوق الزل
+            if not final_suggestions:
+                final_suggestions = db[:3] if len(db) >= 3 else db
 
-                if is_hot_weather and (d_cat == "طبيعة" or cat_mapping.get(d_cat) == "طبيعة" or d_cat == "Nature"):
-                    show_weather_alert = True
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي", "Shopping", "Entertainment", "Dining"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
-                    if alternatives:
-                        chosen_alt = alternatives[0]
-                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
-                        if alt_name not in added_destinations:
-                            final_suggestions.append(chosen_alt)
-                            added_destinations.add(alt_name)
-                    continue
-
-                if is_crowded_time or is_traffic_peak:
-                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي", "Shopping", "Dining"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
-                    if alternatives:
-                        chosen_alt = alternatives[0]
-                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
-                        if alt_name not in added_destinations:
-                            final_suggestions.append(chosen_alt)
-                            added_destinations.add(alt_name)
-                    else:
-                        fallback_alts = [alt for alt in db if alt.get('الوجهة', alt.get('Destination')) != d_name]
-                        if fallback_alts:
-                            fb_name = fallback_alts[0].get('الوجهة', fallback_alts[0].get('Destination'))
-                            if fb_name not in added_destinations:
-                                final_suggestions.append(fallback_alts[0])
-                                added_destinations.add(fb_name)
-                else:
-                    final_suggestions.append(p)
-                    added_destinations.add(d_name)
-
-            final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
-
-            if show_weather_alert:
-                st.toast(strings["weather_alert"], icon="⚠️")
-
-            st.session_state.suggestions = final_suggestions
+            # ترتيب حسب الوقت المفضل للرحلة
+            st.session_state.suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
             st.session_state.transport_choice = None
             st.rerun()
 
