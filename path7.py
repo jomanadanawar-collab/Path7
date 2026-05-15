@@ -196,4 +196,97 @@ else:
             st.markdown(f"### {strings['trans_q']}")
             
             t_cols = st.columns(3)
-            if t_
+            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
+            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
+            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
+
+            for p in st.session_state.suggestions:
+                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
+                
+                is_traffic_peak = (16 <= hour <= 20)
+                is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
+                
+                if st.session_state.transport_choice:
+                    base = p.get('b_time', 20)
+                    if st.session_state.transport_choice == "metro":
+                        t_val = base + 5
+                        traffic_status = ""
+                    else:
+                        t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
+                        traffic_status = f" <span style='color:#EF4444; font-size:0.85em;'>({strings['traffic_peak']})</span>" if is_traffic_peak else ""
+                    
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>{traffic_status}"
+                    
+                    if st.session_state.transport_choice == "metro":
+                        if p.get('metro') == True:
+                            action_html = f"{time_str}<p style='color:#0284C7; margin:0;'>{strings['metro_msg']}</p>"
+                        else:
+                            action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
+                    else:
+                        d_name_raw = p.get('الوجهة', '').strip()
+                        if not IS_AR:
+                            search_query = f"{d_name_raw}, Riyadh"
+                            encoded_query = urllib.parse.quote_plus(search_query)
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
+                        else:
+                            search_query = f"{d_name_raw} الرياض"
+                            encoded_query = urllib.parse.quote_plus(search_query)
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=ar"
+                        
+                        action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+
+                d_name = p.get('الوجهة')
+                d_desc = p.get('وصف')
+                d_cat = p.get('الفئة')
+                
+                alt_html = ""
+                if is_crowded_time:
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold;'>{strings['cap_high']}</small>"
+                    
+                    alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
+                    if alternatives:
+                        alt_place = alternatives[0].get('الوجهة')
+                        alt_html = f"<div style='margin-top: 8px; font-size: 0.9em; color: #0284C7; font-weight: bold;'>{strings['alt_suggest']}<span style='text-decoration: underline;'>{alt_place}</span></div>"
+                elif (12 <= hour < 17):
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
+                else:
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
+
+                st.markdown(f'''
+                    <div class="dest-card">
+                        {capacity_lbl}
+                        <h4 style="color:#0284C7; margin:0;">{d_name}</h4>
+                        <p style="margin-top:5px; margin-bottom:0;">{d_desc}</p>
+                        {alt_html}
+                        {action_html}
+                    </div>
+                ''', unsafe_allow_html=True)
+                
+                if p.get('image') and os.path.exists(p['image']):
+                    st.image(p['image'], use_container_width=True)
+
+    with col_s:
+        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
+        stars = st.columns(5)
+        for i in range(1, 6):
+            if stars[i-1].button(f"{i}", key=f"s{i}"): 
+                st.session_state.rated = True
+        
+        if st.session_state.rated:
+            if st.session_state.day < 3:
+                if st.button(strings["next_day"]):
+                    st.session_state.day += 1
+                    st.session_state.suggestions = []
+                    st.session_state.transport_choice = None
+                    st.session_state.rated = False
+                    st.rerun()
+            else:
+                st.info(strings["final_msg"])
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button(strings["reset"]):
+            st.session_state.clear()
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
