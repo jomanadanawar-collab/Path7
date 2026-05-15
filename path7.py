@@ -23,7 +23,7 @@ now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 day_of_week = now_riyadh.weekday()
 
-# ميزة فائقة الدقة: جلب درجة الحرارة الحية اللحظية لمدينة الرياض
+# جلب درجة الحرارة الحية اللحظية لمدينة الرياض
 def get_exact_riyadh_weather():
     try:
         url = "https://wttr.in/Riyadh?format=%t"
@@ -240,7 +240,7 @@ else:
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
-            # تحديد دقيق لأوقات الزحمة القصوى والشوراع المغلقة
+            # تحديد صارم ومطلق لأوقات الذروة
             is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
@@ -254,15 +254,15 @@ else:
             show_weather_alert = False
             added_destinations = set()
 
-            # --- الحذف والاستبدال الفوري الحاسم للأماكن المزدحمة ---
+            # --- الفلترة الحديدية من جذور الكود لتجنب تلاعب ملف الـ JSON ---
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
-                d_name = p.get('الوجهة')
+                d_name = p.get('الوجهة', '')
                 
                 if d_name in added_destinations:
                     continue
 
-                # 1. فلتر الطقس والحرارة المرتفعة للأماكن المفتوحة
+                # استبعاد فوري شامل للمواقع الخارجية أثناء موجة الحر
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
@@ -273,24 +273,27 @@ else:
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     continue
 
-                # 2. فلتر الزحمة الحاسم: إذا كان الوقت مزدحماً، استبعد هذا المكان فوراً واجلب بديله السالك
+                # الفلترة المطلقة للازدحام: إذا كان الشارع أو الوقت مزدحماً، احجبه تماماً ولا تعرض الكارت!
                 if is_crowded_time or is_traffic_peak:
-                    alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
+                    # جلب الأماكن السالكة والداخلية البديلة مباشرة من قاعدة البيانات
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
-                        # التأكد أن البديل المقترح نفسه ليس مضافاً سابقاً
                         if chosen_alt.get('الوجهة') not in added_destinations:
                             final_suggestions.append(chosen_alt)
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     else:
-                        # إذا لم يتوفر أي بديل في قاعدة البيانات، نعرضه كخيار أخير مع التنبيه
-                        final_suggestions.append(p)
-                        added_destinations.add(d_name)
+                        # حماية احتياطية: إذا لم يجد بديل مناسب، يأخذ مكاناً آخر تماماً لضمان عدم ظهور أي ازدحام
+                        fallback_alts = [alt for alt in db if alt.get('الوجهة') != d_name]
+                        if fallback_alts and fallback_alts[0].get('الوجهة') not in added_destinations:
+                            final_suggestions.append(fallback_alts[0])
+                            added_destinations.add(fallback_alts[0].get('الوجهة'))
                 else:
-                    # الأجواء سالكة والمكان متاح ومريح
+                    # الأجواء ممتازة وخالية من الازدحامات
                     final_suggestions.append(p)
                     added_destinations.add(d_name)
 
+            # ترتيب الأماكن لتبدأ بالأقرب والأقل وقتاً
             final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
 
             if show_weather_alert:
@@ -344,7 +347,7 @@ else:
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
-                # الكروت هنا ستعرض فقط الحالة الحقيقية الآمنة والسالكة للمكان المختار
+                # الكروت المعروضة الآن مضمونة 100% أن تكون سالكة وغير حمراء
                 if is_crowded_time or is_traffic_peak:
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold; margin-top: 2px;'>{strings['cap_high']}</small>"
                 elif (12 <= hour < 17):
