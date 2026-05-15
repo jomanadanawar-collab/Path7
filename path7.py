@@ -26,11 +26,9 @@ day_of_week = now_riyadh.weekday()
 # ميزة فائقة الدقة: جلب درجة الحرارة الحية اللحظية لمدينة الرياض من خوادم الطقس العالمية المباشرة
 def get_exact_riyadh_weather():
     try:
-        # استخدام مصدر بيانات مباشر وعالي التحديث لمدينة الرياض
         url = "https://wttr.in/Riyadh?format=%t"
         response = requests.get(url, timeout=3)
         if response.status_code == 200:
-            # تنظيف النص المستلم وتحويله لعدد صحيح (مثال: +34°C تحول إلى 34)
             text = response.text.replace('°C', '').replace('+', '').strip()
             return int(text)
     except:
@@ -40,7 +38,7 @@ def get_exact_riyadh_weather():
 # استدعاء الحرارة الحية الحقيقية من الإنترنت تلقائياً وبصمت
 current_temp = get_exact_riyadh_weather()
 
-# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية (إذا كانت 34 أو أعلى يعتبر الجو بحاجة لفلترة الأماكن المكشوفة في الظهر)
+# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية
 if current_temp >= 34:
     weather_condition = "حار مشمس ☀️" if 5 <= hour <= 17 else "أجواء دافئة 🌙"
     is_hot_weather = True
@@ -260,7 +258,6 @@ else:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة')
 
-                # ميزة الطقس الفائقة: إذا التقط السوفتوير حرارة مرتفعة، يتم تصفية الأماكن المفتوحة فوراً لحماية تجربة السائح
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
@@ -277,7 +274,6 @@ else:
                 else:
                     final_suggestions.append(p)
 
-            # ترشيد المسار الجغرافي والموقعي لتقليل مسافات السير والوقت
             final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
 
             if show_weather_alert:
@@ -370,27 +366,78 @@ else:
             else:
                 st.info(strings["final_msg"])
                 
-                # تصدير وتحميل خطة الرحلة النهائية (Export Itinerary)
+                # --- الميزة الاحترافية الجديدة: هندسة تذكرة تخرج على هيئة صفحة طباعة HTML فاخرة لحفظها كـ PDF ---
                 st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
                 
-                itinerary_text = f"📍 Path7 Itinerary for {st.session_state.user_name} 📍\n"
-                itinerary_text += f"Trip Style: {st.session_state.budget_key}\n"
-                itinerary_text += "="*35 + "\n"
+                # إنشاء محتوى الأيام برمجياً داخل جدول التذكرة
+                days_html = ""
                 for d_day, places in st.session_state.itinerary_history.items():
-                    itinerary_text += f"\n📅 {d_day}:\n"
-                    for idx, plc in enumerate(places, 1):
-                        itinerary_text += f"  {idx}. {plc}\n"
-                itinerary_text += "\n✨ Thank you for using Path7! ✨"
+                    translated_day = f"اليوم {d_day[-1]}" if IS_AR else d_day
+                    days_html += f"""
+                    <div style='margin-bottom: 15px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 10px;'>
+                        <h4 style='color: #0284C7; margin: 5px 0;'>📅 {translated_day}</h4>
+                        <ul style='margin: 5px 0; padding-{"right" if IS_AR else "left"}: 20px; color: #1E3A8A; font-weight: 500;'>
+                    """
+                    for plc in places:
+                        days_html += f"<li>{plc}</li>"
+                    days_html += "</ul></div>"
                 
+                # هيكل تذكرة الصعود والرحلة بالكامل بتصميم هندسي فخم للـ PDF
+                ticket_style_direction = "rtl" if IS_AR else "ltr"
+                ticket_style_align = "right" if IS_AR else "left"
+                
+                html_ticket_content = f"""
+                <html>
+                <head>
+                    <meta charset='utf-8'>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
+                        body {{ font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif; direction: {ticket_style_direction}; text-align: {ticket_style_align}; background: #F8FAFC; padding: 20px; }}
+                        .ticket-box {{ max-width: 550px; margin: 0 auto; background: white; border-radius: 25px; border: 2px solid #0284C7; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }}
+                        .header {{ background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); color: white; padding: 25px; text-align: center; }}
+                        .content {{ padding: 25px; }}
+                        .footer {{ background: #F1F5F9; padding: 15px; text-align: center; font-size: 0.8em; color: #64748B; border-top: 2px dashed #CBD5E1; }}
+                        .btn-print {{ display: block; width: 100%; max-width: 200px; margin: 20px auto; padding: 10px; background: #10B981; color: white; text-align: center; font-weight: bold; border-radius: 10px; text-decoration: none; cursor: pointer; border: none; }}
+                        @media print {{ .btn-print {{ display: none; }} body {{ background: white; padding: 0; }} .ticket-box {{ border: none; box-shadow: none; }} }}
+                    </style>
+                </head>
+                <body>
+                    <div class='ticket-box'>
+                        <div class='header'>
+                            <h2 style='margin:0; letter-spacing: 1px;'>PATH7 • ITINERARY TICKET</h2>
+                            <p style='margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9em;'>Imam Abdulrahman bin Faisal University 🎓</p>
+                        </div>
+                        <div class='content'>
+                            <p style='margin: 0; color: #64748B;'>{'اسم المسافر / Passenger Name' if IS_AR else 'Passenger Name'}</p>
+                            <h3 style='margin: 5px 0 15px 0; color: #1E3A8A;'>👤 {st.session_state.user_name}</h3>
+                            
+                            <div style='display: flex; justify-content: space-between; background: #F0F9FF; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;'>
+                                <div><span style='font-size:0.8em; color:#64748B;'>{'نمط الرحلة' if IS_AR else 'Trip Style'}</span><br><strong style='color:#0284C7;'>{st.session_state.budget_key}</strong></div>
+                                <div><span style='font-size:0.8em; color:#64748B;'>{'الوجهة' if IS_AR else 'Destination'}</span><br><strong style='color:#0284C7;'>{'الرياض (RUH)' if IS_AR else 'Riyadh'}</strong></div>
+                            </div>
+                            
+                            {days_html}
+                        </div>
+                        <div class='footer'>
+                            ✨ Path7 - Engineering Excellence Ceremony 2026 ✨
+                        </div>
+                    </div>
+                    <button class='btn-print' onclick='window.print()'>{'اضغط للحفظ كـ PDF 📄' if IS_AR else 'Print / Save as PDF 📄'}</button>
+                </body>
+                </html>
+                """
+
+                # زر التنزيل الذكي الذي يفتح صفحة التذكرة التفاعلية الفاخرة المجهزة للحفظ كـ PDF
                 st.markdown('<div class="download-btn">', unsafe_allow_html=True)
                 st.download_button(
-                    label="تحميل جدول الرحلة كاملاً 📄" if IS_AR else "Download Full Itinerary 📄",
-                    data=itinerary_text,
-                    file_name=f"Path7_Trip_{st.session_state.user_name}.txt",
-                    mime="text/plain",
+                    label="تحميل التذكرة الرسمية للرحلة (PDF/HTML) 🎫" if IS_AR else "Download Official PDF Ticket 🎫",
+                    data=html_ticket_content,
+                    file_name=f"Path7_Ticket_{st.session_state.user_name}.html",
+                    mime="text/html",
                     use_container_width=True
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
+                st.caption("💡 بعد فتح الملف المحمّل، اضغط على زر 'الحفظ كـ PDF' الأخضر ليتم حفظ تذكرتك الفاخرة فوراً بالكامل.")
         
         st.markdown("<hr>", unsafe_allow_html=True)
         if st.button(strings["reset"]):
