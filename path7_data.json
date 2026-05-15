@@ -1,158 +1,22 @@
 {
-  "العربية": {
-    "p_name": "Path7 📍",
-    "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
-    "visitor_name": "مرحباً بك، ما هو اسمك؟",
-    "budget_q": "حدد طابع رحلتك اليوم:",
-    "eco": "اقتصادية",
-    "lux": "فاخرة",
-    "start_btn": "انطلق لاستكشاف الرياض 🚀",
-    "day": "يوم",
-    "of": "من",
-    "sunny": "مشمس ☀️",
-    "night": "صافي 🌙",
-    "interests_q": "ما هي اهتماماتك المفضلة اليوم？",
-    "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"],
-    "analyze_btn": "تحليل المسار الذكي 🔍",
-    "transport_q": "وسيلة النقل المفضلة",
-    "m_btn": "🚇 المترو",
-    "c_btn": "🚗 السيارة",
-    "t_btn": "🚕 التاكسي",
-    "est_time": "الوقت المقدر",
-    "min": "دقيقة",
-    "map_btn": "📍 فتح في الخرائط",
-    "metro_msg": "محطة المترو قريبة منك.",
-    "metro_fail": "لا يوجد خط مترو مباشر لهذه الوجهة.",
-    "wait_choice": "⏳ حدد وسيلة النقل لمعرفة المسار",
-    "rating_q": "تقييمك للتجربة ⭐",
-    "next_day": "اليوم التالي ⏭️",
-    "finish": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨",
-    "db": {
-      "Economy": [
-        {
-          "الوجهة": "أسواق المعيقلية",
-          "الفئة": "تسوق",
-          "وصف": "مركز تسوق تقليدي للبخور والعود والبشوت.",
-          "b_time": 25,
-          "metro": true
-        },
-        {
-          "الوجهة": "حصن المصمك",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "رمز توحيد المملكة وتأسيسها.",
-          "b_time": 20,
-          "metro": true
-        },
-        {
-          "الوجهة": "سوق الزل",
-          "الفئة": "تسوق",
-          "وصف": "أقدم سوق مليء بالتاريخ والتحف النادرة.",
-          "b_time": 30,
-          "metro": true
-        },
-        {
-          "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
-          "الفئة": "طبيعة",
-          "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "b_time": 15,
-          "metro": true
-        },
-        {
-          "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
-          "الفئة": "تسوق",
-          "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "b_time": 15,
-          "metro": true
-        },
-        {
-          "الوجهة": "مركز الملك عبدالله المالي (KAFD)",
-          "الفئة": "مطاعم ومقاهي",
-          "وصف": "أعجوبة معمارية وأيقونة اقتصادية حديثة.",
-          "b_time": 15,
-          "metro": true
-        },
-        {
-          "الوجهة": "وادي حنيفة / نمار",
-          "الفئة": "طبيعة",
-          "وصف": "مساحات خضراء خلابة وبحيرات مثالية للنزهات.",
-          "b_time": 40,
-          "metro": false
-        },
-        {
-          "الوجهة": "منتزه الملك عبد الله",
-          "الفئة": "طبيعة",
-          "وصف": "نافورات راقصة ومساحات خضراء شاسعة للعائلات.",
-          "b_time": 25,
-          "metro": true
-        },
-        {
-          "الوجهة": "حافة العالم",
-          "الفئة": "طبيعة",
-          "وصف": "إطلالات منحدرة تخطف الأنفاس لعشاق الطبيعة.",
-          "b_time": 90,
-          "metro": false
-        }
-      ],
-      "Luxury": [
-        {
-          "الوجهة": "حي الطريف",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "موقع اليونسكو وقلب التاريخ السعودي.",
-          "b_time": 30,
-          "metro": false
-        },
-        {
-          "الوجهة": "فيا الرياض",
-          "الفئة": "ترفيه",
-          "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.",
-          "b_time": 20,
-          "metro": false
-        },
-        {
-          "الوجهة": "فيا الرياض",
-          "الفئة": "تسوق",
-          "وصف": "عمارة سلمية مع مطاعم وسينما عالمية.",
-          "b_time": 20,
-          "metro": false
-        },
-        {
-          "الوجهة": "بوليفارد ستي",
-          "الفئة": "ترفيه",
-          "وصف": "أكبر منطقة في العاصمة للثقافات العالمية والألعاب.",
-          "b_time": 25,
-          "metro": false
-        },
-        {
-          "الوجهة": "مطل البجيري",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.",
-          "b_time": 30,
-          "metro": false
-        },
-        {
-          "الوجهة": "مطل البجيري",
-          "الفئة": "مطاعم ومقاهي",
-          "وصف": "مطاعم راقية بإطلالات على وادي حنيفة.",
-          "b_time": 30,
-          "metro": false
-        }
-      ]
-    }
-  },
   "English": {
     "p_name": "Path7 📍",
-    "subtitle": "Real-time Smart Tourism System",
-    "visitor_name": "Welcome, what is your name?",
-    "budget_q": "Choose your trip style today:",
+    "subtitle": "Discover Riyadh's hidden, smooth paths, instantly.",
+    "visitor_name": "What is your name?",
+    "budget_q": "Choose your travel style:",
     "eco": "Economy",
     "lux": "Luxury",
     "start_btn": "Explore Riyadh 🚀",
     "day": "Day",
     "of": "of",
-    "sunny": "Sunny ☀️",
-    "night": "Clear 🌙",
-    "interests_q": "What are your preferred interests today?",
-    "interests_list": ["History & Heritage", "Entertainment", "Nature", "Shopping", "Dining"],
+    "interests_q": "What are your interests today?",
+    "interests_list": [
+      "History & Heritage",
+      "Dining",
+      "Nature",
+      "Shopping",
+      "Entertainment"
+    ],
     "analyze_btn": "Smart Path Analysis 🔍",
     "transport_q": "Preferred Transport",
     "m_btn": "🚇 Metro",
@@ -162,7 +26,7 @@
     "min": "mins",
     "map_btn": "📍 Open Maps",
     "metro_msg": "Metro station is nearby.",
-    "metro_fail": "No direct metro line to this destination.",
+    "metro_fail": "No direct metro to this place.",
     "wait_choice": "⏳ Select transport to see path",
     "rating_q": "Rate your experience ⭐",
     "next_day": "Next Day ⏭️",
@@ -170,111 +34,164 @@
     "db": {
       "Economy": [
         {
-          "الوجهة": "Al Muaiqilia Markets",
-          "الفئة": "Shopping",
-          "وصف": "A traditional market famous for authentic oud, incense, and traditional cloaks.",
-          "b_time": 25,
-          "metro": true
-        },
-        {
-          "الوجهة": "Al Masmak Fort",
-          "الفئة": "History & Heritage",
-          "وصف": "The ultimate symbol of national unification and establishment.",
+          "Destination": "Al-Masmak Palace (Day View)",
+          "Category": "History & Heritage",
+          "Description": "Explore the historic mud-brick fortress in the heart of Riyadh, surrounded by spacious pedestrian paths ensuring a smooth experience.",
           "b_time": 20,
-          "metro": true
+          "metro": false,
+          "image": "masmak_day.png"
         },
         {
-          "الوجهة": "Souq Al Zal",
-          "الفئة": "Shopping",
-          "وصف": "Riyadh's oldest market, filled with history, antiques, and rare collectibles.",
-          "b_time": 30,
-          "metro": true
-        },
-        {
-          "الوجهة": "KAFD",
-          "الفئة": "Nature",
-          "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
+          "Destination": "Souq Al-Zal",
+          "Category": "Shopping",
+          "Description": "Riyadh's oldest traditional market, famous for authentic carpets, antiques, and traditional cloaks, offering an immersive cultural path.",
           "b_time": 15,
-          "metro": true
+          "metro": false,
+          "image": "souq_alzal.png"
         },
         {
-          "الوجهة": "KAFD",
-          "الفئة": "Shopping",
-          "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
-          "b_time": 15,
-          "metro": true
-        },
-        {
-          "الوجهة": "KAFD",
-          "الفئة": "Dining",
-          "وصف": "An architectural marvel and a futuristic hub representing modern Riyadh.",
-          "b_time": 15,
-          "metro": true
-        },
-        {
-          "الوجهة": "Wadi Hanifa / Namar",
-          "الفئة": "Nature",
-          "وصف": "Breathtaking landscapes and serene lakes perfect for open-air picnics.",
-          "b_time": 40,
-          "metro": false
-        },
-        {
-          "الوجهة": "King Abdullah Park",
-          "الفئة": "Nature",
-          "وصف": "Spacious family park featuring lush green areas and dancing fountains.",
+          "Destination": "King Abdullah Park",
+          "Category": "Nature",
+          "Description": "A magnificent expansive public park featuring lush green landscapes, pedestrian tracks, and a giant musical fountain.",
           "b_time": 25,
-          "metro": true
-        },
-        {
-          "الوجهة": "The Edge of the World",
-          "الفئة": "Nature",
-          "وصف": "Stunning dramatic cliffs offering breathtaking views for adventure seekers.",
-          "b_time": 90,
-          "metro": false
+          "metro": false,
+          "image": "king_abdullah_park.png"
         }
       ],
       "Luxury": [
         {
-          "الوجهة": "At-Turaif District",
-          "الفئة": "History & Heritage",
-          "وصف": "A registered UNESCO world heritage site and the historical heart of Saudi Arabia.",
+          "Destination": "King Abdullah Financial District (KAFD)",
+          "Category": "Shopping",
+          "Description": "An architectural masterpiece representing modern Riyadh, hosting luxurious brands and premium walkways between futuristic skyscrapers.",
+          "b_time": 15,
+          "metro": true,
+          "image": "kafd.png"
+        },
+        {
+          "Destination": "Al-Bujairi Terrace",
+          "Category": "Dining",
+          "Description": "A premium dining destination in historic Diriyah, blending authentic Najdi architecture with a stunning view of At-Turaif district.",
           "b_time": 30,
-          "metro": false
+          "metro": false,
+          "image": "bujairi.png"
         },
         {
-          "الوجهة": "Via Riyadh",
-          "الفئة": "Entertainment",
-          "وصف": "Salmani architecture blending luxury cinemas with global dining options.",
+          "Destination": "Via Riyadh",
+          "Category": "Dining",
+          "Description": "An ultra-luxury complex designed in Salmani architectural style, offering world-class elite restaurants and live experiences.",
+          "b_time": 35,
+          "metro": false,
+          "image": "via_riyadh.png"
+        },
+        {
+          "Destination": "Al-Masmak Palace (Night View)",
+          "Category": "History & Heritage",
+          "Description": "Discover the iconic fortress beautifully lit up at night, reflecting the majestic beginning of the modern Saudi state.",
           "b_time": 20,
-          "metro": false
-        },
+          "metro": false,
+          "image": "masmak_night.png"
+        }
+      ]
+    }
+  },
+  "العربية": {
+    "p_name": "Path7 📍",
+    "subtitle": "اكتشف مسارات الرياض الخفية والسالكة، فوراً.",
+    "visitor_name": "فضلاً، ما هو اسمك？",
+    "budget_q": "اختر نمط رحلتك:",
+    "eco": "اقتصادية 🌱",
+    "lux": "فاخرة ✨",
+    "start_btn": "استكشف الرياض 🚀",
+    "day": "اليوم",
+    "of": "من",
+    "interests_q": "ما هي اهتماماتك اليوم؟",
+    "interests_list": [
+      "تاريخ وآثار",
+      "مطاعم ومقاهي",
+      "طبيعة",
+      "تسوق",
+      "ترفيه"
+    ],
+    "analyze_btn": "التحليل الذكي 🔍",
+    "transport_q": "وسيلة النقل المفضلة",
+    "m_btn": "🚇 المترو",
+    "c_btn": "🚗 السيارة",
+    "t_btn": "🚕 التاكسي",
+    "est_time": "الوقت المتوقع",
+    "min": "دقيقة",
+    "map_btn": "📍 فتح الخرائط",
+    "metro_msg": "توجد محطة مترو قريبة.",
+    "metro_fail": "لا يوجد خط مترو مباشر لهذا المكان.",
+    "wait_choice": "⏳ اختر وسيلة النقل لرؤية المسار",
+    "rating_q": "قّيم تجربتك ⭐",
+    "next_day": "اليوم التالي ⏭️",
+    "finish": "شكراً لثقتك بـ Path7.. نتمنى لك رحلة ممتعة! ✨",
+    "db": {
+      "Economy": [
         {
-          "الوجهة": "Via Riyadh",
-          "الفئة": "Shopping",
-          "وصف": "Salmani architecture blending premium shopping boutiques with elite dining.",
+          "Destination": "Al-Masmak Palace (Day View)",
+          "الوجهة": "قصر المصمك التراثي (نهاري)",
+          "الفئة": "تاريخ وآثار",
+          "وصف": "استكشف هذا الحصن العتيق في قلب الرياض، تحفة معمارية نجدية تحيط بها ساحات واسعة ومسارات مشاة سالكة تضمن تجربة هادئة.",
           "b_time": 20,
-          "metro": false
+          "metro": false,
+          "image": "masmak_day.png"
         },
         {
-          "الوجهة": "Boulevard City",
-          "الفئة": "Entertainment",
-          "وصف": "The capital's biggest lifestyle zone showcasing global cultures and premium gaming entertainment.",
+          "Destination": "Souq Al-Zal",
+          "الوجهة": "سوق الزل التاريخي",
+          "الفئة": "تسوق",
+          "وصف": "أقدم الأسواق التراثية بالعاصمة، يفوح بعبق الماضي والعود، ويقدم مسارات تسوق غنية بالمقتنيات الأثرية والمشالح والزل الفاخر.",
+          "b_time": 15,
+          "metro": false,
+          "image": "souq_alzal.png"
+        },
+        {
+          "Destination": "King Abdullah Park",
+          "الوجهة": "منتزه الملك عبدالله بالملز",
+          "الفئة": "طبيعة",
+          "وصف": "مسطحات خضراء ممتدة وممرات مشاة فسيحة تحتضن البحيرة والنافورة التفاعلية الضخمة، توفر مساراً طبيعياً منعشاً وسالكاً.",
           "b_time": 25,
-          "metro": false
+          "metro": false,
+          "image": "king_abdullah_park.png"
+        }
+      ],
+      "Luxury": [
+        {
+          "Destination": "King Abdullah Financial District (KAFD)",
+          "الوجهة": "مركز الملك عبدالله المالي (كافد)",
+          "الفئة": "تسوق",
+          "وصف": "أيقونة عمرانية عالمية تمثل نهضة العاصمة، يضم أفخم دور الأزياء والمطاعم العالمية بين ناطحات سحاب مذهلة وممرات مكيفة وسالكة.",
+          "b_time": 15,
+          "metro": true,
+          "image": "kafd.png"
         },
         {
-          "الوجهة": "Bujairi Terrace",
-          "الفئة": "History & Heritage",
-          "وصف": "Elite premium restaurants directly overlooking the magnificent ruins of Wadi Hanifa.",
+          "Destination": "Al-Bujairi Terrace",
+          "الوجهة": "مطل البجيري التاريخي",
+          "الفئة": "مطاعم ومقاهي",
+          "وصف": "وجهة فاخرة للمطاعم الراقية في الدرعية التاريخية، تمزج بين الطراز المعماري النجدي العريق والإطلالات الآسرة على حي الطريف التاريخي.",
           "b_time": 30,
-          "metro": false
+          "metro": false,
+          "image": "bujairi.png"
         },
         {
-          "الوجهة": "Bujairi Terrace",
-          "الفئة": "Dining",
-          "وصف": "Elite premium restaurants directly overlooking the magnificent ruins of Wadi Hanifa.",
-          "b_time": 30,
-          "metro": false
+          "Destination": "Via Riyadh",
+          "الوجهة": "فيا الرياض الفاخر",
+          "الفئة": "مطاعم ومقاهي",
+          "وصف": "مجمع فاخر مصمم على الطراز السلماني الأنيق، يقدم تجارب ترفيهية استثنائية ونخبة من المطاعم والمقاهي العالمية المرموقة وسط ممرات مائية بديعة.",
+          "b_time": 35,
+          "metro": false,
+          "image": "via_riyadh.png"
+        },
+        {
+          "Destination": "Al-Masmak Palace (Night View)",
+          "الوجهة": "قصر المصمك (إضاءة ليلية)",
+          "الفئة": "تاريخ وآثار",
+          "وصف": "شاهد الحصن العريق وهو يكتسي بحلّة ليلية ذهبية مهيبة تحتضن عبق التاريخ، ليروي قصة تأسيس الدولة السعودية الحديثة بمسارات مريحة.",
+          "b_time": 20,
+          "metro": false,
+          "image": "masmak_night.png"
         }
       ]
     }
