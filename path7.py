@@ -5,7 +5,7 @@ import pytz
 import os
 import urllib.parse
 
-# 1. تحميل البيانات من ملف الـ JSON
+# 1. تحميل البيانات من ملف الـ JSON المحدث
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
@@ -86,6 +86,15 @@ if st.session_state.page == 'lang_selection':
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
+# خريطة توافق وتطابق الفئات بين اللغتين لمنع الأخطاء أثناء التصفية والاختيار المزدوج
+cat_mapping = {
+    "History & Heritage": "تاريخ وآثار",
+    "Entertainment": "ترفيه",
+    "Nature": "طبيعة",
+    "Shopping": "تسوق",
+    "Dining": "مطاعم ومقاهي"
+}
+
 strings = {
     "title": lang_data.get("p_name", "Path7 📍"),
     "sub": lang_data.get("subtitle", ""),
@@ -111,10 +120,11 @@ strings = {
     "rating_t": lang_data.get("rating_q", "Rate your experience ⭐"),
     "next_day": lang_data.get("next_day", "Next Day ⏭️"),
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
-    "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨")
+    "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨"),
+    "hours_lbl": "⏰ ساعات العمل" if IS_AR else "⏰ Working Hours"
 }
 
-# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات
+# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المربعة
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -190,14 +200,21 @@ else:
         
         if st.button(strings["analyze_btn"]):
             db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
-            st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+            
+            # فلترة ذكية ومقاطعة مبنية على خريطة الفئات لمنع تداخل واختلاط التصنيفات
+            if not IS_AR:
+                mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
+                st.session_state.suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
+            else:
+                st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+                
             st.session_state.transport_choice = None
             st.rerun()
 
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
             
-            # إرجاع الأزرار الثلاثة المربعة كما كانت في تصميمك الأصلي المفضل
+            # عودة الأزرار المربعة المفضلة لديكِ والمستقرة كما كانت
             t_cols = st.columns(3)
             if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
             if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
@@ -218,27 +235,27 @@ else:
                     else:
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # --- الحل الصارم لإجبار واجهة خرائط جوجل على الإنجليزية ---
+                        # التعديل الهندسي القاطع لإجبار واجهة جوجل ماب على قلب واجهتها ومنع التعريب التلقائي
                         if not IS_AR:
                             search_query = f"{d_name_raw}, Riyadh"
                             encoded_query = urllib.parse.quote_plus(search_query)
-                            # مَعلَمة hl=en تجبر جوجل ماب المفتوح في المتصفح على عرض الواجهة والأسماء بالإنجليزية الصافية
                             google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
                         else:
                             search_query = f"{d_name_raw} الرياض"
                             encoded_query = urllib.parse.quote_plus(search_query)
-                            # مَعلَمة hl=ar لتثبيت اللغة العربية في الواجهة العربية
                             google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=ar"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
+                d_hours = p.get('hours', '')
                 
                 st.markdown(f'''
                     <div class="dest-card">
                         <h4 style="color:#0284C7;margin:0;">{d_name}</h4>
-                        <p>{d_desc}</p>
+                        <p style="margin-bottom:5px;">{d_desc}</p>
+                        <p style="font-size:0.85em; color:#64748B; margin-bottom:10px;">{strings['hours_lbl']}: {d_hours}</p>
                         {action_html}
                     </div>
                 ''', unsafe_allow_html=True)
