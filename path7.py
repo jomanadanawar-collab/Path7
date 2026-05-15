@@ -214,16 +214,32 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
+                        # قاموس الترجمات البرمجية الذكية لخرائط جوجل لمنع استخدام الترجمة الحرفية المشوهة
+                        mapping_names = {
+                            "فيا الرياض": "Via Riyadh",
+                            "مطل البجيري": "Bujairi Terrace",
+                            "قصر المصمك": "Al Masmak Palace",
+                            "وادي حنيفة": "Wadi Hanifa",
+                            "منتزه الملك عبدالله": "King Abdullah Park",
+                            "حافة العالم": "The Edge of the World",
+                            "واجهة روشن": "Roshn Front",
+                            "مركز الملك عبدالله المالي": "KAFD"
+                        }
+                        
                         d_name_raw = p.get('الوجهة', '').strip()
                         
+                        # هندسة الحركة الذكية المباشرة للخرائط
                         if not IS_AR:
-                            search_query = f"{d_name_raw} Riyadh"
+                            # البحث داخل القاموس الذكي، وإذا لم يتوفر يأخذ الحقل الإنجليزي من ملف الـ JSON أو يضيف الرياض
+                            english_clean_name = mapping_names.get(d_name_raw, p.get('الوجهة_en', d_name_raw))
+                            search_query = f"{english_clean_name}, Riyadh"
                         else:
-                            search_query = f"{d_name_raw} الرياض"
+                            search_query = f"{d_name_raw}, الرياض"
                         
+                        # ترميز النص برمجياً بشكل آمن لحماية الروابط من التلف والتخريب (%20)
                         encoded_query = urllib.parse.quote_plus(search_query)
                         
-                        # دمج أجزاء الرابط برمجياً داخل السيرفر لمنع أي تغيير خارجي تلقائي
+                        # تشفير النطاق لمنع خوارزميات الشات من تحويله تلقائياً لروابط ميتة
                         base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
                         google_maps_link = f"{base_domain}{encoded_query}"
                         
