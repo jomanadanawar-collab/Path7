@@ -214,12 +214,16 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # الحركة الذكية والمحسنة: توليد رابط بحث رسمي ومباشر مع إضافة كلمة Riyadh لضمان دقة البحث
+                        # جلب اسم المكان الفعلي من ملف الـ JSON حسب لغة العرض
                         d_name_raw = p.get('الوجهة', '').strip()
+                        
+                        # إضافة كلمة "Riyadh" لضمان دقة محرك بحث الخرائط وتفادي تطابق الأسماء في بلدان أخرى
                         search_query = f"{d_name_raw} Riyadh"
                         
-                        # ترميز النص برمجياً لضمان قراءة المسافات والرموز بشكل صحيح في المتصفحات
+                        # ترميز النص ليكون متوافقاً كلياً مع المتصفحات (تحويل المسافات لرموز %20 وغيرها)
                         encoded_query = urllib.parse.quote_plus(search_query)
+                        
+                        # الرابط الرسمي المباشر لمحرك بحث خرائط جوجل الفعلي المعتمد
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
