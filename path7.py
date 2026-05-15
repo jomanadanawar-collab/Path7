@@ -228,7 +228,6 @@ else:
                 if d_name in added_destinations:
                     continue
 
-                # 1. فلتر الطقس: استبعاد فوري شامل للمواقع الخارجية أثناء موجة الحر واستبدالها بداخلية سالكة
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
@@ -239,9 +238,7 @@ else:
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     continue
 
-                # 2. فلتر الزحمة الحاسم والقاطع: حذف واستبعاد فوري للمكان من العرض تماماً!
                 if is_crowded_time or is_traffic_peak:
-                    # جلب البديل السالك والآمن فوراً
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
@@ -249,13 +246,11 @@ else:
                             final_suggestions.append(chosen_alt)
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     else:
-                        # حماية احتياطية: أخذ أي مكان آخر سالك لضمان حجب المكان المزدحم تماماً وعدم إظهاره
                         fallback_alts = [alt for alt in db if alt.get('الوجهة') != d_name]
                         if fallback_alts and fallback_alts[0].get('الوجهة') not in added_destinations:
                             final_suggestions.append(fallback_alts[0])
                             added_destinations.add(fallback_alts[0].get('الوجهة'))
                 else:
-                    # المكان ممتاز وسالك ولا يوجد زحمة
                     final_suggestions.append(p)
                     added_destinations.add(d_name)
 
@@ -280,7 +275,6 @@ else:
 
             for p in st.session_state.suggestions:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
-                
                 is_traffic_peak = (16 <= hour <= 20)
                 
                 if st.session_state.transport_choice:
@@ -309,7 +303,6 @@ else:
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
-                # هنا الكروت تظهر فقط باللون الأصفر أو الأخضر لأن المزدحم تم حظره نهائياً من العرض فوق
                 if (12 <= hour < 17):
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold; margin-top: 2px;'>{strings['cap_mid']}</small>"
                 else:
@@ -349,16 +342,51 @@ else:
                     days_html += f"""
                     <div style='margin-bottom: 15px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 10px;'>
                         <h4 style='color: #0284C7; margin: 5px 0;'>📅 {translated_day}</h4>
-                        <ul style='margin: 5px 0; padding-{"right" if IS_AR else "left"}: 20px; color: #1E3A8A; font-weight: 500;'>
+                        <ul style='margin: 5px 0; color: #1E3A8A; font-weight: 500;'>
                     """
                     for plc in places:
                         days_html += f"<li>{plc}</li>"
                     days_html += "</ul></div>"
+                
+                # تم إصلاح صياغة الأقواس لتفادي أي تعارض تماماً مع الـ f-string
+                dir_style = "rtl" if IS_AR else "ltr"
+                align_style = "right" if IS_AR else "left"
                 
                 html_ticket_content = f"""
                 <html>
                 <head>
                     <meta charset='utf-8'>
                     <style>
-                        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Inter:wght@400;700&display=swap');
-                        body {{ font-family: 'IBM Plex Sans Arabic', sans-serif; direction: {"rtl" if IS_AR else "ltr"}; text-align: {
+                        body {{ font-family: sans-serif; direction: {dir_style}; text-align: {align_style}; background: #F8FAFC; padding: 20px; }}
+                        .ticket-box {{ max-width: 550px; margin: 0 auto; background: white; border-radius: 25px; border: 2px solid #0284C7; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }}
+                        .header {{ background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); color: white; padding: 25px; text-align: center; }}
+                        .content {{ padding: 25px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class='ticket-box'>
+                        <div class='header'>
+                            <h2 style='margin:0;'>PATH7</h2>
+                        </div>
+                        <div class='content'>
+                            <h3>👤 {st.session_state.user_name}</h3>
+                            {days_html}
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                st.download_button(
+                    label="تحميل التذكرة الرسمية للرحلة (PDF/HTML) 🎫",
+                    data=html_ticket_content,
+                    file_name=f"Path7_Ticket_{st.session_state.user_name}.html",
+                    mime="text/html",
+                    use_container_width=True
+                )
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button(strings["reset"]):
+            st.session_state.clear()
+            st.rerun()
+
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
