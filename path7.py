@@ -5,7 +5,7 @@ import pytz
 import os
 import urllib.parse
 
-# 1. تحميل البيانات من ملف الـ JSON
+# 1. تحميل البيانات من ملف الـ JSON المحدث والمنظف
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
@@ -21,7 +21,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة والصفحات
+# 3. إدارة الحالة والصفحات داخل النظام الموحد
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -82,7 +82,7 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON المنظم
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
@@ -114,7 +114,7 @@ strings = {
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨")
 }
 
-# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات
+# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المقاوم للتمدد العشوائي
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -146,7 +146,7 @@ if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
-# --- الصفحات ---
+# --- الصفحات الاستعراضية والتفاعلية ---
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
@@ -214,37 +214,19 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
+                        # جلب الاسم مباشرة من الـ JSON (سيخرج باللغة الإنجليزية الصافية فور تفعيل الإنجليزي!)
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # --- الحل الهندسي الذكي والشامل للتخلص من مشكلة الـ JSON والترجمة ---
+                        # إضافة اسم المدينة للبحث بدقة متناهية لمنع التشتت الجغرافي
                         if not IS_AR:
-                            # نقوم بفحص وتطهير الكلمة القادمة من الـ JSON أياً كانت، ونربطها فوراً بالاسم السياحي الإنجليزي الصحيح
-                            if "فيا" in d_name_raw or "Via" in d_name_raw:
-                                search_query = "Via Riyadh"
-                            elif "بجيري" in d_name_raw or "Bujairi" in d_name_raw:
-                                search_query = "Bujairi Terrace"
-                            elif "مصمك" in d_name_raw or "Masmak" in d_name_raw:
-                                search_query = "Al Masmak Palace"
-                            elif "حنيفة" in d_name_raw or "Hanifa" in d_name_raw:
-                                search_query = "Wadi Hanifa"
-                            elif "عبدالله" in d_name_raw and "منتزه" in d_name_raw:
-                                search_query = "King Abdullah Park"
-                            elif "حافة" in d_name_raw or "Edge" in d_name_raw:
-                                search_query = "The Edge of the World"
-                            elif "واجهة" in d_name_raw or "Front" in d_name_raw:
-                                search_query = "Roshn Front"
-                            elif "مالي" in d_name_raw or "KAFD" in d_name_raw:
-                                search_query = "KAFD"
-                            else:
-                                # حماية احتياطية في حال وجود مكان آخر في الـ JSON
-                                search_query = f"{d_name_raw} Riyadh"
+                            search_query = f"{d_name_raw}, Riyadh"
                         else:
-                            # في الواجهة العربية نبحث بالاسم القادم من الـ JSON مباشرة مع إضافة كلمة الرياض للضمان
                             search_query = f"{d_name_raw} الرياض"
                         
+                        # ترميز النص برمجياً بشكل آمن لحماية الروابط من التلف والتخريب (%20)
                         encoded_query = urllib.parse.quote_plus(search_query)
                         
-                        # دمج أجزاء الرابط برمجياً لمنع الشات من تخريبه
+                        # تشفير النطاق لمنع خوارزميات الشات من تحويله تلقائياً لروابط ميتة داخلياً
                         base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
                         google_maps_link = f"{base_domain}{encoded_query}"
                         
