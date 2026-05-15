@@ -5,7 +5,7 @@ import pytz
 import os
 import urllib.parse
 
-# 1. تحميل البيانات من ملف الـ JSON المحدث والمنظف
+# 1. تحميل البيانات من ملف الـ JSON
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
@@ -21,7 +21,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة والصفحات داخل النظام الموحد
+# 3. إدارة الحالة والصفحات
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -82,7 +82,7 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON المنظم
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
@@ -114,7 +114,7 @@ strings = {
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨")
 }
 
-# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المقاوم للتمدد العشوائي
+# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -125,17 +125,6 @@ st.markdown(f'''
     .center-rating {{ text-align: center !important; }}
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
-    
-    /* ستايل مخصص لـ segmented control ليتناسق مع ألوان تطبيقك */
-    div[data-testid="stSegmentedControl"] button {{
-        background: rgba(255, 255, 255, 0.6) !important;
-        border-radius: 10px !important;
-        color: #0284C7 !important;
-    }}
-    div[data-testid="stSegmentedControl"] button[aria-checked="true"] {{
-        background: linear-gradient(90deg, #0284C7, #38BDF8) !important;
-        color: white !important;
-    }}
     
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     
@@ -157,7 +146,7 @@ if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
-# --- الصفحات الاستعراضية والتفاعلية ---
+# --- الصفحات ---
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
@@ -208,15 +197,11 @@ else:
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
             
-            # التعديل الهندسي الحاسم: استخدام st.segmented_control يحفظ الحالة ويمنع اختفاء الكروت عند الضغط على الروابط
-            options_map = {strings["metro"]: "metro", strings["car"]: "car", strings["taxi"]: "taxi"}
-            selected_trans_lbl = st.segmented_control(
-                label=strings['trans_q'],
-                options=list(options_map.keys()),
-                label_visibility="collapsed"
-            )
-            if selected_trans_lbl:
-                st.session_state.transport_choice = options_map[selected_trans_lbl]
+            # إرجاع الأزرار الثلاثة المربعة كما كانت في تصميمك الأصلي المفضل
+            t_cols = st.columns(3)
+            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
+            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
+            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
 
             for p in st.session_state.suggestions:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
@@ -233,14 +218,17 @@ else:
                     else:
                         d_name_raw = p.get('الوجهة', '').strip()
                         
+                        # --- الحل الصارم لإجبار واجهة خرائط جوجل على الإنجليزية ---
                         if not IS_AR:
                             search_query = f"{d_name_raw}, Riyadh"
+                            encoded_query = urllib.parse.quote_plus(search_query)
+                            # مَعلَمة hl=en تجبر جوجل ماب المفتوح في المتصفح على عرض الواجهة والأسماء بالإنجليزية الصافية
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
                         else:
                             search_query = f"{d_name_raw} الرياض"
-                        
-                        encoded_query = urllib.parse.quote_plus(search_query)
-                        base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
-                        google_maps_link = f"{base_domain}{encoded_query}"
+                            encoded_query = urllib.parse.quote_plus(search_query)
+                            # مَعلَمة hl=ar لتثبيت اللغة العربية في الواجهة العربية
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=ar"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
