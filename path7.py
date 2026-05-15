@@ -20,7 +20,7 @@ riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 
-# 3. إدارة الحالة والصفحات (تعريف مبكر لمنع خطأ NameError)
+# 3. إدارة الحالة والصفحات
 if 'lang' not in st.session_state: st.session_state.lang = None
 if 'page' not in st.session_state: st.session_state.page = 'lang_selection'
 if 'day' not in st.session_state: st.session_state.day = 1
@@ -28,51 +28,51 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
-# قاموس ثابت لروابط الخرائط لضمان عملها للغتين العربية والإنجليزية
+# قاموس ثابت ومصحح لروابط الخرائط الرسمية المباشرة (تفتح فوراً على أي جهاز)
 MAPS_REGISTRY = {
-    "حي طريف التاريخي": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
-    "at-turaif historic district": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
-    "at-turaif": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
+    "حي طريف التاريخي": "https://www.google.com/maps/search/?api=1&query=حي+طريف+التاريخي+الدرعية",
+    "at-turaif historic district": "https://www.google.com/maps/search/?api=1&query=At-Turaif+Historic+District+Diriyah",
+    "at-turaif": "https://www.google.com/maps/search/?api=1&query=At-Turaif+Historic+District+Diriyah",
     
-    "سوق المعيقلية": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
-    "al muaiqilia market": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
-    "al-muaiqilia": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
+    "سوق المعيقلية": "https://www.google.com/maps/search/?api=1&query=سوق+المعيقلية+الرياض",
+    "al muaiqilia market": "https://www.google.com/maps/search/?api=1&query=Al+Muaiqilia+Market+Riyadh",
+    "al-muaiqilia": "https://www.google.com/maps/search/?api=1&query=Al+Muaiqilia+Market+Riyadh",
     
-    "قصر المصمك": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
-    "al masmak palace": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
-    "masmak fortress": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
+    "قصر المصمك": "https://www.google.com/maps/search/?api=1&query=قصر+المصمك+الرياض",
+    "al masmak palace": "https://www.google.com/maps/search/?api=1&query=Al+Masmak+Palace+Riyadh",
+    "masmak fortress": "https://www.google.com/maps/search/?api=1&query=Al+Masmak+Palace+Riyadh",
     
-    "سوق الزل": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
-    "souq al zal": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
-    "al-zal market": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
+    "سوق الزل": "https://www.google.com/maps/search/?api=1&query=سوق+الزل+الرياض",
+    "souq al zal": "https://www.google.com/maps/search/?api=1&query=Souq+Al+Zal+Riyadh",
+    "al-zal market": "https://www.google.com/maps/search/?api=1&query=Souq+Al+Zal+Riyadh",
     
-    "ڤيا الرياض": "https://maps.app.goo.gl/yyM4HfYoa7nfYHSe7?g_st=ic",
-    "via riyadh": "https://maps.app.goo.gl/yyM4HfYoa7nfYHSe7?g_st=ic",
+    "ڤيا الرياض": "https://www.google.com/maps/search/?api=1&query=Via+Riyadh",
+    "via riyadh": "https://www.google.com/maps/search/?api=1&query=Via+Riyadh",
     
-    "البوليفارد": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
-    "boulevard": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
-    "the boulevard": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
+    "البوليفارد": "https://www.google.com/maps/search/?api=1&query=بوليڤارد+سيتي+الرياض",
+    "boulevard": "https://www.google.com/maps/search/?api=1&query=Boulevard+City+Riyadh",
+    "the boulevard": "https://www.google.com/maps/search/?api=1&query=Boulevard+City+Riyadh",
     
-    "المالية": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
-    "financial district": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
-    "kafd": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
+    "المالية": "https://www.google.com/maps/search/?api=1&query=مركز+الملك+عبدالله+المالي+KAFD",
+    "financial district": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Financial+District+KAFD",
+    "kafd": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Financial+District+KAFD",
     
-    "واجهة روشن": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
-    "roshn waterfront": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
-    "roshn front": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
+    "واجهة روشن": "https://www.google.com/maps/search/?api=1&query=واجهة+روشن+الرياض",
+    "roshn waterfront": "https://www.google.com/maps/search/?api=1&query=ROSHN+Front+Riyadh",
+    "roshn front": "https://www.google.com/maps/search/?api=1&query=ROSHN+Front+Riyadh",
     
-    "البجيري": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
-    "bujairi terrace": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
-    "al-bujairi": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
+    "البجيري": "https://www.google.com/maps/search/?api=1&query=طلعة+البجيري+الدرعية",
+    "bujairi terrace": "https://www.google.com/maps/search/?api=1&query=Bujairi+Terrace",
+    "al-bujairi": "https://www.google.com/maps/search/?api=1&query=Bujairi+Terrace",
     
-    "وادي حنيفة": "https://maps.app.goo.gl/6KhYZAnVumSQCVJb9?g_st=ic",
-    "wadi hanifa": "https://maps.app.goo.gl/6KhYZAnVumSQCVJb9?g_st=ic",
+    "وادي حنيفة": "https://www.google.com/maps/search/?api=1&query=وادي+حنيفة+الرياض",
+    "wadi hanifa": "https://www.google.com/maps/search/?api=1&query=Wadi+Hanifa+Riyadh",
     
-    "منتزه الملك عبدالله": "https://maps.app.goo.gl/A3GArkz2aX5jD1Da8?g_st=ic",
-    "king abdullah park": "https://maps.app.goo.gl/A3GArkz2aX5jD1Da8?g_st=ic",
+    "منتزه الملك عبدالله": "https://www.google.com/maps/search/?api=1&query=منتزه+الملك+عبدالله+الملز",
+    "king abdullah park": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Park+Riyadh",
     
-    "حافة العالم": "https://maps.app.goo.gl/saiAr2PGJuqZXN8z5?g_st=ic",
-    "edge of the world": "https://maps.app.goo.gl/saiAr2PGJuqZXN8z5?g_st=ic"
+    "حافة العالم": "https://www.google.com/maps/search/?api=1&query=حافة+العالم+الرياض",
+    "edge of the world": "https://www.google.com/maps/search/?api=1&query=Edge+of+the+World+Riyadh"
 }
 
 # --- بوابة اختيار اللغة الأولى ---
@@ -172,10 +172,8 @@ st.markdown(f'''
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
     
-    /* تصميم الأزرار العامة */
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     
-    /* أزرار الأرقام للتقييم */
     .center-rating .stButton>button {{
         width: 45px !important;
         height: 45px !important;
@@ -190,13 +188,11 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر الشريط الجانبي لتغيير اللغة
 if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
 # --- الصفحات ---
-# أ. صفحة الترحيب وتأكيد تذكرة الطيران والثبات الرقمي
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
@@ -219,7 +215,6 @@ if st.session_state.page == 'welcome':
         """
         st.markdown(ticket_html, unsafe_allow_html=True)
         
-        # حقول إدخال البيانات المعتمدة للانطلاق
         st.session_state.user_name = st.text_input(strings["name_q"])
         u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
         
@@ -231,7 +226,6 @@ if st.session_state.page == 'welcome':
             else:
                 st.warning("Please enter your name / فضلاً أدخل اسمك")
 
-# ب. صفحة النظام والمسار السياحي الذكي
 else:
     col_m, col_s = st.columns([2.2, 1])
     with col_m:
@@ -266,16 +260,14 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # جلب رابط الخريطة الصحيح للغتين بالاعتماد على الاسم الفعلي للوجهة
                         d_name_raw = p.get('الوجهة', '').strip()
                         d_name_lower = d_name_raw.lower()
                         
-                        # الفحص والربط المباشر من القاموس
-                        google_maps_link = p.get('map_url') or MAPS_REGISTRY.get(d_name_raw) or MAPS_REGISTRY.get(d_name_lower)
+                        # استدعاء الرابط المباشر الآمن للخرائط
+                        google_maps_link = MAPS_REGISTRY.get(d_name_raw) or MAPS_REGISTRY.get(d_name_lower)
                         
-                        # حماية إضافية في حال كتابة الاسم بأسلوب مختلف في الـ JSON
                         if not google_maps_link:
-                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={d_name_raw}"
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={d_name_raw}+Riyadh"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
