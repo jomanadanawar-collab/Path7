@@ -1,7 +1,7 @@
 {
   "English": {
     "p_name": "Path7 📍",
-    "subtitle": "Your path to explore Riyadh, smartly and easily.",
+    "subtitle": "Your path to explore Riyadh, smartly and easily",
     "visitor_name": "What is your name?",
     "budget_q": "Choose your travel style:",
     "eco": "Economy",
@@ -116,7 +116,7 @@
     "metro_msg": "توجد محطة مترو قريبة.",
     "metro_fail": "لا يوجد خط مترو مباشر لهذا المكان.",
     "wait_choice": "⏳ اختر وسيلة النقل لرؤية المسار",
-    "rating_q": "قيّم تجربتك ⭐",
+    "rating_q": "قّيم تجربتك ⭐",
     "next_day": "اليوم التالي ⏭️",
     "finish": "شكراً لثقتك بـ Path7.. نتمنى لك رحلة ممتعة! ✨",
     "db": {
