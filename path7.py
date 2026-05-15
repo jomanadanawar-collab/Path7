@@ -253,10 +253,9 @@ else:
             
             final_suggestions = []
             show_weather_alert = False
-
-            # تصفية ذكية لمنع تكرار الاقتراحات التبادلية بشكل مكرر ومزعج في الكروت المفتوحة
             added_destinations = set()
 
+            # المعالجة الذكية والمصقولة لمنع ظهور أي كروت تبادلية مكررة نهائياً
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة')
@@ -267,16 +266,16 @@ else:
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
-                    if alternatives and alternatives[0].get('الوجهة') != d_name:
+                    if alternatives:
                         chosen_alt = alternatives[0]
                         if chosen_alt.get('الوجهة') not in added_destinations:
                             final_suggestions.append(chosen_alt)
                             added_destinations.add(chosen_alt.get('الوجهة'))
-                        continue
+                    continue
 
                 if is_crowded_time or is_traffic_peak:
                     alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
-                    if alternatives and alternatives[0].get('الوجهة') != d_name:
+                    if alternatives:
                         chosen_alt = alternatives[0]
                         if chosen_alt.get('الوجهة') not in added_destinations:
                             final_suggestions.append(chosen_alt)
@@ -381,16 +380,13 @@ else:
                     st.rerun()
             else:
                 st.info(strings["final_msg"])
-                
                 st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
                 
-                # إعداد النصوص بناءً على لغة الواجهة والتعريب الكامل للمصطلحات والأنماط
                 ticket_title = "PATH7 • تذكرة مسار الرحلة" if IS_AR else "PATH7 • ITINERARY TICKET"
                 university_name = "جامعة الإمام عبد الرحمن بن فيصل" if IS_AR else "Imam Abdulrahman bin Faisal University"
                 passenger_lbl = "اسم المسافر" if IS_AR else "Passenger Name"
                 style_lbl = "نمط الرحلة" if IS_AR else "Trip Style"
                 
-                # ترجمة النمط لغةً لعدم تركه بالإنجليزية داخل التذكرة العربية
                 if IS_AR:
                     translated_budget = "فاخرة ✨" if st.session_state.budget_key == "Luxury" else "اقتصادية 🌱"
                 else:
@@ -415,7 +411,6 @@ else:
                 ticket_style_direction = "rtl" if IS_AR else "ltr"
                 ticket_style_align = "right" if IS_AR else "left"
                 
-                # التذكرة نظيفة وخالية تماماً من الفوتر أو النصوص الإضافية في الأسفل لتبدو مثالية
                 html_ticket_content = f"""
                 <html>
                 <head>
