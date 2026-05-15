@@ -222,3 +222,177 @@ else:
             added_destinations = set()
 
             for p in raw_suggestions:
+                d_cat = p.get('الفئة')
+                # تعديل قراءة الاسم ليقبل اللغتين أثناء الفلترة
+                d_name = p.get('الوجهة', p.get('Destination', ''))
+                
+                if d_name in added_destinations:
+                    continue
+
+                if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
+                    show_weather_alert = True
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
+                    if alternatives:
+                        chosen_alt = alternatives[0]
+                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
+                        if alt_name not in added_destinations:
+                            final_suggestions.append(chosen_alt)
+                            added_destinations.add(alt_name)
+                    continue
+
+                if is_crowded_time or is_traffic_peak:
+                    alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "مطاعم ومقاهي"] and alt.get('الوجهة', alt.get('Destination')) != d_name]
+                    if alternatives:
+                        chosen_alt = alternatives[0]
+                        alt_name = chosen_alt.get('الوجهة', chosen_alt.get('Destination'))
+                        if alt_name not in added_destinations:
+                            final_suggestions.append(chosen_alt)
+                            added_destinations.add(alt_name)
+                    else:
+                        fallback_alts = [alt for alt in db if alt.get('الوجهة', alt.get('Destination')) != d_name]
+                        if fallback_alts:
+                            fb_name = fallback_alts[0].get('الوجهة', fallback_alts[0].get('Destination'))
+                            if fb_name not in added_destinations:
+                                final_suggestions.append(fallback_alts[0])
+                                added_destinations.add(fb_name)
+                else:
+                    final_suggestions.append(p)
+                    added_destinations.add(d_name)
+
+            final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
+
+            if show_weather_alert:
+                st.toast(strings["weather_alert"], icon="⚠️")
+
+            st.session_state.suggestions = final_suggestions
+            st.session_state.transport_choice = None
+            st.rerun()
+
+        if st.session_state.suggestions:
+            st.markdown(f"### {strings['trans_q']}")
+            t_cols = st.columns(3)
+            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
+            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
+            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
+
+            day_key = f"Day {st.session_state.day}"
+            # حفظ الاسم الصحيح باللغتين في السجل
+            st.session_state.itinerary_history[day_key] = [p.get('الوجهة', p.get('Destination')) for p in st.session_state.suggestions]
+
+            for p in st.session_state.suggestions:
+                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
+                is_traffic_peak = (16 <= hour <= 20)
+                
+                if st.session_state.transport_choice:
+                    base = p.get('b_time', 20)
+                    if st.session_state.transport_choice == "metro":
+                        t_val = base + 5
+                        traffic_str = ""
+                    else:
+                        t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
+                        traffic_str = strings["traffic_peak"] if is_traffic_peak else ""
+                    
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}{traffic_str}</b>"
+                    
+                    if st.session_state.transport_choice == "metro":
+                        if p.get('metro') == True:
+                            action_html = f"{time_str}<p style='color:#0284C7; margin:0;'>{strings['metro_msg']}</p>"
+                        else:
+                            action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
+                    else:
+                        d_name_raw = (p.get('الوجهة') or p.get('Destination', '')).strip()
+                        search_query = f"{d_name_raw} الرياض" if IS_AR else f"{d_name_raw}, Riyadh"
+                        encoded_query = urllib.parse.quote_plus(search_query)
+                        google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
+                        action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
+
+                # التعديل الذهبي لحل مشكلة الـ None بالكامل هنا:
+                d_name = p.get('الوجهة', p.get('Destination'))
+                d_desc = p.get('وصف', p.get('Description'))
+                
+                if (12 <= hour < 17):
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold; margin-top: 2px;'>{strings['cap_mid']}</small>"
+                else:
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold; margin-top: 2px;'>{strings['cap_low']}</small>"
+
+                st.markdown(f'''
+                    <div class="dest-card" style="position: relative; overflow: hidden; padding-top: 20px;">
+                        {capacity_lbl}
+                        <h4 style="color:#0284C7; margin:0; clear: both; padding-top: 2px;">{d_name}</h4>
+                        <p style="margin-top:8px; margin-bottom:0; font-size: 0.95em; color: #334155;">{d_desc}</p>
+                        <div style="margin-top: 12px; font-size: 0.9em; color: #475569;">{action_html}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
+                
+                if p.get('image') and os.path.exists(p['image']):
+                    st.image(p['image'], use_container_width=True)
+
+    with col_s:
+        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
+        stars = st.columns(5)
+        for i in range(1, 6):
+            if stars[i-1].button(f"{i}", key=f"s{i}"): st.session_state.rated = True
+        
+        if st.session_state.rated:
+            if st.session_state.day < 3:
+                if st.button(strings["next_day"]):
+                    st.session_state.day += 1
+                    st.session_state.suggestions = []
+                    st.session_state.transport_choice = None
+                    st.session_state.rated = False
+                    st.rerun()
+            else:
+                st.info(strings["final_msg"])
+                days_html = ""
+                for d_day, places in st.session_state.itinerary_history.items():
+                    translated_day = f"اليوم {d_day[-1]}" if IS_AR else d_day
+                    days_html += f"""
+                    <div style='margin-bottom: 15px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 10px;'>
+                        <h4 style='color: #0284C7; margin: 5px 0;'>📅 {translated_day}</h4>
+                        <ul style='margin: 5px 0; color: #1E3A8A; font-weight: 500;'>
+                    """
+                    for plc in places:
+                        days_html += f"<li>{plc}</li>"
+                    days_html += "</ul></div>"
+                
+                dir_style = "rtl" if IS_AR else "ltr"
+                align_style = "right" if IS_AR else "left"
+                
+                html_ticket_content = f"""
+                <html>
+                <head>
+                    <meta charset='utf-8'>
+                    <style>
+                        body {{ font-family: sans-serif; direction: {dir_style}; text-align: {align_style}; background: #F8FAFC; padding: 20px; }}
+                        .ticket-box {{ max-width: 550px; margin: 0 auto; background: white; border-radius: 25px; border: 2px solid #0284C7; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }}
+                        .header {{ background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); color: white; padding: 25px; text-align: center; }}
+                        .content {{ padding: 25px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class='ticket-box'>
+                        <div class='header'>
+                            <h2 style='margin:0;'>PATH7</h2>
+                        </div>
+                        <div class='content'>
+                            <h3>👤 {st.session_state.user_name}</h3>
+                            {days_html}
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                st.download_button(
+                    label="تحميل التذكرة الرسمية للرحلة (PDF/HTML) 🎫",
+                    data=html_ticket_content,
+                    file_name=f"Path7_Ticket_{st.session_state.user_name}.html",
+                    mime="text/html",
+                    use_container_width=True
+                )
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button(strings["reset"]):
+            st.session_state.clear()
+            st.rerun()
+
+st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
