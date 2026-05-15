@@ -38,24 +38,21 @@
           "Category": "History & Heritage",
           "Description": "Explore the historic mud-brick fortress in the heart of Riyadh, surrounded by spacious pedestrian paths ensuring a smooth experience.",
           "b_time": 20,
-          "metro": false,
-          "image": "masmak.png"
+          "metro": false
         },
         {
           "Destination": "Souq Al-Zal",
           "Category": "Shopping",
           "Description": "Riyadh's oldest traditional market, famous for authentic carpets, antiques, and traditional cloaks, offering an immersive cultural path.",
           "b_time": 15,
-          "metro": false,
-          "image": "souq_alzal.png"
+          "metro": false
         },
         {
           "Destination": "King Abdullah Park",
           "Category": "Nature",
           "Description": "A magnificent expansive public park featuring lush green landscapes, pedestrian tracks, and a giant musical fountain.",
           "b_time": 25,
-          "metro": false,
-          "image": "king_abdullah_park.png"
+          "metro": false
         }
       ],
       "Luxury": [
@@ -64,32 +61,28 @@
           "Category": "Shopping",
           "Description": "An architectural masterpiece representing modern Riyadh, hosting luxurious brands and premium walkways between futuristic skyscrapers.",
           "b_time": 15,
-          "metro": true,
-          "image": "kafd.png"
+          "metro": true
         },
         {
           "Destination": "Boulevard City",
           "Category": "Entertainment",
           "Description": "The ultimate entertainment hub in Riyadh, featuring vibrant neon lights, global events, cinemas, and local upscale cafes.",
           "b_time": 42,
-          "metro": false,
-          "image": "boulevard.png"
+          "metro": false
         },
         {
           "Destination": "Al-Bujairi Terrace",
           "Category": "Dining",
           "Description": "A premium dining destination in historic Diriyah, blending authentic Najdi architecture with a stunning view of At-Turaif district.",
           "b_time": 30,
-          "metro": false,
-          "image": "bujairi.png"
+          "metro": false
         },
         {
           "Destination": "Via Riyadh",
           "Category": "Dining",
           "Description": "An ultra-luxury complex designed in Salmani architectural style, offering world-class elite restaurants and live experiences.",
           "b_time": 35,
-          "metro": false,
-          "image": "via_riyadh.png"
+          "metro": false
         }
       ]
     }
@@ -134,8 +127,7 @@
           "الفئة": "تاريخ وآثار",
           "وصف": "استكشف هذا الحصن العتيق في قلب الرياض، تحفة معمارية نجدية تحيط بها ساحات واسعة ومسارات مشاة سالكة تضمن تجربة هادئة.",
           "b_time": 20,
-          "metro": false,
-          "image": "masmak.png"
+          "metro": false
         },
         {
           "Destination": "Souq Al-Zal",
@@ -143,8 +135,7 @@
           "الفئة": "تسوق",
           "وصف": "أقدم الأسواق التراثية بالعاصمة، يفوح بعبق الماضي والعود، ويقدم مسارات تسوق غنية بالمقتنيات الأثرية والمشالح والزل الفاخر.",
           "b_time": 15,
-          "metro": false,
-          "image": "souq_alzal.png"
+          "metro": false
         },
         {
           "Destination": "King Abdullah Park",
@@ -152,8 +143,7 @@
           "الفئة": "طبيعة",
           "وصف": "مسطحات خضراء ممتدة وممرات مشاة فسيحة تحتضن البحيرة والنافورة التفاعلية الضخمة، توفر مساراً طبيعياً منعشاً وسالكاً.",
           "b_time": 25,
-          "metro": false,
-          "image": "king_abdullah_park.png"
+          "metro": false
         }
       ],
       "Luxury": [
@@ -163,8 +153,7 @@
           "الفئة": "تسوق",
           "وصف": "أيقونة عمرانية عالمية تمثل نهضة العاصمة، يضم أفخم دور الأزياء والمطاعم العالمية بين ناطحات سحاب مذهلة وممرات مكيفة وسالكة.",
           "b_time": 15,
-          "metro": true,
-          "image": "kafd.png"
+          "metro": true
         },
         {
           "Destination": "Boulevard City",
@@ -172,8 +161,7 @@
           "الفئة": "ترفيه",
           "وصف": "أكبر منطقة ترفيهية في العاصمة تجمع بين الشاشات العملاقة، الفعاليات العالمية، المقاهي الراقية، والممرات المصممة لاستيعاب الحشود بشكل مذهل.",
           "b_time": 42,
-          "metro": false,
-          "image": "boulevard.png"
+          "metro": false
         },
         {
           "Destination": "Al-Bujairi Terrace",
@@ -181,8 +169,7 @@
           "الفئة": "مطاعم ومقاهي",
           "وصف": "وجهة فاخرة للمطاعم الراقية في الدرعية التاريخية، تمزج بين الطراز المعماري النجدي العريق والإطلالات الآسرة على حي الطريف التاريخي.",
           "b_time": 30,
-          "metro": false,
-          "image": "bujairi.png"
+          "metro": false
         },
         {
           "Destination": "Via Riyadh",
@@ -190,8 +177,7 @@
           "الفئة": "مطاعم ومقاهي",
           "وصف": "مجمع فاخر مصمم على الطراز السلماني الأنيق، يقدم تجارب ترفيهية استثنائية ونخبة من المطاعم والمقاهي العالمية المرموقة وسط ممرات مائية بديعة.",
           "b_time": 35,
-          "metro": false,
-          "image": "via_riyadh.png"
+          "metro": false
         }
       ]
     }
