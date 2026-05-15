@@ -34,12 +34,12 @@
     "db": {
       "Economy": [
         {
-          "Destination": "Al-Masmak Palace (Day View)",
+          "Destination": "Al-Masmak Palace",
           "Category": "History & Heritage",
           "Description": "Explore the historic mud-brick fortress in the heart of Riyadh, surrounded by spacious pedestrian paths ensuring a smooth experience.",
           "b_time": 20,
           "metro": false,
-          "image": "masmak_day.png"
+          "image": "masmak.png"
         },
         {
           "Destination": "Souq Al-Zal",
@@ -68,6 +68,14 @@
           "image": "kafd.png"
         },
         {
+          "Destination": "Boulevard City",
+          "Category": "Entertainment",
+          "Description": "The ultimate entertainment hub in Riyadh, featuring vibrant neon lights, global events, cinemas, and local upscale cafes.",
+          "b_time": 42,
+          "metro": false,
+          "image": "boulevard.png"
+        },
+        {
           "Destination": "Al-Bujairi Terrace",
           "Category": "Dining",
           "Description": "A premium dining destination in historic Diriyah, blending authentic Najdi architecture with a stunning view of At-Turaif district.",
@@ -82,14 +90,6 @@
           "b_time": 35,
           "metro": false,
           "image": "via_riyadh.png"
-        },
-        {
-          "Destination": "Al-Masmak Palace (Night View)",
-          "Category": "History & Heritage",
-          "Description": "Discover the iconic fortress beautifully lit up at night, reflecting the majestic beginning of the modern Saudi state.",
-          "b_time": 20,
-          "metro": false,
-          "image": "masmak_night.png"
         }
       ]
     }
@@ -97,7 +97,7 @@
   "العربية": {
     "p_name": "Path7 📍",
     "subtitle": "اكتشف مسارات الرياض الخفية والسالكة، فوراً.",
-    "visitor_name": "فضلاً، ما هو اسمك？",
+    "visitor_name": "فضلاً، ما هو اسمك؟",
     "budget_q": "اختر نمط رحلتك:",
     "eco": "اقتصادية 🌱",
     "lux": "فاخرة ✨",
@@ -129,13 +129,13 @@
     "db": {
       "Economy": [
         {
-          "Destination": "Al-Masmak Palace (Day View)",
-          "الوجهة": "قصر المصمك التراثي (نهاري)",
+          "Destination": "Al-Masmak Palace",
+          "الوجهة": "قصر المصمك التراثي",
           "الفئة": "تاريخ وآثار",
           "وصف": "استكشف هذا الحصن العتيق في قلب الرياض، تحفة معمارية نجدية تحيط بها ساحات واسعة ومسارات مشاة سالكة تضمن تجربة هادئة.",
           "b_time": 20,
           "metro": false,
-          "image": "masmak_day.png"
+          "image": "masmak.png"
         },
         {
           "Destination": "Souq Al-Zal",
@@ -167,6 +167,15 @@
           "image": "kafd.png"
         },
         {
+          "Destination": "Boulevard City",
+          "الوجهة": "بوليفارد سيتي",
+          "الفئة": "ترفيه",
+          "وصف": "أكبر منطقة ترفيهية في العاصمة تجمع بين الشاشات العملاقة، الفعاليات العالمية، المقاهي الراقية، والممرات المصممة لاستيعاب الحشود بشكل مذهل.",
+          "b_time": 42,
+          "metro": false,
+          "image": "boulevard.png"
+        },
+        {
           "Destination": "Al-Bujairi Terrace",
           "الوجهة": "مطل البجيري التاريخي",
           "الفئة": "مطاعم ومقاهي",
@@ -183,15 +192,6 @@
           "b_time": 35,
           "metro": false,
           "image": "via_riyadh.png"
-        },
-        {
-          "Destination": "Al-Masmak Palace (Night View)",
-          "الوجهة": "قصر المصمك (إضاءة ليلية)",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "شاهد الحصن العريق وهو يكتسي بحلّة ليلية ذهبية مهيبة تحتضن عبق التاريخ، ليروي قصة تأسيس الدولة السعودية الحديثة بمسارات مريحة.",
-          "b_time": 20,
-          "metro": false,
-          "image": "masmak_night.png"
         }
       ]
     }
