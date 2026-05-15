@@ -126,6 +126,17 @@ st.markdown(f'''
     .dest-card {{ background: white; padding: 20px; border-radius: 20px; border-{"right" if IS_AR else "left"}: 10px solid #0EA5E9; margin-bottom: 15px; text-align: {text_align}; }}
     .map-btn {{ background-color: #0284C7; color: white !important; padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }}
     
+    /* ستايل مخصص لـ segmented control ليتناسق مع ألوان تطبيقك */
+    div[data-testid="stSegmentedControl"] button {{
+        background: rgba(255, 255, 255, 0.6) !important;
+        border-radius: 10px !important;
+        color: #0284C7 !important;
+    }}
+    div[data-testid="stSegmentedControl"] button[aria-checked="true"] {{
+        background: linear-gradient(90deg, #0284C7, #38BDF8) !important;
+        color: white !important;
+    }}
+    
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     
     .center-rating .stButton>button {{
@@ -196,10 +207,16 @@ else:
 
         if st.session_state.suggestions:
             st.markdown(f"### {strings['trans_q']}")
-            t_cols = st.columns(3)
-            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
-            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
-            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
+            
+            # التعديل الهندسي الحاسم: استخدام st.segmented_control يحفظ الحالة ويمنع اختفاء الكروت عند الضغط على الروابط
+            options_map = {strings["metro"]: "metro", strings["car"]: "car", strings["taxi"]: "taxi"}
+            selected_trans_lbl = st.segmented_control(
+                label=strings['trans_q'],
+                options=list(options_map.keys()),
+                label_visibility="collapsed"
+            )
+            if selected_trans_lbl:
+                st.session_state.transport_choice = options_map[selected_trans_lbl]
 
             for p in st.session_state.suggestions:
                 action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
@@ -214,19 +231,14 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        # جلب الاسم مباشرة من الـ JSON (سيخرج باللغة الإنجليزية الصافية فور تفعيل الإنجليزي!)
                         d_name_raw = p.get('الوجهة', '').strip()
                         
-                        # إضافة اسم المدينة للبحث بدقة متناهية لمنع التشتت الجغرافي
                         if not IS_AR:
                             search_query = f"{d_name_raw}, Riyadh"
                         else:
                             search_query = f"{d_name_raw} الرياض"
                         
-                        # ترميز النص برمجياً بشكل آمن لحماية الروابط من التلف والتخريب (%20)
                         encoded_query = urllib.parse.quote_plus(search_query)
-                        
-                        # تشفير النطاق لمنع خوارزميات الشات من تحويله تلقائياً لروابط ميتة داخلياً
                         base_domain = "https" + "://" + "www.google.com" + "/maps/search/?api=1&query="
                         google_maps_link = f"{base_domain}{encoded_query}"
                         
