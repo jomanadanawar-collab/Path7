@@ -182,26 +182,24 @@ else:
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
-            # تحديد ما إذا كان الوقت الحالي يمثل زحمة شديدة
+            is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
-            # جلب الأماكن الأساسية المطابقة لاهتمامات المستخدم
+            # جلب الأماكن المطابقة للاختيار
             if not IS_AR:
                 mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
                 raw_suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
             else:
                 raw_suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
             
-            # تعديل ذكي: إذا كان الوقت مزدحماً، نقوم بتصفية الأماكن المزدحمة واستبدالها فوراً ببدائل سالكة
             final_suggestions = []
             for p in raw_suggestions:
-                if is_crowded_time:
-                    # إذا كان المكان نفسه سيظهر عليه وسم "مزدحم"، نبحث فوراً عن مكان آخر سالك من نفس الفئة في قاعدة البيانات
+                # إذا كان الشارع مزدحماً أو المكان مزدحماً، استبدله فوراً ببديل سالك تماماً
+                if is_crowded_time or is_traffic_peak:
                     d_cat = p.get('الفئة')
                     d_name = p.get('الوجهة')
                     alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
                     if alternatives:
-                        # نقترح المكان البديل السالك بدلاً من المزدحم مباشرة
                         final_suggestions.append(alternatives[0])
                     else:
                         final_suggestions.append(p)
@@ -233,9 +231,9 @@ else:
                         traffic_status = ""
                     else:
                         t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
-                        traffic_status = f" <span style='color:#EF4444; font-size:0.85em;'>({strings['traffic_peak']})</span>" if is_traffic_peak else ""
+                        traffic_status = "" # تم إلغاء النص المكرر المشتت للشارع
                     
-                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>{traffic_status}"
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
                     
                     if st.session_state.transport_choice == "metro":
                         if p.get('metro') == True:
@@ -257,9 +255,8 @@ else:
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
-                # تلوين وتحديد حالة الازدحام الفعلي للأماكن المعروضة حالياً
-                if is_crowded_time:
-                    # الأماكن المتبقية هُنـا هي الأماكن البديلة التي تم اختيارها لأنها سالكة
+                # توحيد شارات الحالة لتظهر دائماً باللون الأخضر النظيف طالما تم تصفية الزحمة خلف الكواليس
+                if is_crowded_time or is_traffic_peak:
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
                 elif (12 <= hour < 17):
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
