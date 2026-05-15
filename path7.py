@@ -28,13 +28,59 @@ if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
 
+# قاموس ثابت لروابط الخرائط لضمان عملها للغتين العربية والإنجليزية
+MAPS_REGISTRY = {
+    "حي طريف التاريخي": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
+    "at-turaif historic district": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
+    "at-turaif": "https://maps.app.goo.gl/csHoJWG4BMLkfRJW7?g_st=ipc",
+    
+    "سوق المعيقلية": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
+    "al muaiqilia market": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
+    "al-muaiqilia": "https://maps.app.goo.gl/xy3hqb29ww3X3nkU9?g_st=ic",
+    
+    "قصر المصمك": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
+    "al masmak palace": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
+    "masmak fortress": "https://maps.app.goo.gl/FiaUHymd1jLTrN8AA?g_st=ic",
+    
+    "سوق الزل": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
+    "souq al zal": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
+    "al-zal market": "https://maps.app.goo.gl/QDoo5gevYDxsD5V79?g_st=iw",
+    
+    "ڤيا الرياض": "https://maps.app.goo.gl/yyM4HfYoa7nfYHSe7?g_st=ic",
+    "via riyadh": "https://maps.app.goo.gl/yyM4HfYoa7nfYHSe7?g_st=ic",
+    
+    "البوليفارد": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
+    "boulevard": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
+    "the boulevard": "https://maps.app.goo.gl/mPLomGHnZBAPQw1q7?g_st=ic",
+    
+    "المالية": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
+    "financial district": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
+    "kafd": "https://maps.app.goo.gl/Cs45ckXh7AwqPqUJ8?g_st=ic",
+    
+    "واجهة روشن": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
+    "roshn waterfront": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
+    "roshn front": "https://maps.app.goo.gl/81dz34BHHRamtSr27?g_st=ic",
+    
+    "البجيري": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
+    "bujairi terrace": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
+    "al-bujairi": "https://maps.app.goo.gl/mgGKsuyqhEK8ydrT8?g_st=ic",
+    
+    "وادي حنيفة": "https://maps.app.goo.gl/6KhYZAnVumSQCVJb9?g_st=ic",
+    "wadi hanifa": "https://maps.app.goo.gl/6KhYZAnVumSQCVJb9?g_st=ic",
+    
+    "منتزه الملك عبدالله": "https://maps.app.goo.gl/A3GArkz2aX5jD1Da8?g_st=ic",
+    "king abdullah park": "https://maps.app.goo.gl/A3GArkz2aX5jD1Da8?g_st=ic",
+    
+    "حافة العالم": "https://maps.app.goo.gl/saiAr2PGJuqZXN8z5?g_st=ic",
+    "edge of the world": "https://maps.app.goo.gl/saiAr2PGJuqZXN8z5?g_st=ic"
+}
+
 # --- بوابة اختيار اللغة الأولى ---
 if st.session_state.page == 'lang_selection':
     st.markdown("""
         <style>
         .stApp { background: linear-gradient(135deg, #0284C7 0%, #E0F2FE 100%); }
         
-        /* كرت العنوان مع مسافة سفلية تمنع الالتصاق نهائياً */
         .lang-card { 
             background: rgba(255, 255, 255, 0.8); 
             backdrop-filter: blur(10px); 
@@ -46,7 +92,6 @@ if st.session_state.page == 'lang_selection':
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
         }
         
-        /* أنيميشن ناعم وسلس لأزرار اللغتين */
         div[data-testid="stHorizontalBlock"] .stButton > button {
             background: white !important;
             color: #0284C7 !important;
@@ -83,7 +128,7 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
@@ -157,7 +202,6 @@ if st.session_state.page == 'welcome':
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
     
     with col_w2:
-        # الكود هنا تمت مراجعته بالكامل والتأكد من إغلاق كل الأقواس وعلامات الاقتباس بدقة منعاً لأي SyntaxError
         ticket_html = """
         <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -222,8 +266,16 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
-                        d_name_for_map = p.get('الوجهة', 'Riyadh')
-                        google_maps_link = p.get('map_url') or f"https://www.google.com/maps/search/?api=1&query={d_name_for_map}"
+                        # جلب رابط الخريطة الصحيح للغتين بالاعتماد على الاسم الفعلي للوجهة
+                        d_name_raw = p.get('الوجهة', '').strip()
+                        d_name_lower = d_name_raw.lower()
+                        
+                        # الفحص والربط المباشر من القاموس
+                        google_maps_link = p.get('map_url') or MAPS_REGISTRY.get(d_name_raw) or MAPS_REGISTRY.get(d_name_lower)
+                        
+                        # حماية إضافية في حال كتابة الاسم بأسلوب مختلف في الـ JSON
+                        if not google_maps_link:
+                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={d_name_raw}"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
