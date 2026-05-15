@@ -2,96 +2,182 @@
   "العربية": {
     "p_name": "Path7 📍",
     "subtitle": "نظام التوافق اللحظي للسياحة الذكية",
-    "visitor_name": "اسم السائح",
-    "budget_q": "حدد الميزانية المناسبة للرحلة:",
-    "start_btn": "استكشف المسار الآن 🚀",
-    "day": "اليوم", 
+    "visitor_name": "مرحباً بك، ما هو اسمك؟",
+    "budget_q": "حدد طابع رحلتك اليوم:",
+    "eco": "اقتصادية",
+    "lux": "فاخرة",
+    "start_btn": "انطلق لاستكشاف الرياض 🚀",
+    "day": "يوم",
     "of": "من",
-    "weather": "حالة الطقس", 
-    "sunny": "مشمس (يفضل الأماكن المغلقة) ☀️", 
-    "night": "ليل صافي (مثالي للمشي) 🌙",
-    "interests_q": "🌟 ما هي اهتماماتك المفضلة اليوم؟",
+    "sunny": "مشمس ☀️",
+    "night": "صافي 🌙",
+    "interests_q": "ما هي اهتماماتك المفضلة اليوم؟",
     "interests_list": ["تاريخ وآثار", "ترفيه", "طبيعة", "تسوق", "مطاعم ومقاهي"],
     "analyze_btn": "تحليل المسار الذكي 🔍",
     "transport_q": "وسيلة النقل المفضلة",
-    "m_btn": "🚇 المترو", 
-    "c_btn": "🚗 سيارة", 
-    "t_btn": "🚕 تاكسي",
-    "min": "دقيقة", 
-    "est_time": "وقت الوصول المقدر",
+    "m_btn": "🚇 المترو",
+    "c_btn": "🚗 السيارة",
+    "t_btn": "🚕 التاكسي",
+    "est_time": "الوقت المقدر",
+    "min": "دقيقة",
+    "map_btn": "📍 فتح في الخرائط",
+    "metro_msg": "محطة المترو قريبة منك.",
+    "metro_fail": "لا يوجد خط مترو مباشر لهذه الوجهة.",
     "wait_choice": "⏳ حدد وسيلة النقل لمعرفة المسار",
-    "metro_msg": "محطة المترو قريبة منك ومتوفرة.",
-    "metro_fail": "عذراً، المترو لا يصل مباشرة لهذه الوجهة.",
-    "rating_q": "⭐ تقييمك للتجربة",
-    "next_day": "مسار اليوم التالي ⏩",
-    "finish": "✨ رحلة سعيدة وذكريات لا تُنسى! ✨",
-    "eco": "اقتصادية", 
-    "lux": "فاخرة",
-    "map_btn": "📍 الموقع على الخريطة",
+    "rating_q": "تقييمك للتجربة ⭐",
+    "next_day": "اليوم التالي ⏭️",
+    "finish": "شكرًا لثقتك بـ Path7.. نتمنى لك رحلة سعيدة! ✨",
     "db": {
       "Economy": [
-        {"الوجهة": "حصن المصمك", "وصف": "رمز التأسيس وعراقة الماضي.", "b_time": 25, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps4", "الفئة": "تاريخ وآثار", "image": "images/masmak.jpg"},
-        {"الوجهة": "أسواق المعيقلية", "وصف": "بخور وعطور أصيلة وتجربة شعبية.", "b_time": 30, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps7", "الفئة": "تسوق", "image": "images/mueaiqilia.jpg"},
-        {"الوجهة": "سوق الزل", "وصف": "تاريخ وتحف نادرة ومزاد تراثي.", "b_time": 20, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps5", "الفئة": "تسوق", "image": "images/zal.jpg"},
-        {"الوجهة": "مركز الملك عبدالله المالي (KAFD)", "وصف": "أيقونة الرياض الحديثة ناطحات سحاب ومقاهي.", "b_time": 15, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps6", "الفئة": "مطاعم ومقاهي", "image": "images/kafd.jpg"},
-        {"الوجهة": "وادي حنيفة", "وصف": "طبيعة وجمال هادئ وممرات للمشي.", "b_time": 45, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M03", "الفئة": "طبيعة", "image": "images/hanifa.jpg"},
-        {"الوجهة": "منتزه الملك عبد الله", "وصف": "مسطحات خضراء ونافورات راقصة.", "b_time": 35, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M04", "الفئة": "طبيعة", "image": "images/park.jpg"},
-        {"الوجهة": "حافة العالم", "وصف": "منظر طبيعي جبلي يخطف الأنفاس.", "b_time": 90, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M05", "الفئة": "طبيعة", "image": "images/edge.jpg"},
-        {"الوجهة": "واجهة روشن", "وصف": "تسوق ومطاعم مفتوحة مميزة.", "b_time": 25, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M06", "الفئة": "تسوق", "image": "images/roshan.jpg"}
+        {
+          "الوجهة": "قصر المصمك",
+          "الفئة": "تاريخ وآثار",
+          "وصف": "حصن طيني شهير يروي قصة توحيد المملكة العربية السعودية وملاحمها التاريخية.",
+          "b_time": 20,
+          "metro": true
+        },
+        {
+          "الوجهة": "وادي حنيفة",
+          "الفئة": "طبيعة",
+          "وصف": "منتزه طبيعي يمتد لمسافات طويلة، مثالي للمشي والاسترخاء وسط أجواء الرياض المفتوحة.",
+          "b_time": 35,
+          "metro": false
+        },
+        {
+          "الوجهة": "منتزه الملك عبدالله",
+          "الفئة": "ترفيه",
+          "وصف": "حديقة واسعة في الملز تتميز بالمسطحات الخضراء والنافورات المضيئة ليلاً.",
+          "b_time": 25,
+          "metro": true
+        },
+        {
+          "الوجهة": "حافة العالم",
+          "الفئة": "طبيعة",
+          "وصف": "مطل صخري شاهق يطل على وديان واسعة ويمنحك تجربة مغامرة استثنائية.",
+          "b_time": 90,
+          "metro": false
+        }
       ],
       "Luxury": [
-        {"الوجهة": "حي الطريف التاريخي", "وصف": "قلب الدرعية التاريخي المسجل في اليونسكو.", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M07", "الفئة": "تاريخ وآثار", "image": "images/turaif.jpg"},
-        {"الوجهة": "ڤيا الرياض", "وصف": "فخامة السينما والمطاعم العالمية الراقية.", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M08", "الفئة": "ترفيه", "image": "images/via.jpg"},
-        {"الوجهة": "البوليفارد", "وصف": "روح الترفيه العالمية والفعاليات المذهلة.", "b_time": 30, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M09", "الفئة": "ترفيه", "image": "images/boulevard.jpg"},
-        {"الوجهة": "مطل البجيري", "وصف": "إطلالة ساحرة على طريف ومطاعم فاخرة.", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/W1Z2x3C4v5B6n7M80", "الفئة": "مطاعم ومقاهي", "image": "images/bujairi.jpg"}
+        {
+          "الوجهة": "فيا الرياض",
+          "الفئة": "تسوق",
+          "وصف": "منطقة فاخرة مصممة على الطراز السلماني تضم أرقى المطاعم العالمية والماركات العالمية.",
+          "b_time": 15,
+          "metro": false
+        },
+        {
+          "الوجهة": "مطل البجيري",
+          "الفئة": "مطاعم ومقاهي",
+          "وصف": "إطلالة ساحرة ومباشرة على حي الطريف التاريخي بالدرعية مع أفخم المطاعم الفاخرة.",
+          "b_time": 30,
+          "metro": false
+        },
+        {
+          "الوجهة": "واجهة روشن",
+          "الفئة": "ترفيه",
+          "وصف": "وجهة حيوية نابضة بالحياة تجمع بين السينما والمطاعم والممشى المفتوح المميز.",
+          "b_time": 20,
+          "metro": false
+        },
+        {
+          "الوجهة": "مركز الملك عبدالله المالي",
+          "الفئة": "تسوق",
+          "وصف": "أيقونة معمارية ومستقبلية تمثل المركز المالي والأبراج الشاهقة لمدينة الرياض.",
+          "b_time": 15,
+          "metro": true
+        }
       ]
     }
   },
   "English": {
     "p_name": "Path7 📍",
-    "subtitle": "Smart Tourism Real-time System",
-    "visitor_name": "Tourist Name",
-    "budget_q": "Choose your trip budget style:",
-    "start_btn": "Explore Path Now 🚀",
-    "day": "Day", 
+    "subtitle": "Real-time Smart Tourism System",
+    "visitor_name": "Welcome, what is your name?",
+    "budget_q": "Choose your trip style today:",
+    "eco": "Economy",
+    "lux": "Luxury",
+    "start_btn": "Explore Riyadh 🚀",
+    "day": "Day",
     "of": "of",
-    "weather": "Weather", 
-    "sunny": "Sunny (Indoor places recommended) ☀️", 
-    "night": "Clear Night (Ideal for walking) 🌙",
-    "interests_q": "🌟 What are your favorite interests today?",
-    "interests_list": ["History", "Entertainment", "Nature", "Shopping", "Dining"],
+    "sunny": "Sunny ☀️",
+    "night": "Clear 🌙",
+    "interests_q": "What are your preferred interests today?",
+    "interests_list": ["History & Heritage", "Entertainment", "Nature", "Shopping", "Dining"],
     "analyze_btn": "Smart Path Analysis 🔍",
     "transport_q": "Preferred Transport",
-    "m_btn": "🚇 Metro", 
-    "c_btn": "🚗 Car", 
+    "m_btn": "🚇 Metro",
+    "c_btn": "🚗 Car",
     "t_btn": "🚕 Taxi",
-    "min": "mins", 
-    "est_time": "Estimated Arrival Time",
-    "wait_choice": "⏳ Select transport to see the path",
-    "metro_msg": "Metro station is nearby and available.",
-    "metro_fail": "Sorry, Metro does not reach this destination directly.",
-    "rating_q": "⭐ Rate your experience",
-    "next_day": "Next Day Path ⏩",
-    "finish": "✨ Have a great trip and unforgettable memories! ✨",
-    "eco": "Economy", 
-    "lux": "Luxury",
-    "map_btn": "📍 View on Map",
+    "est_time": "Est. Time",
+    "min": "mins",
+    "map_btn": "📍 Open Maps",
+    "metro_msg": "Metro station is nearby.",
+    "metro_fail": "No direct metro line to this destination.",
+    "wait_choice": "⏳ Select transport to see path",
+    "rating_q": "Rate your experience ⭐",
+    "next_day": "Next Day ⏭️",
+    "finish": "Thank you for trusting Path7.. Have a great trip! ✨",
     "db": {
       "Economy": [
-        {"الوجهة": "Al-Masmak Fort", "وصف": "The symbol of foundation and ancient history.", "b_time": 25, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps4", "الفئة": "History", "image": "images/masmak.jpg"},
-        {"الوجهة": "Al-Mueaiqilia Markets", "وصف": "Authentic incense, perfumes, and heritage experience.", "b_time": 30, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps7", "الفئة": "Shopping", "image": "images/mueaiqilia.jpg"},
-        {"الوجهة": "Souq Al-Zal", "وصف": "History, rare antiques, and traditional auctions.", "b_time": 20, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps5", "الفئة": "Shopping", "image": "images/zal.jpg"},
-        {"الوجهة": "King Abdullah Financial District (KAFD)", "وصف": "The icon of modern Riyadh, skyscrapers and cafes.", "b_time": 15, "metro": true, "map_url": "https://www.google.com/search?q=https://www.google.com/maps6", "الفئة": "Dining", "image": "images/kafd.jpg"},
-        {"الوجهة": "Wadi Hanifa", "وصف": "Beautiful serene nature and walking pathways.", "b_time": 45, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M03", "الفئة": "Nature", "image": "images/hanifa.jpg"},
-        {"الوجهة": "King Abdullah Park", "وصف": "Green landscapes and wide dancing fountains.", "b_time": 35, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M04", "الفئة": "Nature", "image": "images/park.jpg"},
-        {"الوجهة": "Edge of the World", "وصف": "Breathtaking mountain views and natural horizons.", "b_time": 90, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M05", "الفئة": "Nature", "image": "images/edge.jpg"},
-        {"الوجهة": "Roshn Front", "وصف": "Excellent open-air shopping and dining hub.", "b_time": 25, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M06", "الفئة": "Shopping", "image": "images/roshan.jpg"}
+        {
+          "الوجهة": "Al Masmak Palace",
+          "الفئة": "History & Heritage",
+          "وصف": "A famous clay fortress that tells the history of the unification of Saudi Arabia.",
+          "b_time": 20,
+          "metro": true
+        },
+        {
+          "الوجهة": "Wadi Hanifa",
+          "الفئة": "Nature",
+          "وصف": "A natural valley park, perfect for walking and relaxing in Riyadh's open atmosphere.",
+          "b_time": 35,
+          "metro": false
+        },
+        {
+          "الوجهة": "King Abdullah Park",
+          "الفئة": "Entertainment",
+          "وصف": "A spacious park in Al-Malaz featuring lush greenery and dancing fountains at night.",
+          "b_time": 25,
+          "metro": true
+        },
+        {
+          "الوجهة": "The Edge of the World",
+          "الفئة": "Nature",
+          "وصف": "A breathtaking rocky cliff overlooking vast valleys, offering an exceptional adventure.",
+          "b_time": 90,
+          "metro": false
+        }
       ],
       "Luxury": [
-        {"الوجهة": "At-Turaif Historic District", "وصف": "The historic heart of Diriyah, a UNESCO site.", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M07", "الفئة": "History", "image": "images/turaif.jpg"},
-        {"الوجهة": "Via Riyadh", "وصف": "Luxury cinema and world-class premium dining.", "b_time": 15, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M08", "الفئة": "Entertainment", "image": "images/via.jpg"},
-        {"الوجهة": "The Boulevard", "وصف": "The vibrant spirit of global entertainment and events.", "b_time": 30, "metro": false, "map_url": "https://maps.app.goo.gl/3nS2j5G6h7K8L9M09", "الفئة": "Entertainment", "image": "images/boulevard.jpg"},
-        {"الوجهة": "Bujairi Terrace", "وصف": "Charming views over At-Turaif and luxury restaurants.", "b_time": 20, "metro": true, "map_url": "https://maps.app.goo.gl/W1Z2x3C4v5B6n7M80", "الفئة": "Dining", "image": "images/bujairi.jpg"}
+        {
+          "الوجهة": "Via Riyadh",
+          "الفئة": "Shopping",
+          "وصف": "A luxurious area designed in Salmani style, featuring elite world-class restaurants and brands.",
+          "b_time": 15,
+          "metro": false
+        },
+        {
+          "الوجهة": "Bujairi Terrace",
+          "الفئة": "Dining",
+          "وصف": "A premium dining destination with direct, stunning views over the historic At-Turaif in Diriyah.",
+          "b_time": 30,
+          "metro": false
+        },
+        {
+          "الوجهة": "Roshn Front",
+          "الفئة": "Entertainment",
+          "وصف": "A vibrant venue combining cinemas, outdoor shopping, and premium urban walkways.",
+          "b_time": 20,
+          "metro": false
+        },
+        {
+          "الوجهة": "KAFD",
+          "الفئة": "Shopping",
+          "وصف": "An architectural and futuristic icon representing the financial hub and skyline of Riyadh.",
+          "b_time": 15,
+          "metro": true
+        }
       ]
     }
   }
