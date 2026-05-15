@@ -140,8 +140,8 @@ strings = {
     "next_day": lang_data.get("next_day", "Next Day ⏭️"),
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
     "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨"),
-    "traffic_peak": "مزدحم الشارع الآن 🚗" if IS_AR else "Traffic Peak 🚗",
-    "cap_high": "🔴 مزدحم للغاية الآن" if IS_AR else "🔴 Highly Crowded Now",
+    "traffic_peak": " - مزدحم الشارع الآن 🚗" if IS_AR else " - Traffic Peak 🚗",
+    "cap_high": "🔴 مزدحم للغاية" if IS_AR else "🔴 Highly Crowded",
     "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
     "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth",
     "weather_alert": "⚠️ تم استبدال المواقع الخارجية لشدة حرارة الأجواء وتوجيهك لأماكن مغلقة ومكيفة ومريحة!" if IS_AR else "⚠️ Outdoor places swapped due to current heat; redirected to premium indoor venues!"
@@ -254,25 +254,39 @@ else:
             final_suggestions = []
             show_weather_alert = False
 
+            # تصفية ذكية لمنع تكرار الاقتراحات التبادلية بشكل مكرر ومزعج في الكروت المفتوحة
+            added_destinations = set()
+
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة')
+                
+                if d_name in added_destinations:
+                    continue
 
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
-                    if alternatives:
-                        final_suggestions.append(alternatives[0])
+                    if alternatives and alternatives[0].get('الوجهة') != d_name:
+                        chosen_alt = alternatives[0]
+                        if chosen_alt.get('الوجهة') not in added_destinations:
+                            final_suggestions.append(chosen_alt)
+                            added_destinations.add(chosen_alt.get('الوجهة'))
                         continue
 
                 if is_crowded_time or is_traffic_peak:
                     alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
-                    if alternatives:
-                        final_suggestions.append(alternatives[0])
+                    if alternatives and alternatives[0].get('الوجهة') != d_name:
+                        chosen_alt = alternatives[0]
+                        if chosen_alt.get('الوجهة') not in added_destinations:
+                            final_suggestions.append(chosen_alt)
+                            added_destinations.add(chosen_alt.get('الوجهة'))
                     else:
                         final_suggestions.append(p)
+                        added_destinations.add(d_name)
                 else:
                     final_suggestions.append(p)
+                    added_destinations.add(d_name)
 
             final_suggestions = sorted(final_suggestions, key=lambda x: x.get('b_time', 20))
 
@@ -304,10 +318,12 @@ else:
                     base = p.get('b_time', 20)
                     if st.session_state.transport_choice == "metro":
                         t_val = base + 5
+                        traffic_str = ""
                     else:
                         t_val = int(base * 1.7) if is_traffic_peak else int(base * 1.2)
+                        traffic_str = strings["traffic_peak"] if is_traffic_peak else ""
                     
-                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
+                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}{traffic_str}</b>"
                     
                     if st.session_state.transport_choice == "metro":
                         if p.get('metro') == True:
@@ -330,18 +346,18 @@ else:
                 d_desc = p.get('وصف')
                 
                 if is_crowded_time or is_traffic_peak:
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold; margin-top: 2px;'>{strings['cap_high']}</small>"
                 elif (12 <= hour < 17):
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold; margin-top: 2px;'>{strings['cap_mid']}</small>"
                 else:
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold; margin-top: 2px;'>{strings['cap_low']}</small>"
 
                 st.markdown(f'''
-                    <div class="dest-card">
+                    <div class="dest-card" style="position: relative; overflow: hidden; padding-top: 20px;">
                         {capacity_lbl}
-                        <h4 style="color:#0284C7; margin:0;">{d_name}</h4>
-                        <p style="margin-top:5px; margin-bottom:0;">{d_desc}</p>
-                        {action_html}
+                        <h4 style="color:#0284C7; margin:0; clear: both; padding-top: 2px;">{d_name}</h4>
+                        <p style="margin-top:8px; margin-bottom:0; font-size: 0.95em; color: #334155;">{d_desc}</p>
+                        <div style="margin-top: 12px; font-size: 0.9em; color: #475569;">{action_html}</div>
                     </div>
                 ''', unsafe_allow_html=True)
                 
@@ -366,17 +382,22 @@ else:
             else:
                 st.info(strings["final_msg"])
                 
-                # --- هندسة ديناميكية ذكية للتذكرة بناءً على لغة النظام المحددة ---
                 st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
                 
-                # إعداد النصوص بناءً على لغة الواجهة لمنع ظهور كلمات إنجليزية بالخطأ
+                # إعداد النصوص بناءً على لغة الواجهة والتعريب الكامل للمصطلحات والأنماط
                 ticket_title = "PATH7 • تذكرة مسار الرحلة" if IS_AR else "PATH7 • ITINERARY TICKET"
                 university_name = "جامعة الإمام عبد الرحمن بن فيصل" if IS_AR else "Imam Abdulrahman bin Faisal University"
                 passenger_lbl = "اسم المسافر" if IS_AR else "Passenger Name"
                 style_lbl = "نمط الرحلة" if IS_AR else "Trip Style"
+                
+                # ترجمة النمط لغةً لعدم تركه بالإنجليزية داخل التذكرة العربية
+                if IS_AR:
+                    translated_budget = "فاخرة ✨" if st.session_state.budget_key == "Luxury" else "اقتصادية 🌱"
+                else:
+                    translated_budget = st.session_state.budget_key
+                
                 dest_lbl = "الوجهة" if IS_AR else "Destination"
                 dest_value = "الرياض (RUH)" if IS_AR else "Riyadh (RUH)"
-                footer_text = "Path7 - حفل ختام نادي الهندسة 2026" if IS_AR else "Path7 - Engineering Club Closing 2026"
                 print_btn_text = "اضغط للحفظ كـ PDF 📄" if IS_AR else "Print / Save as PDF 📄"
                 
                 days_html = ""
@@ -394,6 +415,7 @@ else:
                 ticket_style_direction = "rtl" if IS_AR else "ltr"
                 ticket_style_align = "right" if IS_AR else "left"
                 
+                # التذكرة نظيفة وخالية تماماً من الفوتر أو النصوص الإضافية في الأسفل لتبدو مثالية
                 html_ticket_content = f"""
                 <html>
                 <head>
@@ -403,8 +425,7 @@ else:
                         body {{ font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif; direction: {ticket_style_direction}; text-align: {ticket_style_align}; background: #F8FAFC; padding: 20px; }}
                         .ticket-box {{ max-width: 550px; margin: 0 auto; background: white; border-radius: 25px; border: 2px solid #0284C7; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }}
                         .header {{ background: linear-gradient(135deg, #1E3A8A 0%, #0284C7 100%); color: white; padding: 25px; text-align: center; }}
-                        .content {{ padding: 25px; }}
-                        .footer {{ background: #F1F5F9; padding: 15px; text-align: center; font-size: 0.8em; color: #64748B; border-top: 2px dashed #CBD5E1; }}
+                        .content {{ padding: 25px; padding-bottom: 35px; }}
                         .btn-print {{ display: block; width: 100%; max-width: 200px; margin: 20px auto; padding: 10px; background: #10B981; color: white; text-align: center; font-weight: bold; border-radius: 10px; text-decoration: none; cursor: pointer; border: none; }}
                         @media print {{ .btn-print {{ display: none; }} body {{ background: white; padding: 0; }} .ticket-box {{ border: none; box-shadow: none; }} }}
                     </style>
@@ -420,14 +441,11 @@ else:
                             <h3 style='margin: 5px 0 15px 0; color: #1E3A8A;'>👤 {st.session_state.user_name}</h3>
                             
                             <div style='display: flex; justify-content: space-between; background: #F0F9FF; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;'>
-                                <div><span style='font-size:0.8em; color:#64748B;'>{style_lbl}</span><br><strong style='color:#0284C7;'>{st.session_state.budget_key}</strong></div>
+                                <div><span style='font-size:0.8em; color:#64748B;'>{style_lbl}</span><br><strong style='color:#0284C7;'>{translated_budget}</strong></div>
                                 <div><span style='font-size:0.8em; color:#64748B;'>{dest_lbl}</span><br><strong style='color:#0284C7;'>{dest_value}</strong></div>
                             </div>
                             
                             {days_html}
-                        </div>
-                        <div class='footer'>
-                            {footer_text}
                         </div>
                     </div>
                     <button class='btn-print' onclick='window.print()'>{print_btn_text}</button>
