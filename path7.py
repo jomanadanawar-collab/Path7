@@ -161,14 +161,11 @@ st.markdown(f'''
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     .center-rating .stButton>button {{ width: 45px !important; height: 45px !important; padding: 0px !important; margin: 0 auto !important; }}
     .download-btn button {{ background: linear-gradient(90deg, #10B981, #059669) !important; color: white !important; font-weight: bold !important; border-radius: 12px !important; }}
-    
-    /* ستايل مخصص لزر تغيير اللغة العلوي ليكون أنيقاً ومتجاوباً */
     .lang-switch-container {{ text-align: {"left" if IS_AR else "right"}; margin-bottom: 15px; }}
     .lang-switch-container button {{ width: auto !important; padding: 6px 15px !important; font-size: 0.85em !important; background: rgba(255,255,255,0.4) !important; color: #0369A1 !important; border: 1px solid rgba(2, 132, 199, 0.2) !important; }}
     </style>
 ''', unsafe_allow_html=True)
 
-# إضافة زر تغيير اللغة في أعلى الشاشة الرئيسية بطريقة متجاوبة بالكامل بدلاً من الـ Sidebar
 st.markdown(f'<div class="lang-switch-container">', unsafe_allow_html=True)
 if st.button("Switch Language / تغيير اللغة", key="top_lang_fluid"):
     st.session_state.lang = "English" if IS_AR else "العربية"
@@ -327,9 +324,6 @@ else:
                         <div style="margin-top: 12px; font-size: 0.9em; color: #475569;">{action_html}</div>
                     </div>
                 ''', unsafe_allow_html=True)
-                
-                if p.get('image') and os.path.exists(p['image']):
-                    st.image(p['image'], use_container_width=True)
 
     with col_s:
         st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
