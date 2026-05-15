@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import pytz
 import os
+import urllib.parse
 
 # 1. تحميل البيانات من ملف الـ JSON
 def load_data():
@@ -27,53 +28,6 @@ if 'day' not in st.session_state: st.session_state.day = 1
 if 'suggestions' not in st.session_state: st.session_state.suggestions = []
 if 'transport_choice' not in st.session_state: st.session_state.transport_choice = None
 if 'rated' not in st.session_state: st.session_state.rated = False
-
-# قاموس ثابت ومصحح لروابط الخرائط الرسمية المباشرة (تفتح فوراً على أي جهاز)
-MAPS_REGISTRY = {
-    "حي طريف التاريخي": "https://www.google.com/maps/search/?api=1&query=حي+طريف+التاريخي+الدرعية",
-    "at-turaif historic district": "https://www.google.com/maps/search/?api=1&query=At-Turaif+Historic+District+Diriyah",
-    "at-turaif": "https://www.google.com/maps/search/?api=1&query=At-Turaif+Historic+District+Diriyah",
-    
-    "سوق المعيقلية": "https://www.google.com/maps/search/?api=1&query=سوق+المعيقلية+الرياض",
-    "al muaiqilia market": "https://www.google.com/maps/search/?api=1&query=Al+Muaiqilia+Market+Riyadh",
-    "al-muaiqilia": "https://www.google.com/maps/search/?api=1&query=Al+Muaiqilia+Market+Riyadh",
-    
-    "قصر المصمك": "https://www.google.com/maps/search/?api=1&query=قصر+المصمك+الرياض",
-    "al masmak palace": "https://www.google.com/maps/search/?api=1&query=Al+Masmak+Palace+Riyadh",
-    "masmak fortress": "https://www.google.com/maps/search/?api=1&query=Al+Masmak+Palace+Riyadh",
-    
-    "سوق الزل": "https://www.google.com/maps/search/?api=1&query=سوق+الزل+الرياض",
-    "souq al zal": "https://www.google.com/maps/search/?api=1&query=Souq+Al+Zal+Riyadh",
-    "al-zal market": "https://www.google.com/maps/search/?api=1&query=Souq+Al+Zal+Riyadh",
-    
-    "ڤيا الرياض": "https://www.google.com/maps/search/?api=1&query=Via+Riyadh",
-    "via riyadh": "https://www.google.com/maps/search/?api=1&query=Via+Riyadh",
-    
-    "البوليفارد": "https://www.google.com/maps/search/?api=1&query=بوليڤارد+سيتي+الرياض",
-    "boulevard": "https://www.google.com/maps/search/?api=1&query=Boulevard+City+Riyadh",
-    "the boulevard": "https://www.google.com/maps/search/?api=1&query=Boulevard+City+Riyadh",
-    
-    "المالية": "https://www.google.com/maps/search/?api=1&query=مركز+الملك+عبدالله+المالي+KAFD",
-    "financial district": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Financial+District+KAFD",
-    "kafd": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Financial+District+KAFD",
-    
-    "واجهة روشن": "https://www.google.com/maps/search/?api=1&query=واجهة+روشن+الرياض",
-    "roshn waterfront": "https://www.google.com/maps/search/?api=1&query=ROSHN+Front+Riyadh",
-    "roshn front": "https://www.google.com/maps/search/?api=1&query=ROSHN+Front+Riyadh",
-    
-    "البجيري": "https://www.google.com/maps/search/?api=1&query=طلعة+البجيري+الدرعية",
-    "bujairi terrace": "https://www.google.com/maps/search/?api=1&query=Bujairi+Terrace",
-    "al-bujairi": "https://www.google.com/maps/search/?api=1&query=Bujairi+Terrace",
-    
-    "وادي حنيفة": "https://www.google.com/maps/search/?api=1&query=وادي+حنيفة+الرياض",
-    "wadi hanifa": "https://www.google.com/maps/search/?api=1&query=Wadi+Hanifa+Riyadh",
-    
-    "منتزه الملك عبدالله": "https://www.google.com/maps/search/?api=1&query=منتزه+الملك+عبدالله+الملز",
-    "king abdullah park": "https://www.google.com/maps/search/?api=1&query=King+Abdullah+Park+Riyadh",
-    
-    "حافة العالم": "https://www.google.com/maps/search/?api=1&query=حافة+العالم+الرياض",
-    "edge of the world": "https://www.google.com/maps/search/?api=1&query=Edge+of+the+World+Riyadh"
-}
 
 # --- بوابة اختيار اللغة الأولى ---
 if st.session_state.page == 'lang_selection':
@@ -260,14 +214,13 @@ else:
                         else:
                             action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
                     else:
+                        # الحركة الذكية والمحسنة: توليد رابط بحث رسمي ومباشر مع إضافة كلمة Riyadh لضمان دقة البحث
                         d_name_raw = p.get('الوجهة', '').strip()
-                        d_name_lower = d_name_raw.lower()
+                        search_query = f"{d_name_raw} Riyadh"
                         
-                        # استدعاء الرابط المباشر الآمن للخرائط
-                        google_maps_link = MAPS_REGISTRY.get(d_name_raw) or MAPS_REGISTRY.get(d_name_lower)
-                        
-                        if not google_maps_link:
-                            google_maps_link = f"https://www.google.com/maps/search/?api=1&query={d_name_raw}+Riyadh"
+                        # ترميز النص برمجياً لضمان قراءة المسافات والرموز بشكل صحيح في المتصفحات
+                        encoded_query = urllib.parse.quote_plus(search_query)
+                        google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}"
                         
                         action_html = f"{time_str}<br><a href='{google_maps_link}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
 
