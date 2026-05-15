@@ -366,10 +366,19 @@ else:
             else:
                 st.info(strings["final_msg"])
                 
-                # --- الميزة الاحترافية الجديدة: هندسة تذكرة تخرج على هيئة صفحة طباعة HTML فاخرة لحفظها كـ PDF ---
+                # --- هندسة ديناميكية ذكية للتذكرة بناءً على لغة النظام المحددة ---
                 st.markdown("<p style='font-size:0.9em; font-weight:bold;'>🎫 ملخص خطة رحلتك جاهز:</p>", unsafe_allow_html=True)
                 
-                # إنشاء محتوى الأيام برمجياً داخل جدول التذكرة
+                # إعداد النصوص بناءً على لغة الواجهة لمنع ظهور كلمات إنجليزية بالخطأ
+                ticket_title = "PATH7 • تذكرة مسار الرحلة" if IS_AR else "PATH7 • ITINERARY TICKET"
+                university_name = "جامعة الإمام عبد الرحمن بن فيصل" if IS_AR else "Imam Abdulrahman bin Faisal University"
+                passenger_lbl = "اسم المسافر" if IS_AR else "Passenger Name"
+                style_lbl = "نمط الرحلة" if IS_AR else "Trip Style"
+                dest_lbl = "الوجهة" if IS_AR else "Destination"
+                dest_value = "الرياض (RUH)" if IS_AR else "Riyadh (RUH)"
+                footer_text = "Path7 - حفل ختام نادي الهندسة 2026" if IS_AR else "Path7 - Engineering Club Closing 2026"
+                print_btn_text = "اضغط للحفظ كـ PDF 📄" if IS_AR else "Print / Save as PDF 📄"
+                
                 days_html = ""
                 for d_day, places in st.session_state.itinerary_history.items():
                     translated_day = f"اليوم {d_day[-1]}" if IS_AR else d_day
@@ -382,7 +391,6 @@ else:
                         days_html += f"<li>{plc}</li>"
                     days_html += "</ul></div>"
                 
-                # هيكل تذكرة الصعود والرحلة بالكامل بتصميم هندسي فخم للـ PDF
                 ticket_style_direction = "rtl" if IS_AR else "ltr"
                 ticket_style_align = "right" if IS_AR else "left"
                 
@@ -404,30 +412,29 @@ else:
                 <body>
                     <div class='ticket-box'>
                         <div class='header'>
-                            <h2 style='margin:0; letter-spacing: 1px;'>PATH7 • ITINERARY TICKET</h2>
-                            <p style='margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9em;'>Imam Abdulrahman bin Faisal University 🎓</p>
+                            <h2 style='margin:0; font-size: 1.5em; font-weight: bold;'>{ticket_title}</h2>
+                            <p style='margin: 8px 0 0 0; opacity: 0.9; font-size: 0.95em;'>{university_name}</p>
                         </div>
                         <div class='content'>
-                            <p style='margin: 0; color: #64748B;'>{'اسم المسافر / Passenger Name' if IS_AR else 'Passenger Name'}</p>
+                            <p style='margin: 0; color: #64748B; font-size: 0.85em;'>{passenger_lbl}</p>
                             <h3 style='margin: 5px 0 15px 0; color: #1E3A8A;'>👤 {st.session_state.user_name}</h3>
                             
                             <div style='display: flex; justify-content: space-between; background: #F0F9FF; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;'>
-                                <div><span style='font-size:0.8em; color:#64748B;'>{'نمط الرحلة' if IS_AR else 'Trip Style'}</span><br><strong style='color:#0284C7;'>{st.session_state.budget_key}</strong></div>
-                                <div><span style='font-size:0.8em; color:#64748B;'>{'الوجهة' if IS_AR else 'Destination'}</span><br><strong style='color:#0284C7;'>{'الرياض (RUH)' if IS_AR else 'Riyadh'}</strong></div>
+                                <div><span style='font-size:0.8em; color:#64748B;'>{style_lbl}</span><br><strong style='color:#0284C7;'>{st.session_state.budget_key}</strong></div>
+                                <div><span style='font-size:0.8em; color:#64748B;'>{dest_lbl}</span><br><strong style='color:#0284C7;'>{dest_value}</strong></div>
                             </div>
                             
                             {days_html}
                         </div>
                         <div class='footer'>
-                            ✨ Path7 - Engineering Excellence Ceremony 2026 ✨
+                            {footer_text}
                         </div>
                     </div>
-                    <button class='btn-print' onclick='window.print()'>{'اضغط للحفظ كـ PDF 📄' if IS_AR else 'Print / Save as PDF 📄'}</button>
+                    <button class='btn-print' onclick='window.print()'>{print_btn_text}</button>
                 </body>
                 </html>
                 """
 
-                # زر التنزيل الذكي الذي يفتح صفحة التذكرة التفاعلية الفاخرة المجهزة للحفظ كـ PDF
                 st.markdown('<div class="download-btn">', unsafe_allow_html=True)
                 st.download_button(
                     label="تحميل التذكرة الرسمية للرحلة (PDF/HTML) 🎫" if IS_AR else "Download Official PDF Ticket 🎫",
@@ -437,7 +444,7 @@ else:
                     use_container_width=True
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
-                st.caption("💡 بعد فتح الملف المحمّل، اضغط على زر 'الحفظ كـ PDF' الأخضر ليتم حفظ تذكرتك الفاخرة فوراً بالكامل.")
+                st.caption("💡 بعد فتح الملف المحمّل، اضغط على زر 'اضغط للحفظ كـ PDF' الأخضر ليتم حفظ تذكرتك فوراً بالكامل.")
         
         st.markdown("<hr>", unsafe_allow_html=True)
         if st.button(strings["reset"]):
