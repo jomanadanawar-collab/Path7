@@ -1,7 +1,7 @@
 {
   "English": {
-    "p_name": "PATH 7 📍",
-    "subtitle": "Your path to explore Riyadh, smartly and easily",
+    "p_name": "Path7 📍",
+    "subtitle": "Your path to explore Riyadh, smartly and easily.",
     "visitor_name": "What is your name?",
     "budget_q": "Choose your travel style:",
     "eco": "Economy",
@@ -36,36 +36,22 @@
         {
           "Destination": "Al-Masmak Palace",
           "Category": "History & Heritage",
-          "Description": "An iconic clay-brick fortress in old Riyadh, showcasing unified national history and ancient mud architecture.",
+          "Description": "Explore the historic mud-brick fortress in the heart of Riyadh, surrounded by spacious pedestrian paths ensuring a smooth experience.",
           "b_time": 20,
           "metro": false
         },
         {
           "Destination": "Souq Al-Zal",
-          "Category": "History & Heritage",
-          "Description": "Riyadh's oldest traditional market, pulsing with the heritage of authentic auctions, oud, and exquisite Najdi carpets.",
+          "Category": "Shopping",
+          "Description": "Riyadh's oldest traditional market, famous for authentic carpets, antiques, and traditional cloaks, offering an immersive cultural path.",
           "b_time": 15,
           "metro": false
         },
         {
-          "Destination": "National Museum",
-          "Category": "History & Heritage",
-          "Description": "A magnificent cultural landmark displaying Arabian history, historical artifacts, and pristine historic structures.",
-          "b_time": 25,
-          "metro": true
-        },
-        {
-          "Destination": "Al-Maddah Cafe",
-          "Category": "Dining",
-          "Description": "A classic cozy space celebrating authentic musical heritage, serving premium traditional hot coffee and tea.",
-          "b_time": 15,
-          "metro": false
-        },
-        {
-          "Destination": "Al-Suwaidi Park",
+          "Destination": "King Abdullah Park",
           "Category": "Nature",
-          "Description": "A vast vibrant public park with scenic walkways, hosting global cultural activities and open green spaces.",
-          "b_time": 30,
+          "Description": "A magnificent expansive public park featuring lush green landscapes, pedestrian tracks, and a giant musical fountain.",
+          "b_time": 25,
           "metro": false
         }
       ],
@@ -73,52 +59,45 @@
         {
           "Destination": "King Abdullah Financial District (KAFD)",
           "Category": "Shopping",
-          "Description": "A world-class architectural masterpiece symbolizing the capital's rise, featuring elite global fashion houses and restaurants.",
+          "Description": "An architectural masterpiece representing modern Riyadh, hosting luxurious brands and premium walkways between futuristic skyscrapers.",
           "b_time": 15,
           "metro": true
         },
         {
           "Destination": "Boulevard City",
           "Category": "Entertainment",
-          "Description": "The ultimate entertainment hub featuring massive screens, global events, premium venues, and flawless tourist structural paths.",
+          "Description": "The ultimate entertainment hub in Riyadh, featuring vibrant neon lights, global events, cinemas, and local upscale cafes.",
           "b_time": 42,
           "metro": false
         },
         {
           "Destination": "Al-Bujairi Terrace",
           "Category": "Dining",
-          "Description": "A luxury culinary destination in historic Diriyah, blending authentic Najdi architectural style with breathtaking views of At-Turaif.",
+          "Description": "A premium dining destination in historic Diriyah, blending authentic Najdi architecture with a stunning view of At-Turaif district.",
           "b_time": 30,
           "metro": false
         },
         {
-          "Destination": "At-Turaif UNESCO World Heritage Site",
-          "Category": "History & Heritage",
-          "Description": "The magnificent historical mud-brick city and the ancestral home of the Saudi state, reflecting deep architectural glory.",
+          "Destination": "Via Riyadh",
+          "Category": "Dining",
+          "Description": "An ultra-luxury complex designed in Salmani architectural style, offering world-class elite restaurants and live experiences.",
           "b_time": 35,
-          "metro": false
-        },
-        {
-          "Destination": "Wadi Hanifa Eco-Park",
-          "Category": "Nature",
-          "Description": "An expansive valley oasis utilizing advanced green infrastructure, offering serene running streams and clean open fields.",
-          "b_time": 25,
           "metro": false
         }
       ]
     }
   },
   "العربية": {
-    "p_name": "PATH7📍",
-    "subtitle": "مسارك الذكي لاستكشاف مدينة الرياض",
-    "visitor_name": "مرحباً بك، ما هو اسمك الكريم؟",
-    "budget_q": "اختر نمط رحلتك المفضل:",
-    "eco": "اقتصادية",
-    "lux": "فاخرة",
+    "p_name": "Path7 📍",
+    "subtitle": "طريقك لاستكشاف الرياض، بذكاء وسهولة",
+    "visitor_name": "فضلاً، ما هو اسمك؟",
+    "budget_q": "اختر نمط رحلتك:",
+    "eco": "اقتصادية 🌱",
+    "lux": "فاخرة ✨",
     "start_btn": "استكشف الرياض 🚀",
     "day": "اليوم",
     "of": "من",
-    "interests_q": "ما هي اهتماماتك وجدولك المفضل لهذا اليوم؟",
+    "interests_q": "ما هي اهتماماتك اليوم؟",
     "interests_list": [
       "تاريخ وآثار",
       "مطاعم ومقاهي",
@@ -126,60 +105,44 @@
       "تسوق",
       "ترفيه"
     ],
-    "analyze_btn": "تحليل المسار الذكي 🔍",
+    "analyze_btn": "التحليل الذكي 🔍",
     "transport_q": "وسيلة النقل المفضلة",
     "m_btn": "🚇 المترو",
     "c_btn": "🚗 السيارة",
     "t_btn": "🚕 التاكسي",
-    "est_time": "الوقت المتوقع للوصول",
+    "est_time": "الوقت المتوقع",
     "min": "دقيقة",
-    "map_btn": "📍 فتح الخريطة",
-    "metro_msg": "محطة المترو قريبة جداً من الموقع ويمكنك المشي إليها.",
-    "metro_fail": "لا يوجد خط مترو مباشر لهذا الموقع حالياً.",
-    "wait_choice": "⏳ فضلاً اختر وسيلة النقل لعرض تفاصيل المسار",
-    "rating_q": "قيم تجربتك للمسار اليوم ⭐",
-    "next_day": "الانتقال لليوم التالي ⏭️",
-    "finish": "شكراً لثقتك بالمسار السابع.. نتمنى لك رحلة سعيدة وآمنة! ✨",
+    "map_btn": "📍 فتح الخرائط",
+    "metro_msg": "توجد محطة مترو قريبة.",
+    "metro_fail": "لا يوجد خط مترو مباشر لهذا المكان.",
+    "wait_choice": "⏳ اختر وسيلة النقل لرؤية المسار",
+    "rating_q": "قيّم تجربتك ⭐",
+    "next_day": "اليوم التالي ⏭️",
+    "finish": "شكراً لثقتك بـ Path7.. نتمنى لك رحلة ممتعة! ✨",
     "db": {
       "Economy": [
         {
           "Destination": "Al-Masmak Palace",
-          "الوجهة": "قصر المصمك التاريخي",
+          "الوجهة": "قصر المصمك التراثي",
           "الفئة": "تاريخ وآثار",
-          "وصف": "حصن طيني عريق يروي قصة توحيد المملكة، ويمتاز بهندسته النجدية التقليدية وبوابته التاريخية الشهيرة وسط الرياض.",
+          "وصف": "استكشف هذا الحصن العتيق في قلب الرياض، تحفة معمارية نجدية تحيط بها ساحات واسعة ومسارات مشاة سالكة تضمن تجربة هادئة.",
           "b_time": 20,
           "metro": false
         },
         {
           "Destination": "Souq Al-Zal",
-          "الوجهة": "سوق الزل الأثري",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "أقدم الأسواق التقليدية في العاصمة، يعبق بالتراث وحراج السجاد والمشالح والعطور الشرقية العتيقة.",
+          "الوجهة": "سوق الزل التاريخي",
+          "الفئة": "تسوق",
+          "وصف": "أقدم الأسواق التراثية بالعاصمة، يفوح بعبق الماضي والعود، ويقدم مسارات تسوق غنية بالمقتنيات الأثرية والمشالح والزل الفاخر.",
           "b_time": 15,
           "metro": false
         },
         {
-          "Destination": "National Museum",
-          "الوجهة": "المتحف الوطني السعودي",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "صرح ثقافي مهيب يعرض تاريخ شبه الجزيرة العربية عبر قاعات مصممة بطراز معماري حديث وجذاب.",
-          "b_time": 25,
-          "metro": true
-        },
-        {
-          "Destination": "Al-Maddah Cafe",
-          "الوجهة": "مقهى صوت الأرض (طلال مداح)",
-          "الفئة": "مطاعم ومقاهي",
-          "وصف": "مساحة كلاسيكية دافئة تحتفي بالإرث الفني الأصيل، وتقدم القهوة والشاي التقليدي بجلسات شعبية مريحة.",
-          "b_time": 15,
-          "metro": false
-        },
-        {
-          "Destination": "Al-Suwaidi Park",
-          "الوجهة": "حديقة السويدي",
+          "Destination": "King Abdullah Park",
+          "الوجهة": "منتزه الملك عبدالله بالملز",
           "الفئة": "طبيعة",
-          "وصف": "منتزه عام واسع يضم مساحات خضراء ممتدة، وممرات للمشي، ويحتضن فعاليات ثقافية متنوعة تناسب الجميع.",
-          "b_time": 30,
+          "وصف": "مسطحات خضراء ممتدة وممرات مشاة فسيحة تحتضن البحيرة والنافورة التفاعلية الضخمة، توفر مساراً طبيعياً منعشاً وسالكاً.",
+          "b_time": 25,
           "metro": false
         }
       ],
@@ -209,19 +172,11 @@
           "metro": false
         },
         {
-          "Destination": "At-Turaif UNESCO World Heritage Site",
-          "الوجهة": "حي الطريف التاريخي بالدرعية",
-          "الفئة": "تاريخ وآثار",
-          "وصف": "موقع أثري مسجل في اليونسكو، يمثل مهد الدولة السعودية الأولى ويبرز قصوراً طينية شامخة بهندستها النجدية الفريدة.",
+          "Destination": "Via Riyadh",
+          "الوجهة": "فيا الرياض الفاخر",
+          "الفئة": "مطاعم ومقاهي",
+          "وصف": "مجمع فاخر مصمم على الطراز السلماني الأنيق، يقدم تجارب ترفيهية استثنائية ونخبة من المطاعم والمقاهي العالمية المرموقة وسط ممرات مائية بديعة.",
           "b_time": 35,
-          "metro": false
-        },
-        {
-          "Destination": "Wadi Hanifa Eco-Park",
-          "الوجهة": "منتزه وادي حنيفة البيئي",
-          "الفئة": "طبيعة",
-          "وصف": "مجرى مائي ممتد وبيئة طبيعية خلابة تم تطويرها ببنية تحتية مستدامة، توفر جلسات هادئة وممرات بين التكوينات الصخرية.",
-          "b_time": 25,
           "metro": false
         }
       ]
