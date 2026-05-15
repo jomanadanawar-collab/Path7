@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 import os
 
-# 1. تحميل البيانات
+# 1. تحميل البيانات من ملف الـ JSON
 def load_data():
     try:
         with open('path7_data.json', 'r', encoding='utf-8') as f:
@@ -15,7 +15,7 @@ def load_data():
 
 DATA_ALL = load_data()
 
-# 2. التوافق اللحظي والوقت
+# 2. التوافق اللحظي والوقت (توقيت الرياض)
 riyadh_tz = pytz.timezone('Asia/Riyadh')
 now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
@@ -83,39 +83,39 @@ if st.session_state.page == 'lang_selection':
             st.rerun()
     st.stop()
 
-# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص
+# جلب بيانات اللغة المحددة ديناميكياً من الـ JSON لربط النصوص والاهتمامات والوجهات كاملة باللغة المختارة
 lang_data = DATA_ALL.get(st.session_state.lang, DATA_ALL.get("العربية", {}))
 IS_AR = st.session_state.lang == "العربية"
 
 strings = {
     "title": lang_data.get("p_name", "Path7 📍"),
     "sub": lang_data.get("subtitle", ""),
-    "name_q": lang_data.get("visitor_name", "Name"),
-    "budget_q": lang_data.get("budget_q", "Budget"),
+    "name_q": lang_data.get("visitor_name", "Welcome, what is your name?"),
+    "budget_q": lang_data.get("budget_q", "Choose your trip style:"),
     "budgets": [lang_data.get("eco", "Economy"), lang_data.get("lux", "Luxury")],
-    "start_btn": lang_data.get("start_btn", "Explore 🚀"),
+    "start_btn": lang_data.get("start_btn", "Explore Riyadh 🚀"),
     "day_lbl": f"📅 {lang_data.get('day', 'Day')} {st.session_state.day} {lang_data.get('of', 'of')} 3",
-    "weather": (lang_data.get("sunny", "Sunny") if 5 <= hour <= 17 else lang_data.get("night", "Clear")),
-    "interests_q": lang_data.get("interests_q", "Interests"),
+    "weather": (lang_data.get("sunny", "Sunny ☀️") if 5 <= hour <= 17 else lang_data.get("night", "Clear 🌙")),
+    "interests_q": lang_data.get("interests_q", "What are your interests today?"),
     "interests_list": lang_data.get("interests_list", []),
-    "analyze_btn": lang_data.get("analyze_btn", "Analyze"),
-    "trans_q": lang_data.get("transport_q", "Transport"),
-    "metro": lang_data.get("m_btn", "Metro"),
-    "car": lang_data.get("c_btn", "Car"),
-    "taxi": lang_data.get("t_btn", "Taxi"),
+    "analyze_btn": lang_data.get("analyze_btn", "Smart Path Analysis 🔍"),
+    "trans_q": lang_data.get("transport_q", "Preferred Transport"),
+    "metro": lang_data.get("m_btn", "🚇 Metro"),
+    "car": lang_data.get("c_btn", "🚗 Car"),
+    "taxi": lang_data.get("t_btn", "🚕 Taxi"),
     "est_time": lang_data.get("est_time", "Est. Time"),
     "mins": lang_data.get("min", "mins"),
-    "map_btn": lang_data.get("map_btn", "Location"),
-    "metro_msg": lang_data.get("metro_msg", "Metro is close."),
-    "metro_fail": lang_data.get("metro_fail", "No direct metro."),
-    "select_trans": lang_data.get("wait_choice", "Select transport"),
-    "rating_t": lang_data.get("rating_q", "Rate"),
-    "next_day": lang_data.get("next_day", "Next"),
+    "map_btn": lang_data.get("map_btn", "📍 Open Maps"),
+    "metro_msg": lang_data.get("metro_msg", "Metro station is nearby."),
+    "metro_fail": lang_data.get("metro_fail", "No direct metro line to this destination."),
+    "select_trans": lang_data.get("wait_choice", "⏳ Select transport to see path"),
+    "rating_t": lang_data.get("rating_q", "Rate your experience ⭐"),
+    "next_day": lang_data.get("next_day", "Next Day ⏭️"),
     "reset": "إعادة ضبط 🔄" if IS_AR else "Reset 🔄",
-    "final_msg": lang_data.get("finish", "Thank you")
+    "final_msg": lang_data.get("finish", "Thank you for trusting Path7.. Have a great trip! ✨")
 }
 
-# 4. التنسيق البصري (إصلاح النجوم وتنسيق العناصر العامة)
+# 4. التنسيق البصري العام للواجهة والأزرار والبطاقات المقاومة للاهتزاز
 text_align = "right" if IS_AR else "left"
 st.markdown(f'''
     <style>
@@ -130,7 +130,7 @@ st.markdown(f'''
     /* تصميم الأزرار العامة */
     .stButton>button {{ background: linear-gradient(90deg, #0284C7, #38BDF8) !important; color: white !important; border-radius: 10px !important; width: 100%; }}
     
-    /* أزرار الأرقام للتقييم (بدون نجوم ومربعة متناسقة) */
+    /* أزرار الأرقام للتقييم (تصميم مربّع متناسق بدون نجوم مكررة) */
     .center-rating .stButton>button {{
         width: 45px !important;
         height: 45px !important;
@@ -145,18 +145,19 @@ st.markdown(f'''
     </style>
 ''', unsafe_allow_html=True)
 
-# زر الشريط الجانبي للطوارئ
+# زر الشريط الجانبي لتغيير اللغة في أي وقت كخيار طوارئ للمحكّم
 if st.sidebar.button("Switch Language / تغيير اللغة"):
     st.session_state.lang = "English" if IS_AR else "العربية"
     st.rerun()
 
 # --- الصفحات ---
+# أ. صفحة الترحيب وتأكيد تذكرة الطيران والثبات الرقمي
 if st.session_state.page == 'welcome':
     st.markdown(f'<div class="glass-card" style="text-align: center;"><h1>{strings["title"]}</h1><p>{strings["sub"]}</p></div>', unsafe_allow_html=True)
     col_w1, col_w2, col_w3 = st.columns([1, 2, 1])
     
     with col_w2:
-        # كرت التذكرة الرقمية الثابتة والمحاكية للخطوط السعودية (غير قابل للكتابة تماماً)
+        # التذكرة الثابتة كلياً والمحاكية لبيانات طيران حقيقية قادمة للرياض
         st.markdown("""
             <div style="background: rgba(255, 255, 255, 0.85); padding: 18px; border-radius: 15px; border-left: 6px solid #1E3A8A; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 22px; text-align: center;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -171,93 +172,4 @@ if st.session_state.page == 'welcome':
                     📍 Destination: Riyadh (RUH) | الوجهة: الرياض
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-        
-        # حقول البيانات التفاعلية التي يملأها المستخدم أو المحكّم للدخول
-        st.session_state.user_name = st.text_input(strings["name_q"])
-        u_budget = st.radio(strings["budget_q"], strings["budgets"], horizontal=True)
-        
-        if st.button(strings["start_btn"]):
-            if st.session_state.user_name:
-                st.session_state.budget_key = "Luxury" if (u_budget in ["فاخرة", "Luxury"]) else "Economy"
-                st.session_state.page = 'system'
-                st.rerun()
-            else:
-                st.warning("Please enter your name / فضلاً أدخل اسمك")
-
-else:
-    col_m, col_s = st.columns([2.2, 1])
-    with col_m:
-        st.markdown(f'<div class="glass-card"><h3>{strings["day_lbl"]}</h3><p>👤 {st.session_state.user_name} | 🕒 {now_riyadh.strftime("%I:%M %p")} | 🌤️ {strings["weather"]}</p></div>', unsafe_allow_html=True)
-        
-        st.subheader(strings["interests_q"])
-        selected = st.multiselect("", strings["interests_list"], label_visibility="collapsed")
-        
-        if st.button(strings["analyze_btn"]):
-            db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
-            st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
-            st.session_state.transport_choice = None
-            st.rerun()
-
-        if st.session_state.suggestions:
-            st.markdown(f"### {strings['trans_q']}")
-            t_cols = st.columns(3)
-            if t_cols[0].button(strings["metro"]): st.session_state.transport_choice = "metro"
-            if t_cols[1].button(strings["car"]): st.session_state.transport_choice = "car"
-            if t_cols[2].button(strings["taxi"]): st.session_state.transport_choice = "taxi"
-
-            for p in st.session_state.suggestions:
-                action_html = f"<p style='color:#94A3B8;'>{strings['select_trans']}</p>"
-                if st.session_state.transport_choice:
-                    base = p.get('b_time', 20)
-                    t_val = base + 10 if st.session_state.transport_choice == "metro" else int(base * 1.4)
-                    time_str = f"<b>{strings['est_time']}: {t_val} {strings['mins']}</b>"
-                    
-                    if st.session_state.transport_choice == "metro":
-                        if p.get('metro') == True:
-                            action_html = f"{time_str}<p style='color:#0284C7;'>{strings['metro_msg']}</p>"
-                        else:
-                            action_html = f"{time_str}<p style='color:#EF4444;'>{strings['metro_fail']}</p>"
-                    else:
-                        action_html = f"{time_str}<br><a href='{p.get('map_url', '#')}' target='_blank' class='map-btn'>{strings['map_btn']}</a>"
-
-                d_name = p.get('الوجهة')
-                d_desc = p.get('وصف')
-                
-                st.markdown(f'''
-                    <div class="dest-card">
-                        <h4 style="color:#0284C7;margin:0;">{d_name}</h4>
-                        <p>{d_desc}</p>
-                        {action_html}
-                    </div>
-                ''', unsafe_allow_html=True)
-                
-                if p.get('image') and os.path.exists(p['image']):
-                    st.image(p['image'], use_container_width=True)
-
-    with col_s:
-        st.markdown(f'<div class="glass-card center-rating"><h4>{strings["rating_t"]}</h4>', unsafe_allow_html=True)
-        stars = st.columns(5)
-        for i in range(1, 6):
-            # عرض الأرقام فقط بشكل متناسق ومربع بناءً على رغبتكِ
-            if stars[i-1].button(f"{i}", key=f"s{i}"): 
-                st.session_state.rated = True
-        
-        if st.session_state.rated:
-            if st.session_state.day < 3:
-                if st.button(strings["next_day"]):
-                    st.session_state.day += 1
-                    st.session_state.suggestions = []
-                    st.session_state.transport_choice = None
-                    st.session_state.rated = False
-                    st.rerun()
-            else:
-                st.info(strings["final_msg"])
-        
-        st.markdown("<hr>", unsafe_allow_html=True)
-        if st.button(strings["reset"]):
-            st.session_state.clear()
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8em;'>Path7 | Engineering Excellence @ IAU</p>", unsafe_allow_html=True)
+        """, unsafe_allow_html=True
