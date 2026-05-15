@@ -113,8 +113,7 @@ strings = {
     "traffic_peak": "مزدحم الشارع الآن 🚗" if IS_AR else "Traffic Peak 🚗",
     "cap_high": "🔴 مزدحم للغاية الآن" if IS_AR else "🔴 Highly Crowded Now",
     "cap_mid": "🟡 ازدحام متوسط" if IS_AR else "🟡 Moderate Crowd",
-    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth",
-    "alt_suggest": "💡 نقترح كبديل متوفر الآن: " if IS_AR else "💡 Alternative suggestion now: "
+    "cap_low": "🟢 متاح جداً وغير مزدحم" if IS_AR else "🟢 Available & Smooth"
 }
 
 text_align = "right" if IS_AR else "left"
@@ -183,12 +182,33 @@ else:
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
+            # تحديد ما إذا كان الوقت الحالي يمثل زحمة شديدة
+            is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
+            
+            # جلب الأماكن الأساسية المطابقة لاهتمامات المستخدم
             if not IS_AR:
                 mapped_selected = [cat_mapping.get(cat, cat) for cat in selected]
-                st.session_state.suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
+                raw_suggestions = [p for p in db if cat_mapping.get(p.get('الفئة'), p.get('الفئة')) in mapped_selected] or db[:2]
             else:
-                st.session_state.suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
-                
+                raw_suggestions = [p for p in db if p.get('الفئة') in selected] or db[:2]
+            
+            # تعديل ذكي: إذا كان الوقت مزدحماً، نقوم بتصفية الأماكن المزدحمة واستبدالها فوراً ببدائل سالكة
+            final_suggestions = []
+            for p in raw_suggestions:
+                if is_crowded_time:
+                    # إذا كان المكان نفسه سيظهر عليه وسم "مزدحم"، نبحث فوراً عن مكان آخر سالك من نفس الفئة في قاعدة البيانات
+                    d_cat = p.get('الفئة')
+                    d_name = p.get('الوجهة')
+                    alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
+                    if alternatives:
+                        # نقترح المكان البديل السالك بدلاً من المزدحم مباشرة
+                        final_suggestions.append(alternatives[0])
+                    else:
+                        final_suggestions.append(p)
+                else:
+                    final_suggestions.append(p)
+
+            st.session_state.suggestions = final_suggestions
             st.session_state.transport_choice = None
             st.rerun()
 
@@ -224,7 +244,6 @@ else:
                             action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
                     else:
                         d_name_raw = p.get('الوجهة', '').strip()
-                        # بناء الرابط النظيف والصحيح تماماً بدون شروط منقطعة
                         if not IS_AR:
                             search_query = f"{d_name_raw}, Riyadh"
                         else:
@@ -237,17 +256,11 @@ else:
 
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
-                d_cat = p.get('الفئة')
                 
-                alt_html = ""
+                # تلوين وتحديد حالة الازدحام الفعلي للأماكن المعروضة حالياً
                 if is_crowded_time:
-                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold;'>{strings['cap_high']}</small>"
-                    
-                    # البحث عن مكان بديل من نفس الفئة في قاعدة البيانات كاملة
-                    alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
-                    if alternatives:
-                        alt_place = alternatives[0].get('الوجهة')
-                        alt_html = f"<div style='margin-top: 8px; font-size: 0.9em; color: #0284C7; font-weight: bold;'>{strings['alt_suggest']}<span style='text-decoration: underline;'>{alt_place}</span></div>"
+                    # الأماكن المتبقية هُنـا هي الأماكن البديلة التي تم اختيارها لأنها سالكة
+                    capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#10B981; font-weight:bold;'>{strings['cap_low']}</small>"
                 elif (12 <= hour < 17):
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#F59E0B; font-weight:bold;'>{strings['cap_mid']}</small>"
                 else:
@@ -258,7 +271,6 @@ else:
                         {capacity_lbl}
                         <h4 style="color:#0284C7; margin:0;">{d_name}</h4>
                         <p style="margin-top:5px; margin-bottom:0;">{d_desc}</p>
-                        {alt_html}
                         {action_html}
                     </div>
                 ''', unsafe_allow_html=True)
