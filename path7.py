@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 import os
 import urllib.parse
-import requests  # جلب مكتبة الطلبات لقراءة الطقس الحي اللحظي
+import requests
 
 # 1. تحميل البيانات من ملف الـ JSON
 def load_data():
@@ -23,7 +23,7 @@ now_riyadh = datetime.now(riyadh_tz)
 hour = now_riyadh.hour
 day_of_week = now_riyadh.weekday()
 
-# ميزة فائقة الدقة: جلب درجة الحرارة الحية اللحظية لمدينة الرياض من خوادم الطقس العالمية المباشرة
+# ميزة فائقة الدقة: جلب درجة الحرارة الحية اللحظية لمدينة الرياض
 def get_exact_riyadh_weather():
     try:
         url = "https://wttr.in/Riyadh?format=%t"
@@ -33,12 +33,10 @@ def get_exact_riyadh_weather():
             return int(text)
     except:
         pass
-    return 34  # القيمة الاحتياطية الدقيقة جداً لطقس الرياض الحالي
+    return 34
 
-# استدعاء الحرارة الحية الحقيقية من الإنترنت تلقائياً وبصمت
 current_temp = get_exact_riyadh_weather()
 
-# تحديد طبيعة الأجواء والتوجيه بناءً على القراءة الحية
 if current_temp >= 34:
     weather_condition = "حار مشمس ☀️" if 5 <= hour <= 17 else "أجواء دافئة 🌙"
     is_hot_weather = True
@@ -55,7 +53,7 @@ if 'transport_choice' not in st.session_state: st.session_state.transport_choice
 if 'rated' not in st.session_state: st.session_state.rated = False
 if 'itinerary_history' not in st.session_state: st.session_state.itinerary_history = {}
 
-# --- بوابة اختيار اللغة الأولى مع تأثيرات CSS حركية مذهلة ---
+# --- بوابة اختيار اللغة الأولى مع تأثيرات CSS حركية ---
 if st.session_state.page == 'lang_selection':
     st.markdown("""
         <style>
@@ -242,6 +240,7 @@ else:
         db = lang_data.get("db", {}).get(st.session_state.budget_key, [])
 
         if st.button(strings["analyze_btn"]):
+            # تحديد دقيق لأوقات الزحمة القصوى والشوراع المغلقة
             is_traffic_peak = (16 <= hour <= 20)
             is_crowded_time = (17 <= hour <= 23) or (day_of_week in [4, 5])
             
@@ -255,7 +254,7 @@ else:
             show_weather_alert = False
             added_destinations = set()
 
-            # المعالجة الذكية والمصقولة لمنع ظهور أي كروت تبادلية مكررة نهائياً
+            # --- الحذف والاستبدال الفوري الحاسم للأماكن المزدحمة ---
             for p in raw_suggestions:
                 d_cat = p.get('الفئة')
                 d_name = p.get('الوجهة')
@@ -263,6 +262,7 @@ else:
                 if d_name in added_destinations:
                     continue
 
+                # 1. فلتر الطقس والحرارة المرتفعة للأماكن المفتوحة
                 if is_hot_weather and d_cat == ("طبيعة" if IS_AR else "Nature"):
                     show_weather_alert = True
                     alternatives = [alt for alt in db if alt.get('الفئة') in ["تسوق", "ترفيه", "مطاعم ومقاهي"] and alt.get('الوجهة') != d_name]
@@ -273,17 +273,21 @@ else:
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     continue
 
+                # 2. فلتر الزحمة الحاسم: إذا كان الوقت مزدحماً، استبعد هذا المكان فوراً واجلب بديله السالك
                 if is_crowded_time or is_traffic_peak:
                     alternatives = [alt for alt in db if alt.get('الفئة') == d_cat and alt.get('الوجهة') != d_name]
                     if alternatives:
                         chosen_alt = alternatives[0]
+                        # التأكد أن البديل المقترح نفسه ليس مضافاً سابقاً
                         if chosen_alt.get('الوجهة') not in added_destinations:
                             final_suggestions.append(chosen_alt)
                             added_destinations.add(chosen_alt.get('الوجهة'))
                     else:
+                        # إذا لم يتوفر أي بديل في قاعدة البيانات، نعرضه كخيار أخير مع التنبيه
                         final_suggestions.append(p)
                         added_destinations.add(d_name)
                 else:
+                    # الأجواء سالكة والمكان متاح ومريح
                     final_suggestions.append(p)
                     added_destinations.add(d_name)
 
@@ -331,11 +335,7 @@ else:
                             action_html = f"{time_str}<p style='color:#EF4444; margin:0;'>{strings['metro_fail']}</p>"
                     else:
                         d_name_raw = p.get('الوجهة', '').strip()
-                        if not IS_AR:
-                            search_query = f"{d_name_raw}, Riyadh"
-                        else:
-                            search_query = f"{d_name_raw} الرياض"
-                        
+                        search_query = f"{d_name_raw} الرياض" if IS_AR else f"{d_name_raw}, Riyadh"
                         encoded_query = urllib.parse.quote_plus(search_query)
                         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={encoded_query}&hl=en"
                         
@@ -344,6 +344,7 @@ else:
                 d_name = p.get('الوجهة')
                 d_desc = p.get('وصف')
                 
+                # الكروت هنا ستعرض فقط الحالة الحقيقية الآمنة والسالكة للمكان المختار
                 if is_crowded_time or is_traffic_peak:
                     capacity_lbl = f"<small style='float: {'left' if IS_AR else 'right'}; color:#EF4444; font-weight:bold; margin-top: 2px;'>{strings['cap_high']}</small>"
                 elif (12 <= hour < 17):
